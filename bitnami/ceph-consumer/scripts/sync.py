@@ -239,6 +239,14 @@ class CephConsumerSync:
         # Get maxMonId
         max_mon_id = cm_data.get("maxMonId", "0")
 
+        # Decode all secret fields for copying to consumer
+        decoded_secrets = {}
+        for key, value in secret_data.items():
+            try:
+                decoded_secrets[key] = base64.b64decode(value).decode("utf-8")
+            except Exception as e:
+                logger.warning(f"Failed to decode secret key {key}: {e}")
+
         logger.info(f"Provider FSID: {fsid}")
         logger.info(f"Provider Mon data: {mon_data}")
 
@@ -246,6 +254,7 @@ class CephConsumerSync:
             "fsid": fsid,
             "mon_data": mon_data,
             "max_mon_id": max_mon_id,
+            "secret_data": decoded_secrets,
         }
 
     def sync_mon_endpoints(self, mon_info: Dict[str, Any]) -> bool:
@@ -271,6 +280,19 @@ class CephConsumerSync:
         if not self.consumer_client.apply(configmap):
             success = False
 
+        # Build secret data from provider
+        # Copy all fields from provider secret, add cluster-name
+        secret_string_data = copy.deepcopy(mon_info.get("secret_data", {}))
+        secret_string_data["cluster-name"] = self.consumer_ns
+        
+        # Ensure required fields exist (for external cluster compatibility)
+        # Provider uses: ceph-secret, ceph-username, fsid, mon-secret
+        # External cluster expects: admin-secret (or ceph-secret), fsid, mon-secret, cluster-name
+        
+        # Map ceph-secret to admin-secret if needed (for Rook external cluster compatibility)
+        if "ceph-secret" in secret_string_data and "admin-secret" not in secret_string_data:
+            secret_string_data["admin-secret"] = secret_string_data["ceph-secret"]
+        
         # Create/update Mon secret
         secret = {
             "apiVersion": "v1",
@@ -281,12 +303,7 @@ class CephConsumerSync:
                 "labels": copy.deepcopy(self.managed_labels),
             },
             "type": "kubernetes.io/rook",
-            "stringData": {
-                "fsid": mon_info["fsid"],
-                "cluster-name": self.consumer_ns,
-                "admin-secret": "admin-secret",
-                "mon-secret": "mon-secret",
-            },
+            "stringData": secret_string_data,
         }
 
         if not self.consumer_client.apply(secret):
@@ -355,8 +372,14 @@ class CephConsumerSync:
         logger.info(f"Found {len(ceph_scs)} Ceph StorageClasses in provider cluster")
         return ceph_scs
 
-    def should_sync_storage_class(self, sc_name: str, provisioner: str) -> bool:
+    def should_sync_storage_class(self, sc_name: str, provisioner: str, labels: Dict[str, str]) -> bool:
         """Check if StorageClass should be synced"""
+        # Check exclude label first
+        exclude_label = self.config["storageClassSync"]["filter"].get("excludeLabel", "ceph-consumer.rook.io/exclude")
+        if labels.get(exclude_label) == "true":
+            logger.debug(f"StorageClass {sc_name} excluded by label {exclude_label}=true")
+            return False
+
         # Check RBD/CephFS enable flags
         if ".rbd.csi.ceph.com" in provisioner:
             if not self.config["storageClassSync"]["rbd"]["enabled"]:
@@ -371,7 +394,6 @@ class CephConsumerSync:
         filter_config = self.config["storageClassSync"]["filter"]
         
         # Check exclude patterns
-        import re
         for pattern in filter_config.get("excludePatterns", []):
             try:
                 if re.match(pattern, sc_name):
@@ -485,9 +507,10 @@ class CephConsumerSync:
         for provider_sc in provider_scs:
             sc_name = provider_sc["metadata"]["name"]
             provisioner = provider_sc.get("provisioner", "")
+            labels = provider_sc.get("metadata", {}).get("labels", {})
             
             # Check if should sync
-            if not self.should_sync_storage_class(sc_name, provisioner):
+            if not self.should_sync_storage_class(sc_name, provisioner, labels):
                 continue
             
             # Transform and apply
