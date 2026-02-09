@@ -40,10 +40,6 @@ Deploying Bitnami applications as Helm Charts is the easiest way to get started 
 
 Learn more about the Bitnami tagging policy and the difference between rolling tags and immutable tags [in our documentation page](https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-understand-rolling-tags-containers-index.html).
 
-You can see the equivalence between the different tags by taking a look at the `tags-info.yaml` file present in the branch folder, i.e `bitnami/ASSET/BRANCH/DISTRO/tags-info.yaml`.
-
-Subscribe to project updates by watching the [bitnami/containers GitHub repo](https://github.com/bitnami/containers).
-
 ## Get this image
 
 The recommended way to get the Bitnami Docker Image for Moodle&trade; is to pull the prebuilt image from the [Docker Hub Registry](https://hub.docker.com/r/bitnami/moodle).
@@ -213,7 +209,6 @@ docker run -d --name moodle \
 | `MOODLE_LANG`                 | Allow to define default site language                                                                                        | `en`                               |
 | `MOODLE_USERNAME`             | Moodle user name.                                                                                                            | `user`                             |
 | `MOODLE_PASSWORD`             | Moodle user password.                                                                                                        | `bitnami`                          |
-| `MOODLE_DATABASE_MIN_VERSION` | Change database minimum version because of an issue with Azure Database for MariaDB.                                         | `nil`                              |
 | `MOODLE_EMAIL`                | Moodle user e-mail address.                                                                                                  | `user@example.com`                 |
 | `MOODLE_SMTP_HOST`            | Moodle SMTP server host.                                                                                                     | `nil`                              |
 | `MOODLE_SMTP_PORT_NUMBER`     | Moodle SMTP server port number.                                                                                              | `nil`                              |
