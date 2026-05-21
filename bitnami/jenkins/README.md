@@ -1,7 +1,5 @@
 # Bitnami Secure Image for Jenkins
 
-## What is Jenkins?
-
 > Jenkins is an open source Continuous Integration and Continuous Delivery (CI/CD) server designed to automate the building, testing, and deploying of any software project.
 
 [Overview of Jenkins](https://jenkins.io/)
@@ -14,6 +12,14 @@ docker run --name jenkins bitnami/jenkins:latest
 ```
 
 You can find the default credentials and available configuration options in the [Environment Variables](#environment-variables) section.
+
+## Using `docker-compose.yml`
+
+The docker-compose.yaml file of this container can be found in the [Bitnami Containers repository](https://github.com/bitnami/containers/).
+
+[https://github.com/bitnami/containers/tree/main/bitnami/jenkins/docker-compose.yml](https://github.com/bitnami/containers/tree/main/bitnami/jenkins/docker-compose.yml)
+
+Please be aware this file has not undergone internal testing. Consequently, we advise its use exclusively for development or testing purposes. For production-ready deployments, we highly recommend utilizing its associated [Bitnami Helm chart](https://github.com/bitnami/charts/tree/main/bitnami/jenkins).
 
 ## Why use Bitnami Secure Images?
 
@@ -44,53 +50,15 @@ Non-root container images add an extra layer of security and are generally recom
 
 Learn more about the Bitnami tagging policy and the difference between rolling tags and immutable tags [in our documentation page](https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-understand-rolling-tags-containers-index.html).
 
-You can see the equivalence between the different tags by taking a look at the `tags-info.yaml` file present in the branch folder, i.e `bitnami/ASSET/BRANCH/DISTRO/tags-info.yaml`.
-
-Subscribe to project updates by watching the [bitnami/containers GitHub repo](https://github.com/bitnami/containers).
-
 ## Get this image
 
-The recommended way to get the Bitnami Jenkins Docker Image is to pull the prebuilt image from the [Docker Hub Registry](https://hub.docker.com/r/bitnami/jenkins).
-
-```console
-docker pull bitnami/jenkins:latest
-```
-
-To use a specific version, you can pull a versioned tag. You can view the [list of available versions](https://hub.docker.com/r/bitnami/jenkins/tags/) in the Docker Hub Registry.
-
-```console
-docker pull bitnami/jenkins:[TAG]
-```
-
-If you wish, you can also build the image yourself by cloning the repository, changing to the directory containing the Dockerfile and executing the `docker build` command. Remember to replace the `APP`, `VERSION` and `OPERATING-SYSTEM` path placeholders in the example command below with the correct values.
-
-```console
-git clone https://github.com/bitnami/containers.git
-cd bitnami/APP/VERSION/OPERATING-SYSTEM
-docker build -t bitnami/APP:latest .
-```
+The Bitnami Jenkins Docker image is only available to [Bitnami Secure Images](https://bitnami.com) customers.
 
 ## How to use this image
 
-### Using the Docker Command Line
+### Using Docker Compose
 
-#### Step 1: Create a network
-
-```console
-docker network create jenkins-network
-```
-
-#### Step 2: Create volumes for Jenkins persistence and launch the container
-
-```console
-$ docker volume create --name jenkins_data
-docker run -d -p 80:8080 --name jenkins \
-  --network jenkins-network \
-  --volume jenkins_data:/bitnami/jenkins \
-  bitnami/jenkins:latest
-```
-
-Access your application at `http://your-ip/`
+Please be aware this file has not undergone internal testing. Consequently, we advise its use exclusively for development or testing purposes. For production-ready deployments, we highly recommend utilizing its associated [Bitnami Helm chart](https://github.com/bitnami/charts/tree/main/bitnami/jenkins).
 
 ## Persisting your application
 
@@ -100,56 +68,13 @@ For persistence you should mount a volume at the `/bitnami/jenkins` path. The ab
 
 To avoid inadvertent removal of this volume you can [mount host directories as data volumes](https://docs.docker.com/engine/tutorials/dockervolumes/). Alternatively you can make use of volume plugins to host the volume data.
 
-### Mount host directories as data volumes with Docker Compose
-
-This requires a minor change to the [`docker-compose.yml`](https://github.com/bitnami/containers/blob/main/bitnami/jenkins/docker-compose.yml) file present in this repository:
-
-```diff
-  ...
-  services:
-    jenkins:
-    ...
-    volumes:
--     - jenkins_data:/bitnami/jenkins
-+     - /path/to/jenkins-persistence:/bitnami/jenkins
-- volumes:
--   jenkins_data:
--     driver: local
-```
-
-> NOTE: As this is a non-root container, the mounted files and directories must have the proper permissions for the UID `1001`.
-
-### Mount host directories as data volumes using the Docker command line
-
-#### Step 1: Create a network (if it does not exist)
-
-```console
-docker network create jenkins-network
-```
-
-#### Step 2. Create the Jenkins container with host volumes
-
-```console
-docker run -d -p 80:8080 --name jenkins \
-  --network jenkins-network \
-  --volume /path/to/jenkins-persistence:/bitnami/jenkins \
-  bitnami/jenkins:latest
-```
-
-### Using Docker Compose
-
-```console
-curl -sSL https://raw.githubusercontent.com/bitnami/containers/main/bitnami/jenkins/docker-compose.yml > docker-compose.yml
-docker-compose up -d
-```
-
-Please be aware this file has not undergone internal testing. Consequently, we advise its use exclusively for development or testing purposes. For production-ready deployments, we highly recommend utilizing its associated [Bitnami Helm chart](https://github.com/bitnami/charts/tree/main/bitnami/jenkins).
-
-If you detect any issue in the `docker-compose.yaml` file, feel free to report it or contribute with a fix by following our [Contributing Guidelines](https://github.com/bitnami/containers/blob/main/CONTRIBUTING.md).
-
 ## Configuration
 
+The following section describes the supported environment variables
+
 ### Environment variables
+
+The following tables list the main variables you can set.
 
 #### Customizable environment variables
 
@@ -204,110 +129,16 @@ If you detect any issue in the `docker-compose.yaml` file, feel free to report i
 | `JENKINS_DEFAULT_HTTPS_PORT_NUMBER`    | Default Jenkins HTTPS port number to enable at build time.                                 | `8443`                                                  |
 | `JENKINS_DEFAULT_JNLP_PORT_NUMBER`     | Default Jenkins JNLP port number to enable at build time.                                  | `50000`                                                 |
 
-When you start the Jenkins image, you can adjust the configuration of the instance by passing one or more environment variables either on the docker-compose file or on the `docker run` command line. If you want to add a new environment variable:
-
-- For docker-compose add the variable name and value under the application section in the [`docker-compose.yml`](https://github.com/bitnami/containers/blob/main/bitnami/jenkins/docker-compose.yml) file present in this repository:
-
-    ```yaml
-    jenkins:
-      ...
-      environment:
-        - JENKINS_PASSWORD=my_password
-      ...
-    ```
-
-- For manual execution add a `--env` option with each variable and value:
-
-    ```console
-    $ docker run -d -p 80:8080 --name jenkins \
-      --env JENKINS_PASSWORD=my_password \
-      --network jenkins-network \
-      --volume /path/to/jenkins-persistence:/bitnami/jenkins \
-      bitnami/jenkins:latest
-    ```
-
 ### FIPS configuration in Bitnami Secure Images
 
 The Bitnami Jenkins Docker image from the [Bitnami Secure Images](https://go-vmware.broadcom.com/contact-us) catalog includes extra features and settings to configure the container with FIPS capabilities. You can configure the next environment variables:
 
 - `OPENSSL_FIPS`: whether OpenSSL runs in FIPS mode or not. `yes` (default), `no`.
+- `JAVA_TOOL_OPTIONS`: controls Java FIPS mode. Use `-Djava.security.properties==/opt/bitnami/java/conf/security/java.security.restricted` (restricted), `-Djava.security.properties==/opt/bitnami/java/conf/security/java.security.relaxed` (relaxed), or `-Djava.security.properties==/opt/bitnami/java/conf/security/java.security.original` (off).
 
 ## Logging
 
-The Bitnami Jenkins Docker image sends the container logs to `stdout`. To view the logs:
-
-```console
-docker logs jenkins
-```
-
-Or using Docker Compose:
-
-```console
-docker-compose logs jenkins
-```
-
-You can configure the containers [logging driver](https://docs.docker.com/engine/admin/logging/overview/) using the `--log-driver` option if you wish to consume the container logs differently. In the default configuration docker uses the `json-file` driver.
-
-## Maintenance
-
-### Backing up your container
-
-To backup your data, configuration and logs, follow these simple steps:
-
-#### Step 1: Stop the currently running container
-
-- For docker-compose: `$ docker-compose stop jenkins`
-- For manual execution: `$ docker stop jenkins`
-
-#### Step 2: Run the backup command
-
-We need to mount two volumes in a container we will use to create the backup: a directory on your host to store the backup in, and the volumes from the container we just stopped so we can access the data.
-
-```console
-docker run --rm -v /path/to/jenkins-backups:/backups --volumes-from jenkins bitnami/os-shell \
-  cp -a /bitnami/jenkins /backups/latest
-```
-
-### Restoring a backup
-
-Restoring a backup is as simple as mounting the backup as volumes in the containers.
-
-```diff
- $ docker run -d --name jenkins \
-   ...
--  --volume /path/to/jenkins-persistence:/bitnami/jenkins \
-+  --volume /path/to/jenkins-backups/latest:/bitnami/jenkins \
-   bitnami/jenkins:latest
-```
-
-### Upgrading Jenkins
-
-Bitnami provides up-to-date versions of Jenkins, including security patches, soon after they are made upstream. We recommend that you follow these steps to upgrade your container. We will cover here the upgrade of the Jenkins container.
-
-### Step 1. Get the updated images
-
-```console
-docker pull bitnami/jenkins:latest
-```
-
-### Step 2. Stop your container
-
-- For docker-compose: `$ docker-compose stop jenkins`
-- For manual execution: `$ docker stop jenkins`
-
-### Step 3. Take a snapshot of the application state
-
-Follow the steps in [Backing up your container](#backing-up-your-container) to take a snapshot of the current application state.
-
-### Step 4. Remove the stopped container
-
-- For docker-compose: `$ docker-compose rm -v jenkins`
-- For manual execution: `$ docker rm -v jenkins`
-
-### Step 5. Run the new image
-
-- For docker-compose: `$ docker-compose up jenkins`
-- For manual execution (mount the directories if needed): `docker run --name jenkins bitnami/jenkins:latest`
+The Bitnami Jenkins Docker image sends the container logs to the `stdout`. You can configure the containers [logging driver](https://docs.docker.com/engine/admin/logging/overview/) using the `--log-driver` option if you wish to consume the container logs differently. In the default configuration docker uses the `json-file` driver.
 
 ## Customize this image
 
@@ -417,7 +248,7 @@ docker run -d -p 80:8080 --name jenkins \
   bitnami/jenkins:latest
 ```
 
-> NOTE: The default `admin` user with this setup will not be created. It should be done separately.
+> **NOTE** The default `admin` user with this setup will not be created. It should be done separately.
 
 ## Notable Changes
 
@@ -462,14 +293,6 @@ docker run -d -p 80:8080 --name jenkins \
 ### 2.107.1-r0
 
 - The Jenkins container has been migrated to the LTS version. From now on, this repository will only track long term support releases from [Jenkins](https://jenkins.io/changelog-stable/).
-
-## Contributing
-
-We'd love for you to contribute to this container. You can request new features by creating an [issue](https://github.com/bitnami/containers/issues) or submitting a [pull request](https://github.com/bitnami/containers/pulls) with your contribution.
-
-## Issues
-
-If you encountered a problem running this container, you can file an [issue](https://github.com/bitnami/containers/issues/new/choose). For us to provide better support, be sure to fill the issue template.
 
 ## License
 

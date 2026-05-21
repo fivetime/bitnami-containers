@@ -1,7 +1,5 @@
 # Bitnami Secure Image for RabbitMQ Messaging Topology Operator
 
-## What is RabbitMQ Messaging Topology Operator?
-
 > The RabbitMQ Messaging Topology Operator allows developers to create and manage RabbitMQ messaging topologies within a RabbitMQ cluster using a declarative Kubernetes API.
 
 [Overview of RabbitMQ Messaging Topology Operator](https://github.com/rabbitmq/messaging-topology-operator)
@@ -36,31 +34,15 @@ Learn more about the Bitnami tagging policy and the difference between rolling t
 
 ## Get this image
 
-The recommended way to get the Bitnami rmq-default-credential-updater Docker Image is to pull the prebuilt image from the [Docker Hub Registry](https://hub.docker.com/r/bitnami/rmq-default-credential-updater).
-
-```console
-docker pull bitnami/rmq-messaging-topology-operator:latest
-```
-
-To use a specific version, you can pull a versioned tag. You can view the [list of available versions](https://hub.docker.com/r/bitnami/rmq-messaging-topology-operator/tags/) in the Docker Hub Registry.
-
-```console
-docker pull bitnami/rmq-messaging-topology-operator:[TAG]
-```
-
-If you wish, you can also build the image yourself by cloning the repository, changing to the directory containing the Dockerfile and executing the `docker build` command. Remember to replace the `APP`, `VERSION` and `OPERATING-SYSTEM` path placeholders in the example command below with the correct values.
-
-```console
-git clone https://github.com/bitnami/containers.git
-cd bitnami/APP/VERSION/OPERATING-SYSTEM
-docker build -t bitnami/APP:latest .
-```
+The Bitnami RabbitMQ Messaging Topology Operator Docker image is only available to [Bitnami Secure Images](https://bitnami.com) customers.
 
 ## Why use a non-root container?
 
 Non-root container images add an extra layer of security and are generally recommended for production environments. However, because they run as a non-root user, privileged tasks are typically off-limits. Learn more about non-root containers [in our docs](https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-work-with-non-root-containers-index.html).
 
 ## Configuration
+
+The following section describes how to run commands
 
 ### Running commands
 
@@ -78,13 +60,13 @@ Check the [official RabbitMQ Messaging Topology Operator documentation](https://
 
 - The `docker-compose.yaml` file has been removed, as it was solely intended for internal testing purposes.
 
-## Contributing
 
-We'd love for you to contribute to this container. You can request new features by creating an [issue](https://github.com/bitnami/containers/issues) or submitting a [pull request](https://github.com/bitnami/containers/pulls) with your contribution.
+### FIPS configuration in Bitnami Secure Images
 
-## Issues
+The Bitnami RabbitMQ Messaging Topology Operator Docker image from the [Bitnami Secure Images](https://go-vmware.broadcom.com/contact-us) catalog includes extra features and settings to configure the container with FIPS capabilities. You can configure the next environment variables:
 
-If you encountered a problem running this container, you can file an [issue](https://github.com/bitnami/containers/issues/new/choose). For us to provide better support, be sure to fill the issue template.
+- `OPENSSL_FIPS`: whether OpenSSL runs in FIPS mode or not. `yes` (default), `no`.
+- `GODEBUG`: controls Go FIPS mode. Use `fips140=only` (restricted), `fips140=on` (relaxed), or `fips140=off` (disabled).
 
 ## License
 

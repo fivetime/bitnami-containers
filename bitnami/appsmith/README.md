@@ -1,7 +1,5 @@
 # Bitnami Secure Image for Appsmith
 
-## What is Appsmith?
-
 > Appsmith is an open source platform for building and maintaining internal tools, such as custom dashboards, admin panels or CRUD apps.
 
 [Overview of Appsmith](https://www.appsmith.com/)
@@ -12,6 +10,14 @@ Trademarks: This software listing is packaged by Bitnami. The respective tradema
 ```console
 docker run -it --name appsmith bitnami/appsmith:latest
 ```
+
+## Using `docker-compose.yml`
+
+The docker-compose.yaml file of this container can be found in the [Bitnami Containers repository](https://github.com/bitnami/containers/).
+
+[https://github.com/bitnami/containers/tree/main/bitnami/appsmith/docker-compose.yml](https://github.com/bitnami/containers/tree/main/bitnami/appsmith/docker-compose.yml)
+
+Please be aware this file has not undergone internal testing. Consequently, we advise its use exclusively for development or testing purposes. For production-ready deployments, we highly recommend utilizing its associated [Bitnami Helm chart](https://github.com/bitnami/charts/tree/main/bitnami/appsmith).
 
 ## Why use Bitnami Secure Images?
 
@@ -34,75 +40,17 @@ If you are looking for our previous generation of images based on Debian Linux, 
 
 Learn more about the Bitnami tagging policy and the difference between rolling tags and immutable tags [in our documentation page](https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-understand-rolling-tags-containers-index.html).
 
-You can see the equivalence between the different tags by taking a look at the `tags-info.yaml` file present in the branch folder, i.e `bitnami/ASSET/BRANCH/DISTRO/tags-info.yaml`.
-
-Subscribe to project updates by watching the [bitnami/containers GitHub repo](https://github.com/bitnami/containers).
-
 ## Get this image
 
-The recommended way to get the Bitnami Appsmith Docker Image is to pull the prebuilt image from the [Docker Hub Registry](https://hub.docker.com/r/bitnami/appsmith).
-
-```console
-docker pull bitnami/appsmith:latest
-```
-
-To use a specific version, you can pull a versioned tag. You can view the [list of available versions](https://hub.docker.com/r/bitnami/appsmith/tags/) in the Docker Hub Registry.
-
-```console
-docker pull bitnami/appsmith:[TAG]
-```
-
-If you wish, you can also build the image yourself by cloning the repository, changing to the directory containing the Dockerfile and executing the `docker build` command. Remember to replace the `APP`, `VERSION` and `OPERATING-SYSTEM` path placeholders in the example command below with the correct values.
-
-```console
-git clone https://github.com/bitnami/containers.git
-cd bitnami/APP/VERSION/OPERATING-SYSTEM
-docker build -t bitnami/APP:latest .
-```
-
-## Maintenance
-
-### Upgrade this image
-
-Bitnami provides up-to-date versions of Appsmith, including security patches, soon after they are made upstream. We recommend that you follow these steps to upgrade your container.
-
-#### Step 1: Get the updated image
-
-```console
-docker pull bitnami/appsmith:latest
-```
-
-or if you're using Docker Compose, update the value of the image property to `bitnami/appsmith:latest`.
-
-#### Step 2: Remove the currently running container
-
-```console
-docker rm -v appsmith
-```
-
-or using Docker Compose:
-
-```console
-docker-compose rm -v appsmith
-```
-
-#### Step 3: Run the new image
-
-Re-create your container from the new image.
-
-```console
-docker run --name appsmith bitnami/appsmith:latest
-```
-
-or using Docker Compose:
-
-```console
-docker-compose up appsmith
-```
+The Bitnami Appsmith Docker image is only available to [Bitnami Secure Images](https://bitnami.com) customers.
 
 ## Configuration
 
+The following section describes the supported environment variables
+
 ### Environment variables
+
+The following tables list the main variables you can set.
 
 #### Customizable environment variables
 
@@ -151,31 +99,6 @@ docker-compose up appsmith
 | `APPSMITH_DAEMON_USER`      | Appsmith daemon system user.                 | `appsmith`                          |
 | `APPSMITH_DAEMON_GROUP`     | Appsmith daemon system group.                | `appsmith`                          |
 
-When you start the Appsmith image, you can adjust the configuration of the instance by passing one or more environment variables either on the docker-compose file or on the `docker run` command line. Please note that some variables are only considered when the container is started for the first time. If you want to add a new environment variable:
-
-- For docker-compose add the variable name and value under the application section in the [`docker-compose.yml`](https://github.com/bitnami/containers/blob/main/bitnami/appsmith/docker-compose.yml) file present in this repository:
-
-    ```yaml
-    appsmith-api:
-      ...
-      environment:
-        - APPSMITH_PASSWORD=my_password
-      ...
-    ```
-
-- For manual execution add a `--env` option with each variable and value:
-
-    ```console
-    $ docker run -d --name appsmith-api -p 80:8080 -p 443:8443 \
-      --env APPSMITH_PASSWORD=my_password \
-      --env APPSMITH_MODE=backend \
-      --network appsmith-tier \
-      --volume /path/to/appsmith-persistence:/bitnami \
-      bitnami/appsmith:latest
-    ```
-
-Available environment variables:
-
 #### Run mode
 
 Appsmith supports three running modes:
@@ -188,74 +111,18 @@ The running mode is defined via the `APPSMITH_MODE` environment variable. The po
 
 ##### Connect Appsmith container to an existing database
 
-The Bitnami Appsmith container supports connecting the Appsmith application to an external database. This would be an example of using an external database for Appsmith.
-
-- Modify the [`docker-compose.yml`](https://github.com/bitnami/containers/blob/main/bitnami/appsmith/docker-compose.yml) file present in this repository:
-
-    ```diff
-       appsmith:
-         ...
-         environment:
-    -      - APPSMITH_DATABASE_HOST=mongodb
-    +      - APPSMITH_DATABASE_HOST=mongodb_host
-           - APPSMITH_DATABASE_PORT_NUMBER=27017
-           - APPSMITH_DATABASE_NAME=appsmith_db
-           - APPSMITH_DATABASE_USER=appsmith_user
-    -      - ALLOW_EMPTY_PASSWORD=yes
-    +      - APPSMITH_DATABASE_PASSWORD=appsmith_password
-         ...
-    ```
-
-- For manual execution:
-
-    ```console
-    $ docker run -d --name appsmith\
-      -p 8080:8080 -p 8443:8443 \
-      --network appsmith-network \
-      --env APPSMITH_DATABASE_HOST=mongodb_host \
-      --env APPSMITH_DATABASE_PORT_NUMBER=27017 \
-      --env APPSMITH_DATABASE_NAME=appsmith_db \
-      --env APPSMITH_DATABASE_USER=appsmith_user \
-      --env APPSMITH_DATABASE_PASSWORD=appsmith_password \
-      --volume appsmith_data:/bitnami/appsmith \
-      bitnami/appsmith:latest
-    ```
+The Bitnami Appsmith container supports connecting the Appsmith application to an external database.
 
 ### FIPS configuration in Bitnami Secure Images
 
 The Bitnami Appsmith Docker image from the [Bitnami Secure Images](https://go-vmware.broadcom.com/contact-us) catalog includes extra features and settings to configure the container with FIPS capabilities. You can configure the next environment variables:
 
 - `OPENSSL_FIPS`: whether OpenSSL runs in FIPS mode or not. `yes` (default), `no`.
+- `JAVA_TOOL_OPTIONS`: controls Java FIPS mode. Use `-Djava.security.properties==/opt/bitnami/java/conf/security/java.security.restricted` (restricted), `-Djava.security.properties==/opt/bitnami/java/conf/security/java.security.relaxed` (relaxed), or `-Djava.security.properties==/opt/bitnami/java/conf/security/java.security.original` (off).
 
 ## Logging
 
-The Bitnami Appsmith Docker image sends the container logs to `stdout`. To view the logs:
-
-```console
-docker logs wordpress
-```
-
-Or using Docker Compose:
-
-```console
-docker-compose logs wordpress
-```
-
-You can configure the containers [logging driver](https://docs.docker.com/engine/admin/logging/overview/) using the `--log-driver` option if you wish to consume the container logs differently. In the default configuration docker uses the `json-file` driver.
-
-## Using `docker-compose.yaml`
-
-Please be aware this file has not undergone internal testing. Consequently, we advise its use exclusively for development or testing purposes. For production-ready deployments, we highly recommend utilizing its associated [Bitnami Helm chart](https://github.com/bitnami/charts/tree/main/bitnami/appsmith).
-
-If you detect any issue in the `docker-compose.yaml` file, feel free to report it or contribute with a fix by following our [Contributing Guidelines](https://github.com/bitnami/containers/blob/main/CONTRIBUTING.md).
-
-## Contributing
-
-We'd love for you to contribute to this Docker image. You can request new features by creating an [issue](https://github.com/bitnami/containers/issues) or submitting a [pull request](https://github.com/bitnami/containers/pulls) with your contribution.
-
-## Issues
-
-If you encountered a problem running this container, you can file an [issue](https://github.com/bitnami/containers/issues/new/choose). For us to provide better support, be sure to fill the issue template.
+The Bitnami Appsmith Docker image sends the container logs to the `stdout`. You can configure the containers [logging driver](https://docs.docker.com/engine/admin/logging/overview/) using the `--log-driver` option if you wish to consume the container logs differently. In the default configuration docker uses the `json-file` driver.
 
 ## License
 

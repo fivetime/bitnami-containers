@@ -1,7 +1,5 @@
 # Bitnami Secure Image for Grafana Image Renderer
 
-## What is Grafana Image Renderer?
-
 > The Grafana Image Renderer is a plugin for Grafana that uses headless Chrome to render panels and dashboards as PNG images.
 
 [Overview of Grafana Image Renderer](https://github.com/grafana/grafana-image-renderer)
@@ -42,31 +40,9 @@ Non-root container images add an extra layer of security and are generally recom
 
 Learn more about the Bitnami tagging policy and the difference between rolling tags and immutable tags [in our documentation page](https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-understand-rolling-tags-containers-index.html).
 
-You can see the equivalence between the different tags by taking a look at the `tags-info.yaml` file present in the branch folder, i.e `bitnami/ASSET/BRANCH/DISTRO/tags-info.yaml`.
-
-Subscribe to project updates by watching the [bitnami/containers GitHub repo](https://github.com/bitnami/containers).
-
 ## Get this image
 
-The recommended way to get the Bitnami Grafana Image Renderer Docker Image is to pull the prebuilt image from the [Docker Hub Registry](https://hub.docker.com/r/bitnami/grafana-image-renderer).
-
-```console
-docker pull bitnami/grafana-image-renderer:latest
-```
-
-To use a specific version, you can pull a versioned tag. You can view the [list of available versions](https://hub.docker.com/r/bitnami/grafana-image-renderer/tags/) in the Docker Hub Registry.
-
-```console
-docker pull bitnami/grafana-image-renderer:[TAG]
-```
-
-If you wish, you can also build the image yourself by cloning the repository, changing to the directory containing the Dockerfile and executing the `docker build` command. Remember to replace the `APP`, `VERSION` and `OPERATING-SYSTEM` path placeholders in the example command below with the correct values.
-
-```console
-git clone https://github.com/bitnami/containers.git
-cd bitnami/APP/VERSION/OPERATING-SYSTEM
-docker build -t bitnami/APP:latest .
-```
+The Bitnami Grafana Image Renderer Docker image is only available to [Bitnami Secure Images](https://bitnami.com) customers.
 
 ## Connecting to other containers
 
@@ -114,12 +90,15 @@ You can customize Grafana Image Renderer settings by replacing the default confi
 
 ### Environment variables
 
+The following tables list the main variables you can set.
+
 #### Customizable environment variables
 
-| Name                                    | Description                           | Default Value |
-|-----------------------------------------|---------------------------------------|---------------|
-| `GRAFANA_IMAGE_RENDERER_LISTEN_ADDRESS` | Grafana Image Renderer listen address | `127.0.0.1`   |
-| `GRAFANA_IMAGE_RENDERER_PORT_NUMBER`    | Grafana Image Renderer port number    | `8080`        |
+| Name                                    | Description                                                                       | Default Value                             |
+|-----------------------------------------|-----------------------------------------------------------------------------------|-------------------------------------------|
+| `GRAFANA_IMAGE_RENDERER_LISTEN_ADDRESS` | Grafana Image Renderer listen address                                             | `127.0.0.1`                               |
+| `GRAFANA_IMAGE_RENDERER_PORT_NUMBER`    | Grafana Image Renderer port number                                                | `8080`                                    |
+| `GRAFANA_IMAGE_RENDERER_EXTRA_ENV_FILE` | File to store extra environment variables for the Grafana Image Renderer service. | `${GRAFANA_IMAGE_RENDERER_BASE_DIR}/.env` |
 
 #### Read-only environment variables
 
@@ -141,47 +120,7 @@ The Bitnami Grafana Image Renderer Docker image from the [Bitnami Secure Images]
 
 ## Logging
 
-The Bitnami Grafana Image Renderer Docker image sends the container logs to the `stdout`. To view the logs:
-
-```console
-docker logs grafana-image-renderer
-```
-
-You can configure the containers [logging driver](https://docs.docker.com/engine/admin/logging/overview/) using the `--log-driver` option if you wish to consume the container logs differently. In the default configuration docker uses the `json-file` driver.
-
-## Maintenance
-
-### Upgrade this image
-
-Bitnami provides up-to-date versions of Grafana Image Renderer, including security patches, soon after they are made upstream. We recommend that you follow these steps to upgrade your container.
-
-#### Step 1: Get the updated image
-
-```console
-docker pull bitnami/grafana-image-renderer:latest
-```
-
-#### Step 2: Stop the currently running container
-
-Stop the currently running container using the command
-
-```console
-docker stop grafana-image-renderer
-```
-
-#### Step 3: Remove the currently running container
-
-```console
-docker rm -v grafana-image-renderer
-```
-
-#### Step 4: Run the new image
-
-Re-create your container from the new image:
-
-```console
-docker run --name grafana-image-renderer bitnami/grafana-image-renderer:latest
-```
+The Bitnami Grafana Image Renderer Docker image sends the container logs to the `stdout`. You can configure the containers [logging driver](https://docs.docker.com/engine/admin/logging/overview/) using the `--log-driver` option if you wish to consume the container logs differently. In the default configuration docker uses the `json-file` driver.
 
 ## Notable Changes
 
@@ -192,14 +131,6 @@ The entire service has been rewritten in Go, replacing the previous Node.js impl
 ### Starting January 16, 2024
 
 - The `docker-compose.yaml` file has been removed, as it was solely intended for internal testing purposes.
-
-## Contributing
-
-We'd love for you to contribute to this container. You can request new features by creating an [issue](https://github.com/bitnami/containers/issues) or submitting a [pull request](https://github.com/bitnami/containers/pulls) with your contribution.
-
-## Issues
-
-If you encountered a problem running this container, you can file an [issue](https://github.com/bitnami/containers/issues/new/choose). For us to provide better support, be sure to fill the issue template.
 
 ## License
 

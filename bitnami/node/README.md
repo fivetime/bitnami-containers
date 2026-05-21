@@ -1,7 +1,5 @@
 # Bitnami Secure Image for Node.js
 
-## What is Node.js?
-
 > Node.js is a runtime environment built on V8 JavaScript engine. Its event-driven, non-blocking I/O model enables the development of fast, scalable, and data-intensive server applications.
 
 [Overview of Node.js](https://nodejs.org/)
@@ -66,31 +64,9 @@ Recommended for:
 
 Learn more about the Bitnami tagging policy and the difference between rolling tags and immutable tags [in our documentation page](https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-understand-rolling-tags-containers-index.html).
 
-You can see the equivalence between the different tags by taking a look at the `tags-info.yaml` file present in the branch folder, i.e `bitnami/ASSET/BRANCH/DISTRO/tags-info.yaml`.
-
-Subscribe to project updates by watching the [bitnami/containers GitHub repo](https://github.com/bitnami/containers).
-
 ## Get this image
 
-The recommended way to get the Bitnami Node.js Docker Image is to pull the prebuilt image from the [Docker Hub Registry](https://hub.docker.com/r/bitnami/node).
-
-```console
-docker pull bitnami/node:latest
-```
-
-To use a specific version, you can pull a versioned tag. You can view the [list of available versions](https://hub.docker.com/r/bitnami/node/tags/) in the Docker Hub Registry.
-
-```console
-docker pull bitnami/node:[TAG]
-```
-
-If you wish, you can also build the image yourself by cloning the repository, changing to the directory containing the Dockerfile and executing the `docker build` command. Remember to replace the `APP`, `VERSION` and `OPERATING-SYSTEM` path placeholders in the example command below with the correct values.
-
-```console
-git clone https://github.com/bitnami/containers.git
-cd bitnami/APP/VERSION/OPERATING-SYSTEM
-docker build -t bitnami/APP:latest .
-```
+The Bitnami Node.js Docker image is only available to [Bitnami Secure Images](https://bitnami.com) customers.
 
 ## Entering the REPL
 
@@ -105,6 +81,8 @@ docker run -it --name node bitnami/node
 - [nodejs.org/api/repl.html](https://nodejs.org/api/repl.html)
 
 ## Configuration
+
+The following section describes how to run commands
 
 ### Running your Node.js script
 
@@ -122,17 +100,6 @@ If your Node.js app has a `package.json` defining your app's dependencies and st
 ```console
 docker run --rm -v /path/to/app:/app bitnami/node npm install
 docker run -it --name node  -v /path/to/app:/app bitnami/node npm start
-```
-
-or by modifying the [`docker-compose.yml`](https://github.com/bitnami/containers/blob/main/bitnami/node/docker-compose.yml) file present in this repository:
-
-```yaml
-node:
-  ...
-  command: "sh -c 'npm install && npm start'"
-  volumes:
-    - .:/app
-  ...
 ```
 
 **Further Reading:**
@@ -290,32 +257,6 @@ docker run -it \
   bitnami/nginx
 ```
 
-## Maintenance
-
-### Upgrade this image
-
-Bitnami provides up-to-date versions of Node.js, including security patches, soon after they are made upstream. We recommend that you follow these steps to upgrade your container.
-
-#### Step 1: Get the updated image
-
-```console
-docker pull bitnami/node:latest
-```
-
-#### Step 2: Remove the currently running container
-
-```console
-docker rm -v node
-```
-
-#### Step 3: Run the new image
-
-Re-create your container from the new image.
-
-```console
-docker run --name node bitnami/node:latest
-```
-
 ## Notable Changes
 
 ### Starting January 16, 2024
@@ -333,14 +274,6 @@ docker run --name node bitnami/node:latest
 ### 4.1.1-0-r01 (2015-10-07)
 
 - `/app` directory is no longer exported as a volume. This caused problems when building on top of the image, since changes in the volume are not persisted between Dockerfile `RUN` instructions. To keep the previous behavior (so that you can mount the volume in another container), create the container with the `-v /app` option.
-
-## Contributing
-
-We'd love for you to contribute to this Docker image. You can request new features by creating an [issue](https://github.com/bitnami/containers/issues) or submitting a [pull request](https://github.com/bitnami/containers/pulls) with your contribution.
-
-## Issues
-
-If you encountered a problem running this container, you can file an [issue](https://github.com/bitnami/containers/issues/new/choose). For us to provide better support, be sure to fill the issue template.
 
 ## License
 

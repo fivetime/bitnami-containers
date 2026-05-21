@@ -1,7 +1,5 @@
 # Bitnami Secure Image for .NET SDK
 
-## What is .NET SDK?
-
 > .NET SDK is the software development kit for the ASP.NET Core framework.
 
 [Overview of .NET SDK](https://dotnet.microsoft.com/apps/aspnet)
@@ -12,6 +10,14 @@ Trademarks: This software listing is packaged by Bitnami. The respective tradema
 ```console
 docker run --name dotnet-sdk bitnami/dotnet-sdk:latest
 ```
+
+## Using `docker-compose.yml`
+
+The docker-compose.yaml file of this container can be found in the [Bitnami Containers repository](https://github.com/bitnami/containers/).
+
+[https://github.com/bitnami/containers/tree/main/bitnami/dotnet-sdk/docker-compose.yml](https://github.com/bitnami/containers/tree/main/bitnami/dotnet-sdk/docker-compose.yml)
+
+Please be aware this file has not undergone internal testing. Consequently, we advise its use exclusively for development or testing purposes. For production-ready deployments, we highly recommend utilizing its associated [Bitnami Helm chart](https://github.com/bitnami/charts/tree/main/bitnami/aspnet-core).
 
 ## Why use Bitnami Secure Images?
 
@@ -34,31 +40,9 @@ If you are looking for our previous generation of images based on Debian Linux, 
 
 Learn more about the Bitnami tagging policy and the difference between rolling tags and immutable tags [in our documentation page](https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-understand-rolling-tags-containers-index.html).
 
-You can see the equivalence between the different tags by taking a look at the `tags-info.yaml` file present in the branch folder, i.e `bitnami/ASSET/BRANCH/DISTRO/tags-info.yaml`.
-
-Subscribe to project updates by watching the [bitnami/containers GitHub repo](https://github.com/bitnami/containers).
-
 ## Get this image
 
-The recommended way to get the Bitnami .NET SDK Docker Image is to pull the prebuilt image from the [Docker Hub Registry](https://hub.docker.com/r/bitnami/dotnet-sdk).
-
-```console
-docker pull bitnami/dotnet-sdk:latest
-```
-
-To use a specific version, you can pull a versioned tag. You can view the [list of available versions](https://hub.docker.com/r/bitnami/dotnet-sdk/tags/) in the Docker Hub Registry.
-
-```console
-docker pull bitnami/dotnet-sdk:[TAG]
-```
-
-If you wish, you can also build the image yourself by cloning the repository, changing to the directory containing the Dockerfile and executing the `docker build` command. Remember to replace the `APP`, `VERSION` and `OPERATING-SYSTEM` path placeholders in the example command below with the correct values.
-
-```console
-git clone https://github.com/bitnami/containers.git
-cd bitnami/APP/VERSION/OPERATING-SYSTEM
-docker build -t bitnami/APP:latest .
-```
+The Bitnami .NET SDK Docker image is only available to [Bitnami Secure Images](https://bitnami.com) customers.
 
 ## Persisting your application
 
@@ -66,99 +50,15 @@ If you remove the container all your data will be lost, and the next time you ru
 
 For persistence you should mount a directory at the `/bitnami` path. If the mounted directory is empty, it will be initialized on the first run.
 
-```console
-docker run \
-    -v /path/to/dotnet-persistence:/bitnami \
-    bitnami/dotnet-sdk:latest
-```
-
-You can also do this with a minor change to the [`docker-compose.yml`](https://github.com/bitnami/containers/blob/main/bitnami/dotnet-sdk/docker-compose.yml) file present in this repository:
-
-```yaml
-dotnet-sdk:
-  ...
-  volumes:
-    - /path/to/dotnet-persistence:/app
-  ...
-```
-
 ## Connecting to other containers
 
 Using [Docker container networking](https://docs.docker.com/engine/userguide/networking/), a different server running inside a container can easily be accessed by your application containers and vice-versa.
 
 Containers attached to the same network can communicate with each other using the container name as the hostname.
 
-### Using the Command Line
-
-#### Step 1: Create a network
-
-```console
-docker network create dotnet-network --driver bridge
-```
-
-#### Step 2: Launch the .NET SDK container within your network
-
-Use the `--network <NETWORK>` argument to the `docker run` command to attach the container to the `dotnet-network` network.
-
-```console
-docker run --name dotnet-node1 --network dotnet-network bitnami/dotnet-sdk:latest
-```
-
-#### Step 3: Run another containers
-
-We can launch another containers using the same flag (`--network NETWORK`) in the `docker run` command. If you also set a name to your container, you will be able to use it as hostname in your network.
-
-## Logging
-
-The Bitnami .NET SDK Docker image sends the container logs to `stdout`. To view the logs:
-
-```console
-docker logs dotnet-sdk
-```
-
-You can configure the containers [logging driver](https://docs.docker.com/engine/admin/logging/overview/) using the `--log-driver` option if you wish to consume the container logs differently. In the default configuration docker uses the `json-file` driver.
-
-## Maintenance
-
-### Upgrade this image
-
-Bitnami provides up-to-date versions of .NET SDK, including security patches, soon after they are made upstream. We recommend that you follow these steps to upgrade your container.
-
-#### Step 1: Get the updated image
-
-```console
-docker pull bitnami/dotnet-sdk:latest
-```
-
-#### Step 2: Stop the running container
-
-Stop the currently running container using the command
-
-```console
-docker stop dotnet-sdk
-```
-
-#### Step 3: Remove the currently running container
-
-```console
-docker rm -v dotnet-sdk
-```
-
-#### Step 4: Run the new image
-
-Re-create your container from the new image.
-
-```console
-docker run --name dotnet-sdk bitnami/dotnet-sdk:latest
-```
-
-## Using `docker-compose.yaml`
-
-Please be aware this file has not undergone internal testing. Consequently, we advise its use exclusively for development or testing purposes.
-
-If you detect any issue in the `docker-compose.yaml` file, feel free to report it or contribute with a fix by following our [Contributing Guidelines](https://github.com/bitnami/containers/blob/main/CONTRIBUTING.md).
-
 ## Configuration
+
+The following section describes how to configure the application
 
 ### FIPS configuration in Bitnami Secure Images
 
@@ -166,13 +66,9 @@ The Bitnami .NET SDK Docker image from the [Bitnami Secure Images](https://go-vm
 
 - `OPENSSL_FIPS`: whether OpenSSL runs in FIPS mode or not. `yes` (default), `no`.
 
-## Contributing
+## Logging
 
-We'd love for you to contribute to this container. You can request new features by creating an [issue](https://github.com/bitnami/containers/issues) or submitting a [pull request](https://github.com/bitnami/containers/pulls) with your contribution.
-
-## Issues
-
-If you encountered a problem running this container, you can file an [issue](https://github.com/bitnami/containers/issues/new/choose). For us to provide better support, be sure to fill the issue template.
+The Bitnami .NET SDK Docker image sends the container logs to the `stdout`. You can configure the containers [logging driver](https://docs.docker.com/engine/admin/logging/overview/) using the `--log-driver` option if you wish to consume the container logs differently. In the default configuration docker uses the `json-file` driver.
 
 ## License
 

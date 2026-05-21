@@ -1,7 +1,5 @@
 # Bitnami Secure Image for Ruby
 
-## What is Ruby?
-
 > Ruby on Rails is a full-stack development environment optimized for programmer happiness and sustainable productivity. It lets you write beautiful code by favoring convention over configuration.
 
 [Overview of Ruby](https://www.ruby-lang.org)
@@ -12,6 +10,12 @@ Trademarks: This software listing is packaged by Bitnami. The respective tradema
 ```console
 docker run -it --name ruby bitnami/ruby:latest
 ```
+
+## Using `docker-compose.yml`
+
+The docker-compose.yaml file of this container can be found in the [Bitnami Containers repository](https://github.com/bitnami/containers/).
+
+[https://github.com/bitnami/containers/tree/main/bitnami/ruby/docker-compose.yml](https://github.com/bitnami/containers/tree/main/bitnami/ruby/docker-compose.yml)
 
 ## Why use Bitnami Secure Images?
 
@@ -66,10 +70,6 @@ Recommended for:
 
 Learn more about the Bitnami tagging policy and the difference between rolling tags and immutable tags [in our documentation page](https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-understand-rolling-tags-containers-index.html).
 
-You can see the equivalence between the different tags by taking a look at the `tags-info.yaml` file present in the branch folder, i.e `bitnami/ASSET/BRANCH/DISTRO/tags-info.yaml`.
-
-Subscribe to project updates by watching the [bitnami/containers GitHub repo](https://github.com/bitnami/containers).
-
 ### Deprecation Note (2022-01-21)
 
 The `prod` tags has been removed; from now on just the regular container images will be released.
@@ -84,25 +84,7 @@ The formatting convention for `prod` tags has been changed:
 
 ## Get this image
 
-The recommended way to get the Bitnami Ruby Docker Image is to pull the prebuilt image from the [Docker Hub Registry](https://hub.docker.com/r/bitnami/ruby).
-
-```console
-docker pull bitnami/ruby:latest
-```
-
-To use a specific version, you can pull a versioned tag. You can view the [list of available versions](https://hub.docker.com/r/bitnami/ruby/tags/) in the Docker Hub Registry.
-
-```console
-docker pull bitnami/ruby:[TAG]
-```
-
-If you wish, you can also build the image yourself by cloning the repository, changing to the directory containing the Dockerfile and executing the `docker build` command. Remember to replace the `APP`, `VERSION` and `OPERATING-SYSTEM` path placeholders in the example command below with the correct values.
-
-```console
-git clone https://github.com/bitnami/containers.git
-cd bitnami/APP/VERSION/OPERATING-SYSTEM
-docker build -t bitnami/APP:latest .
-```
+The Bitnami Ruby Docker image is only available to [Bitnami Secure Images](https://bitnami.com) customers.
 
 ## Entering the REPL
 
@@ -117,6 +99,8 @@ docker run -it --name ruby bitnami/ruby:latest
 - [Ruby IRB Documentation](http://ruby-doc.org/stdlib-2.4.0/libdoc/irb/rdoc/IRB.html)
 
 ## Configuration
+
+The following section describes how to run commands
 
 ### Running your Ruby script
 
@@ -134,17 +118,6 @@ If your Ruby app has a `Gemfile` defining your app's dependencies and start scri
 ```console
 docker run -it --name ruby -v /path/to/app:/app bitnami/ruby:latest \
   sh -c "bundle install && ruby script.rb"
-```
-
-or by modifying the [`docker-compose.yml`](https://github.com/bitnami/containers/blob/main/bitnami/ruby/docker-compose.yml) file present in this repository:
-
-```yaml
-ruby:
-  ...
-  command: "sh -c 'bundle install && ruby script.rb'"
-  volumes:
-    - .:/app
-  ...
 ```
 
 **Further Reading:**
@@ -288,46 +261,6 @@ nginx:
     - /path/to/vhost.conf:/bitnami/nginx/conf/vhosts/yourapp.conf
 ```
 
-## Maintenance
-
-### Upgrade this image
-
-Bitnami provides up-to-date versions of Ruby, including security patches, soon after they are made upstream. We recommend that you follow these steps to upgrade your container.
-
-#### Step 1: Get the updated image
-
-```console
-docker pull bitnami/ruby:latest
-```
-
-or if you're using Docker Compose, update the value of the image property to `bitnami/ruby:latest`.
-
-#### Step 2: Remove the currently running container
-
-```console
-docker rm -v ruby
-```
-
-or using Docker Compose:
-
-```console
-docker-compose rm -v ruby
-```
-
-#### Step 3: Run the new image
-
-Re-create your container from the new image.
-
-```console
-docker run --name ruby bitnami/ruby:latest
-```
-
-or using Docker Compose:
-
-```console
-docker-compose up ruby
-```
-
 ## Notable Changes
 
 ### 2.3.1-r0 (2016-05-11)
@@ -341,20 +274,6 @@ docker-compose up ruby
 ### 2.2.3-0-r01 (2015-08-26)
 
 - Permissions fixed so `bitnami` user can install gems without needing `sudo`.
-
-## Using `docker-compose.yaml`
-
-Please be aware this file has not undergone internal testing. Consequently, we advise its use exclusively for development or testing purposes.
-
-If you detect any issue in the `docker-compose.yaml` file, feel free to report it or contribute with a fix by following our [Contributing Guidelines](https://github.com/bitnami/containers/blob/main/CONTRIBUTING.md).
-
-## Contributing
-
-We'd love for you to contribute to this container. You can request new features by creating an [issue](https://github.com/bitnami/containers/issues) or submitting a [pull request](https://github.com/bitnami/containers/pulls) with your contribution.
-
-## Issues
-
-If you encountered a problem running this container, you can file an [issue](https://github.com/bitnami/containers/issues/new/choose). For us to provide better support, be sure to fill the issue template.
 
 ## License
 

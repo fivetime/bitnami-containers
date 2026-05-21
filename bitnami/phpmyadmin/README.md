@@ -1,7 +1,5 @@
 # Bitnami Secure Image for phpMyAdmin
 
-## What is phpMyAdmin?
-
 > phpMyAdmin is a free software tool written in PHP, intended to handle the administration of MySQL over the Web. phpMyAdmin supports a wide range of operations on MySQL and MariaDB.
 
 [Overview of phpMyAdmin](https://www.phpmyadmin.net/)
@@ -9,13 +7,19 @@ Trademarks: This software listing is packaged by Bitnami. The respective tradema
 
 ## TL;DR
 
-### Docker Compose
-
 ```console
 docker run --name phpmyadmin bitnami/phpmyadmin:latest
 ```
 
 You can find the default credentials and available configuration options in the [Environment Variables](#environment-variables) section.
+
+## Using `docker-compose.yml`
+
+The docker-compose.yaml file of this container can be found in the [Bitnami Containers repository](https://github.com/bitnami/containers/).
+
+[https://github.com/bitnami/containers/tree/main/bitnami/phpmyadmin/docker-compose.yml](https://github.com/bitnami/containers/tree/main/bitnami/phpmyadmin/docker-compose.yml)
+
+Please be aware this file has not undergone internal testing. Consequently, we advise its use exclusively for development or testing purposes. For production-ready deployments, we highly recommend utilizing its associated [Bitnami Helm chart](https://github.com/bitnami/charts/tree/main/bitnami/phpmyadmin).
 
 ## Why use Bitnami Secure Images?
 
@@ -42,56 +46,13 @@ Deploying Bitnami applications as Helm Charts is the easiest way to get started 
 
 Learn more about the Bitnami tagging policy and the difference between rolling tags and immutable tags [in our documentation page](https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-understand-rolling-tags-containers-index.html).
 
-You can see the equivalence between the different tags by taking a look at the `tags-info.yaml` file present in the branch folder, i.e `bitnami/ASSET/BRANCH/DISTRO/tags-info.yaml`.
-
-Subscribe to project updates by watching the [bitnami/containers GitHub repo](https://github.com/bitnami/containers).
-
-## Prerequisites
-
-To run this application you need [Docker Engine](https://www.docker.com/products/docker-engine) >= `1.10.0`. [Docker Compose](https://docs.docker.com/compose/) is recommended with a version `1.6.0` or later.
-
 ## How to use this image
 
-phpMyAdmin requires access to a MySQL database or MariaDB database to work. We'll use our very own [MariaDB image](https://github.com/bitnami/containers/tree/main/bitnami/mariadb).
-
-### Using the Docker Command Line
-
-1. Create a network
-
-    ```console
-    docker network create phpmyadmin-tier
-    ```
-
-2. Create a volume for MariaDB persistence and create a MariaDB container
-
-    ```console
-    docker volume create --name mariadb_data
-    docker run -d --name mariadb -e ALLOW_EMPTY_PASSWORD=yes \
-      --net phpmyadmin-tier \
-      --volume mariadb_data:/bitnami/mariadb \
-      bitnami/mariadb:latest
-    ```
-
-3. Launch the phpMyAdmin container
-
-    ```console
-    docker run -d --name phpmyadmin -p 80:8080 -p 443:8443 \
-      --net phpmyadmin-tier \
-      bitnami/phpmyadmin:latest
-    ```
-
-    Access your application at `http://your-ip/`
+phpMyAdmin requires access to a MySQL database or MariaDB database to work. We'll use the [Bitnami MariaDB image](https://github.com/bitnami/containers/tree/main/bitnami/mariadb).
 
 ### Using Docker Compose
 
-```console
-curl -sSL https://raw.githubusercontent.com/bitnami/containers/main/bitnami/phpmyadmin/docker-compose.yml > docker-compose.yml
-docker-compose up -d
-```
-
 Please be aware this file has not undergone internal testing. Consequently, we advise its use exclusively for development or testing purposes. For production-ready deployments, we highly recommend utilizing its associated [Bitnami Helm chart](https://github.com/bitnami/charts/tree/main/bitnami/phpmyadmin).
-
-If you detect any issue in the `docker-compose.yaml` file, feel free to report it or contribute with a fix by following our [Contributing Guidelines](https://github.com/bitnami/containers/blob/main/CONTRIBUTING.md).
 
 ### Persisting your application
 
@@ -99,78 +60,15 @@ If you remove the container all your data and configurations will be lost, and t
 
 For persistence you should mount a volume at the `/bitnami` path. Additionally you should mount a volume for [persistence of the MariaDB data](https://github.com/bitnami/containers/blob/main/bitnami/mariadb#persisting-your-database).
 
-The above examples define a Docker volume named `mariadb_data`. The application state will persist as long as this volume is not removed.
-
 To avoid inadvertent removal of these volumes you can [mount host directories as data volumes](https://docs.docker.com/engine/tutorials/dockervolumes/). Alternatively you can make use of volume plugins to host the volume data.
-
-#### Mount host directories as data volumes with Docker Compose
-
-This requires a minor change to the [`docker-compose.yml`](https://github.com/bitnami/containers/blob/main/bitnami/phpmyadmin/docker-compose.yml) file present in this repository:
-
-```yaml
-services:
-  mariadb:
-  ...
-    volumes:
-      - /path/to/mariadb-persistence:/bitnami/mariadb
-  ...
-```
-
-#### Mount host directories as data volumes using the Docker command line
-
-1. Create a network (if it does not exist)
-
-    ```console
-    docker network create phpmyadmin-tier
-    ```
-
-2. Create a MariaDB container with host volume
-
-    ```console
-    docker run -d --name mariadb -e ALLOW_EMPTY_PASSWORD=yes \
-      --net phpmyadmin-tier \
-      --volume /path/to/mariadb-persistence:/bitnami/mariadb \
-      bitnami/mariadb:latest
-    ```
-
-3. Launch the phpMyAdmin container
-
-    ```console
-    docker run -d --name phpmyadmin -p 80:8080 -p 443:8443 \
-      --net phpmyadmin-tier \
-      bitnami/phpmyadmin:latest
-    ```
-
-## Upgrading phpMyAdmin
-
-Bitnami provides up-to-date versions of MariaDB and phpMyAdmin, including security patches, soon after they are made upstream. We recommend that you follow these steps to upgrade your container. We will cover here the upgrade of the phpMyAdmin container. For the MariaDB upgrade see <https://github.com/bitnami/containers/tree/main/bitnami/mariadb#upgrade-this-image>
-
-The `bitnami/phpmyadmin:latest` tag always points to the most recent release. To get the most recent release you can simple repull the `latest` tag from the Docker Hub with `docker pull bitnami/phpmyadmin:latest`. However it is recommended to use [tagged versions](https://hub.docker.com/r/bitnami/phpmyadmin/tags/).
-
-1. Get the updated images:
-
-    ```console
-    docker pull bitnami/phpmyadmin:latest
-    ```
-
-2. Stop your container
-
-    - For docker-compose: `$ docker-compose stop phpmyadmin`
-    - For manual execution: `$ docker stop phpmyadmin`
-
-3. Remove the currently running container
-
-    - For docker-compose: `$ docker-compose rm -v phpmyadmin`
-    - For manual execution: `$ docker rm -v phpmyadmin`
-
-4. Run the new image
-
-    - For docker-compose: `$ docker-compose up phpmyadmin`
-    - For manual execution: `docker run --name phpmyadmin bitnami/phpmyadmin:latest`
 
 ## Configuration
 
+The following section describes the supported environment variables
+
 ### Environment variables
+
+The following tables list the main variables you can set.
 
 #### Customizable environment variables
 
@@ -221,34 +119,6 @@ The `bitnami/phpmyadmin:latest` tag always points to the most recent release. To
 | `PHP_DEFAULT_POST_MAX_SIZE`                   | Default max PHP POST size.                                                                                                               | `80M`                                     |
 | `PHP_DEFAULT_MEMORY_LIMIT`                    | Default PHP memory limit.                                                                                                                | `256M`                                    |
 
-#### Specifying Environment variables using Docker Compose
-
-This requires a change to the [`docker-compose.yml`](https://github.com/bitnami/containers/blob/main/bitnami/phpmyadmin/docker-compose.yml) file present in this repository:
-
-```yaml
-services:
-  mariadb:
-  ...
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
-  ...
-  phpmyadmin:
-  ...
-    environment:
-      - DATABASE_ALLOW_NO_PASSWORD=false
-      - PHPMYADMIN_ALLOW_ARBITRARY_SERVER=yes
-  ...
-```
-
-#### Specifying Environment variables on the Docker command line
-
-```console
-docker run -d --name phpmyadmin -p 80:8080 -p 443:8443 \
-  --net phpmyadmin-tier \
-  --env PHPMYADMIN_PASSWORD=my_password \
-  bitnami/phpmyadmin:latest
-```
-
 ### FIPS configuration in Bitnami Secure Images
 
 The Bitnami phpMyAdmin Docker image from the [Bitnami Secure Images](https://go-vmware.broadcom.com/contact-us) catalog includes extra features and settings to configure the container with FIPS capabilities. You can configure the next environment variables:
@@ -276,63 +146,6 @@ FROM bitnami/phpmyadmin
 ...
 ```
 
-Here is an example of extending the image with the following modifications:
-
-- Install the `vim` editor
-- Modify the Apache configuration file
-- Modify the ports used by Apache
-- Modify the default container user
-
-```Dockerfile
-FROM bitnami/phpmyadmin
-
-### Change user to perform privileged actions
-USER 0
-### Install 'vim'
-RUN install_packages vim
-### Revert to the original non-root user
-USER 1001
-
-### Enable mod_ratelimit module
-RUN sed -i -r 's/#LoadModule ratelimit_module/LoadModule ratelimit_module/' /opt/bitnami/apache/conf/httpd.conf
-
-### Modify the ports used by Apache by default
-## It is also possible to change these environment variables at runtime
-ENV APACHE_HTTP_PORT_NUMBER=8181
-ENV APACHE_HTTPS_PORT_NUMBER=8143
-EXPOSE 8181 8143
-
-### Modify the default container user
-USER 1002
-```
-
-Based on the extended image, you can use a Docker Compose file like the one below to add other features:
-
-```yaml
-version: '2'
-services:
-  mariadb:
-    image: bitnami/mariadb:latest
-    environment:
-      - MARIADB_ROOT_PASSWORD=bitnami
-    volumes:
-      - mariadb_data:/bitnami/mariadb
-  phpmyadmin:
-    build: .
-    ports:
-      - 80:8181
-      - 443:8143
-    depends_on:
-      - mariadb
-    volumes:
-      - phpmyadmin_data:/bitnami/mariadb
-volumes:
-  mariadb_data:
-    driver: local
-  phpmyadmin_data:
-    driver: local
-```
-
 ## Notable Changes
 
 ### 5.0.2-debian-10-r73
@@ -347,14 +160,6 @@ volumes:
 - The Apache configuration volume (`/bitnami/apache`) has been deprecated, and support for this feature will be dropped in the near future. Until then, the container will enable the Apache configuration from that volume if it exists. By default, and if the configuration volume does not exist, the configuration files will be regenerated each time the container is created. Users wanting to apply custom Apache configuration files are advised to mount a volume for the configuration at `/opt/bitnami/apache/conf`, or mount specific configuration files individually.
 - The PHP configuration volume (`/bitnami/php`) has been deprecated, and support for this feature will be dropped in the near future. Until then, the container will enable the PHP configuration from that volume if it exists. By default, and if the configuration volume does not exist, the configuration files will be regenerated each time the container is created. Users wanting to apply custom PHP configuration files are advised to mount a volume for the configuration at `/opt/bitnami/php/conf`, or mount specific configuration files individually.
 - Enabling custom Apache certificates by placing them at `/opt/bitnami/apache/certs` has been deprecated, and support for this functionality will be dropped in the near future. Users wanting to enable custom certificates are advised to mount their certificate files on top of the preconfigured ones at `/certs`.
-
-## Contributing
-
-We'd love for you to contribute to this container. You can request new features by creating an [issue](https://github.com/bitnami/containers/issues) or submitting a [pull request](https://github.com/bitnami/containers/pulls) with your contribution.
-
-## Issues
-
-If you encountered a problem running this container, you can file an [issue](https://github.com/bitnami/containers/issues/new/choose). For us to provide better support, be sure to fill the issue template.
 
 ## License
 

@@ -1,7 +1,5 @@
 # Bitnami Secure Image for Apache Airflow
 
-## What is Apache Airflow?
-
 > Apache Airflow is a tool to express and execute workflows as directed acyclic graphs (DAGs). It includes utilities to schedule tasks, monitor task progress and handle task dependencies.
 
 [Overview of Apache Airflow](https://airflow.apache.org/)
@@ -13,8 +11,13 @@ Trademarks: This software listing is packaged by Bitnami. The respective tradema
 docker run --name airflow bitnami/airflow:latest
 ```
 
-**Warning**: This quick setup is only intended for development environments. You are encouraged to change the insecure default credentials and check out the available configuration options in the [Environment Variables](#environment-variables) section for a more secure d
-eployment.
+## Using `docker-compose.yml`
+
+The docker-compose.yaml file of this container can be found in the [Bitnami Containers repository](https://github.com/bitnami/containers/).
+
+[https://github.com/bitnami/containers/tree/main/bitnami/airflow/docker-compose.yml](https://github.com/bitnami/containers/tree/main/bitnami/airflow/docker-compose.yml)
+
+Please be aware this file has not undergone internal testing. Consequently, we advise its use exclusively for development or testing purposes. For production-ready deployments, we highly recommend utilizing its associated [Bitnami Helm chart](https://github.com/bitnami/charts/tree/main/bitnami/airflow).
 
 ## Why use Bitnami Secure Images?
 
@@ -37,113 +40,9 @@ If you are looking for our previous generation of images based on Debian Linux, 
 
 Learn more about the Bitnami tagging policy and the difference between rolling tags and immutable tags [in our documentation page](https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-understand-rolling-tags-containers-index.html).
 
-You can see the equivalence between the different tags by taking a look at the `tags-info.yaml` file present in the branch folder, i.e `bitnami/ASSET/BRANCH/DISTRO/tags-info.yaml`.
-
-Subscribe to project updates by watching the [bitnami/containers GitHub repo](https://github.com/bitnami/containers).
-
-## Prerequisites
-
-To run this application you need [Docker Engine](https://www.docker.com/products/docker-engine) >= `1.10.0`. [Docker Compose](https://docs.docker.com/compose/) is recommended with a version `1.6.0` or later.
-
 ## How to use this image
 
-Airflow requires access to a PostgreSQL database to store information. We will use our very own [PostgreSQL image](https://github.com/bitnami/containers/tree/main/bitnami/postgresql) for the database requirements. Additionally, if you pretend to use the `CeleryExecutor`, you will also need a [Redis(R) server](https://github.com/bitnami/containers/tree/main/bitnami/redis).
-
-### Using the Docker Command Line
-
-1. Create a network
-
-    ```console
-    docker network create airflow-tier
-    ```
-
-2. Create a volume for PostgreSQL persistence and create a PostgreSQL container
-
-    ```console
-    docker volume create --name postgresql_data
-    docker run -d --name postgresql \
-      -e POSTGRESQL_USERNAME=bn_airflow \
-      -e POSTGRESQL_PASSWORD=bitnami1 \
-      -e POSTGRESQL_DATABASE=bitnami_airflow \
-      --net airflow-tier \
-      --volume postgresql_data:/bitnami/postgresql \
-      bitnami/postgresql:latest
-    ```
-
-3. Create a volume for Redis(R) persistence and create a Redis(R) container
-
-    ```console
-    docker volume create --name redis_data
-    docker run -d --name redis \
-      -e ALLOW_EMPTY_PASSWORD=yes \
-      --net airflow-tier \
-      --volume redis_data:/bitnami \
-      bitnami/redis:latest
-    ```
-
-4. Launch the Apache Airflow web container
-
-    ```console
-    docker run -d --name airflow -p 8080:8080 \
-      -e AIRFLOW_FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho= \
-      -e AIRFLOW_SECRET_KEY=a25mQ1FHTUh3MnFRSk5KMEIyVVU2YmN0VGRyYTVXY08= \
-      -e AIRFLOW_EXECUTOR=CeleryExecutor \
-      -e AIRFLOW_DATABASE_NAME=bitnami_airflow \
-      -e AIRFLOW_DATABASE_USERNAME=bn_airflow \
-      -e AIRFLOW_DATABASE_PASSWORD=bitnami1 \
-      -e AIRFLOW_LOAD_EXAMPLES=yes \
-      -e AIRFLOW_PASSWORD=bitnami123 \
-      -e AIRFLOW_USERNAME=user \
-      -e AIRFLOW_EMAIL=user@example.com \
-      --net airflow-tier \
-      bitnami/airflow:latest
-    ```
-
-5. Launch the Apache Airflow scheduler container
-
-    ```console
-    docker run -d --name airflow-scheduler \
-      -e AIRFLOW_COMPONENT_TYPE=scheduler \
-      -e AIRFLOW_FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho= \
-      -e AIRFLOW_SECRET_KEY=a25mQ1FHTUh3MnFRSk5KMEIyVVU2YmN0VGRyYTVXY08= \
-      -e AIRFLOW_EXECUTOR=CeleryExecutor \
-      -e AIRFLOW_DATABASE_NAME=bitnami_airflow \
-      -e AIRFLOW_DATABASE_USERNAME=bn_airflow \
-      -e AIRFLOW_DATABASE_PASSWORD=bitnami1 \
-      -e AIRFLOW_LOAD_EXAMPLES=yes \
-      -e AIRFLOW_WEBSERVER_HOST=airflow \
-      --net airflow-tier \
-      bitnami/airflow:latest
-    ```
-
-6. Launch the Apache Airflow worker container
-
-    ```console
-    docker run -d --name airflow-worker \
-      -e AIRFLOW_COMPONENT_TYPE=worker \
-      -e AIRFLOW_FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho= \
-      -e AIRFLOW_SECRET_KEY=a25mQ1FHTUh3MnFRSk5KMEIyVVU2YmN0VGRyYTVXY08= \
-      -e AIRFLOW_EXECUTOR=CeleryExecutor \
-      -e AIRFLOW_DATABASE_NAME=bitnami_airflow \
-      -e AIRFLOW_DATABASE_USERNAME=bn_airflow \
-      -e AIRFLOW_DATABASE_PASSWORD=bitnami1 \
-      -e AIRFLOW_WEBSERVER_HOST=airflow \
-      --net airflow-tier \
-      bitnami/airflow:latest
-    ```
-
-  Access your application at `http://your-ip:8080`
-
-### Using `docker-compose.yaml`
-
-```console
-curl -LO https://raw.githubusercontent.com/bitnami/containers/main/bitnami/airflow/docker-compose.yml
-docker-compose up
-```
-
-Please be aware this file has not undergone internal testing. Consequently, we advise its use exclusively for development or testing purposes. For production-ready deployments, we highly recommend utilizing its associated [Bitnami Helm chart](https://github.com/bitnami/charts/tree/main/bitnami/airflow).
-
-If you detect any issue in the `docker-compose.yaml` file, feel free to report it or contribute with a fix by following our [Contributing Guidelines](https://github.com/bitnami/containers/blob/main/CONTRIBUTING.md).
+Airflow requires access to a PostgreSQL database to store information. We will use the [Bitnami PostgreSQL image](https://github.com/bitnami/containers/tree/main/bitnami/postgresql) for the database requirements. Additionally, if you pretend to use the `CeleryExecutor`, you will also need a [Bitnami Redis(R) server](https://github.com/bitnami/containers/tree/main/bitnami/redis).
 
 ### Persisting your application
 
@@ -153,147 +52,9 @@ The above examples define docker volumes namely `postgresql_data`, and `redis_da
 
 To avoid inadvertent removal of these volumes you can [mount host directories as data volumes](https://docs.docker.com/engine/tutorials/dockervolumes/). Alternatively you can make use of volume plugins to host the volume data.
 
-#### Mount host directories as data volumes with Docker Compose
-
-The following `docker-compose.yml` template demonstrates the use of host directories as data volumes.
-
-```yaml
-version: '2'
-services:
-  postgresql:
-    image: bitnami/postgresql:latest
-    environment:
-      - POSTGRESQL_DATABASE=bitnami_airflow
-      - POSTGRESQL_USERNAME=bn_airflow
-      - POSTGRESQL_PASSWORD=bitnami1
-    volumes:
-      - /path/to/postgresql-persistence:/bitnami/postgresql
-  redis:
-    image: bitnami/redis:latest
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
-    volumes:
-      - /path/to/redis-persistence:/bitnami
-  airflow-worker:
-    image: bitnami/airflow:latest
-    environment:
-      - AIRFLOW_COMPONENT_TYPE=worker
-      - AIRFLOW_FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
-      - AIRFLOW_SECRET_KEY=a25mQ1FHTUh3MnFRSk5KMEIyVVU2YmN0VGRyYTVXY08=
-      - AIRFLOW_EXECUTOR=CeleryExecutor
-      - AIRFLOW_DATABASE_NAME=bitnami_airflow
-      - AIRFLOW_DATABASE_USERNAME=bn_airflow
-      - AIRFLOW_DATABASE_PASSWORD=bitnami1
-      - AIRFLOW_LOAD_EXAMPLES=yes
-  airflow-scheduler:
-    image: bitnami/airflow:latest
-    environment:
-      - AIRFLOW_COMPONENT_TYPE=scheduler
-      - AIRFLOW_FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
-      - AIRFLOW_SECRET_KEY=a25mQ1FHTUh3MnFRSk5KMEIyVVU2YmN0VGRyYTVXY08=
-      - AIRFLOW_EXECUTOR=CeleryExecutor
-      - AIRFLOW_DATABASE_NAME=bitnami_airflow
-      - AIRFLOW_DATABASE_USERNAME=bn_airflow
-      - AIRFLOW_DATABASE_PASSWORD=bitnami1
-      - AIRFLOW_LOAD_EXAMPLES=yes
-  airflow:
-    image: bitnami/airflow:latest
-    environment:
-      - AIRFLOW_FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
-      - AIRFLOW_SECRET_KEY=a25mQ1FHTUh3MnFRSk5KMEIyVVU2YmN0VGRyYTVXY08=
-      - AIRFLOW_EXECUTOR=CeleryExecutor
-      - AIRFLOW_DATABASE_NAME=bitnami_airflow
-      - AIRFLOW_DATABASE_USERNAME=bn_airflow
-      - AIRFLOW_DATABASE_PASSWORD=bitnami1
-      - AIRFLOW_PASSWORD=bitnami123
-      - AIRFLOW_USERNAME=user
-      - AIRFLOW_EMAIL=user@example.com
-    ports:
-      - 8080:8080
-```
-
-#### Mount host directories as data volumes using the Docker command line
-
-1. Create a network (if it does not exist)
-
-    ```console
-    docker network create airflow-tier
-    ```
-
-2. Create the PostgreSQL container with host volumes
-
-    ```console
-    docker run -d --name postgresql \
-      -e POSTGRESQL_USERNAME=bn_airflow \
-      -e POSTGRESQL_PASSWORD=bitnami1 \
-      -e POSTGRESQL_DATABASE=bitnami_airflow \
-      --net airflow-tier \
-      --volume /path/to/postgresql-persistence:/bitnami \
-      bitnami/postgresql:latest
-    ```
-
-3. Create the Redis(R) container with host volumes
-
-    ```console
-    docker run -d --name redis \
-      -e ALLOW_EMPTY_PASSWORD=yes \
-      --net airflow-tier \
-      --volume /path/to/redis-persistence:/bitnami \
-      bitnami/redis:latest
-    ```
-
-4. Create the Airflow container
-
-    ```console
-    docker run -d --name airflow -p 8080:8080 \
-      -e AIRFLOW_FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho= \
-      -e AIRFLOW_SECRET_KEY=a25mQ1FHTUh3MnFRSk5KMEIyVVU2YmN0VGRyYTVXY08= \
-      -e AIRFLOW_EXECUTOR=CeleryExecutor \
-      -e AIRFLOW_DATABASE_NAME=bitnami_airflow \
-      -e AIRFLOW_DATABASE_USERNAME=bn_airflow \
-      -e AIRFLOW_DATABASE_PASSWORD=bitnami1 \
-      -e AIRFLOW_LOAD_EXAMPLES=yes \
-      -e AIRFLOW_PASSWORD=bitnami123 \
-      -e AIRFLOW_USERNAME=user \
-      -e AIRFLOW_EMAIL=user@example.com \
-      --net airflow-tier \
-      bitnami/airflow:latest
-    ```
-
-5. Create the Airflow Scheduler container
-
-    ```console
-    docker run -d --name airflow-scheduler \
-      -e AIRFLOW_COMPONENT_TYPE=scheduler \
-      -e AIRFLOW_FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho= \
-      -e AIRFLOW_SECRET_KEY=a25mQ1FHTUh3MnFRSk5KMEIyVVU2YmN0VGRyYTVXY08= \
-      -e AIRFLOW_EXECUTOR=CeleryExecutor \
-      -e AIRFLOW_DATABASE_NAME=bitnami_airflow \
-      -e AIRFLOW_DATABASE_USERNAME=bn_airflow \
-      -e AIRFLOW_DATABASE_PASSWORD=bitnami1 \
-      -e AIRFLOW_LOAD_EXAMPLES=yes \
-      -e AIRFLOW_WEBSERVER_HOST=airflow \
-      --net airflow-tier \
-      bitnami/airflow:latest
-    ```
-
-6. Create the Airflow Worker container
-
-    ```console
-    docker run -d --name airflow-worker \
-      -e AIRFLOW_COMPONENT_TYPE=worker \
-      -e AIRFLOW_FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho= \
-      -e AIRFLOW_SECRET_KEY=a25mQ1FHTUh3MnFRSk5KMEIyVVU2YmN0VGRyYTVXY08= \
-      -e AIRFLOW_EXECUTOR=CeleryExecutor \
-      -e AIRFLOW_DATABASE_NAME=bitnami_airflow \
-      -e AIRFLOW_DATABASE_USERNAME=bn_airflow \
-      -e AIRFLOW_DATABASE_PASSWORD=bitnami1 \
-      -e AIRFLOW_WEBSERVER_HOST=airflow \
-      --net airflow-tier \
-      bitnami/airflow:latest
-    ```
-
 ## Configuration
+
+The following sections describe how to load DAGs, install modules, and set environment variables.
 
 ### Load DAG files
 
@@ -305,12 +66,15 @@ This container supports the installation of additional python modules at start-u
 
 ### Environment variables
 
+The following tables list the main variables you can set.
+
 #### Customizable environment variables
 
 | Name                                     | Description                                                                                                                                 | Default Value                   |
 |------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------|
 | `AIRFLOW_USERNAME`                       | Airflow username                                                                                                                            | `user`                          |
-| `AIRFLOW_PASSWORD`                       | Airflow password                                                                                                                            | `bitnami`                       |
+| `ALLOW_EMPTY_PASSWORD`                   | Allow an empty password.                                                                                                                    | `no`                            |
+| `AIRFLOW_PASSWORD`                       | Airflow password                                                                                                                            | `nil`                           |
 | `AIRFLOW_FIRSTNAME`                      | Airflow firstname                                                                                                                           | `Firstname`                     |
 | `AIRFLOW_LASTNAME`                       | Airflow lastname                                                                                                                            | `Lastname`                      |
 | `AIRFLOW_EMAIL`                          | Airflow email                                                                                                                               | `user@example.com`              |
@@ -319,8 +83,8 @@ This container supports the installation of additional python modules at start-u
 | `AIRFLOW_RAW_FERNET_KEY`                 | Airflow raw/unencoded Fernet key                                                                                                            | `nil`                           |
 | `AIRFLOW_FORCE_OVERWRITE_CONF_FILE`      | Force the airflow.cfg config file generation.                                                                                               | `no`                            |
 | `AIRFLOW_FERNET_KEY`                     | Airflow Fernet key                                                                                                                          | `nil`                           |
-| `AIRFLOW_WEBSERVER_SECRET_KEY`           | Airflow webserver secret key                                                                                                                | `airflow-web-server-key`        |
-| `AIRFLOW_APISERVER_SECRET_KEY`           | Airflow API secret key                                                                                                                      | `airflow-api-server-key`        |
+| `AIRFLOW_WEBSERVER_SECRET_KEY`           | Airflow webserver secret key                                                                                                                | `nil`                           |
+| `AIRFLOW_APISERVER_SECRET_KEY`           | Airflow API secret key                                                                                                                      | `nil`                           |
 | `AIRFLOW_APISERVER_BASE_URL`             | Airflow API server base URL.                                                                                                                | `nil`                           |
 | `AIRFLOW_APISERVER_HOST`                 | Airflow API server host                                                                                                                     | `127.0.0.1`                     |
 | `AIRFLOW_APISERVER_PORT_NUMBER`          | Airflow API server port.                                                                                                                    | `8080`                          |
@@ -360,7 +124,7 @@ This container supports the installation of additional python modules at start-u
 | `AIRFLOW_LDAP_ROLES_MAPPING`             | Mapping from LDAP DN to a list of Airflow roles.                                                                                            | `nil`                           |
 | `AIRFLOW_LDAP_ROLES_SYNC_AT_LOGIN`       | Replace ALL the user roles each login, or only on registration.                                                                             | `True`                          |
 | `AIRFLOW_LDAP_USE_TLS`                   | Use LDAP SSL.                                                                                                                               | `False`                         |
-| `AIRFLOW_LDAP_ALLOW_SELF_SIGNED`         | Allow self signed certicates in LDAP ssl.                                                                                                   | `True`                          |
+| `AIRFLOW_LDAP_ALLOW_SELF_SIGNED`         | Allow self signed certificates in LDAP ssl.                                                                                                 | `True`                          |
 | `AIRFLOW_LDAP_TLS_CA_CERTIFICATE`        | File that store the CA for LDAP ssl.                                                                                                        | `nil`                           |
 
 #### Read-only environment variables
@@ -380,42 +144,6 @@ This container supports the installation of additional python modules at start-u
 
 > In addition to the previous environment variables, all the parameters from the configuration file can be overwritten by using environment variables with this format: `AIRFLOW__{SECTION}__{KEY}`. Note the double underscores.
 
-#### Specifying Environment variables using Docker Compose
-
-```yaml
-version: '2'
-
-services:
-  airflow:
-    image: bitnami/airflow:latest
-    environment:
-      - AIRFLOW_FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
-      - AIRFLOW_SECRET_KEY=a25mQ1FHTUh3MnFRSk5KMEIyVVU2YmN0VGRyYTVXY08=
-      - AIRFLOW_EXECUTOR=CeleryExecutor
-      - AIRFLOW_DATABASE_NAME=bitnami_airflow
-      - AIRFLOW_DATABASE_USERNAME=bn_airflow
-      - AIRFLOW_DATABASE_PASSWORD=bitnami1
-      - AIRFLOW_PASSWORD=bitnami123
-      - AIRFLOW_USERNAME=user
-      - AIRFLOW_EMAIL=user@example.com
-```
-
-#### Specifying Environment variables on the Docker command line
-
-```console
-docker run -d --name airflow -p 8080:8080 \
-    -e AIRFLOW_FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho= \
-    -e AIRFLOW_SECRET_KEY=a25mQ1FHTUh3MnFRSk5KMEIyVVU2YmN0VGRyYTVXY08= \
-    -e AIRFLOW_EXECUTOR=CeleryExecutor \
-    -e AIRFLOW_DATABASE_NAME=bitnami_airflow \
-    -e AIRFLOW_DATABASE_USERNAME=bn_airflow \
-    -e AIRFLOW_DATABASE_PASSWORD=bitnami1 \
-    -e AIRFLOW_PASSWORD=bitnami123 \
-    -e AIRFLOW_USERNAME=user \
-    -e AIRFLOW_EMAIL=user@example.com \
-    bitnami/airflow:latest
-```
-
 #### SMTP Configuration
 
 To configure Airflow to send email using SMTP you can set the following environment variables:
@@ -428,58 +156,15 @@ To configure Airflow to send email using SMTP you can set the following environm
 - `AIRFLOW__SMTP__SMTP_PASSWORD`: Password for SMTP. No defaults.
 - `AIRFLOW__SMTP__SMTP_MAIL_FROM`: To modify the "from email address". Default: **<airflow@example.com>**
 
-This would be an example of SMTP configuration using a GMail account:
-
-- docker-compose (application part):
-
-```yaml
-  airflow:
-    image: bitnami/airflow:latest
-    environment:
-      - AIRFLOW_FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
-      - AIRFLOW_SECRET_KEY=a25mQ1FHTUh3MnFRSk5KMEIyVVU2YmN0VGRyYTVXY08=
-      - AIRFLOW_EXECUTOR=CeleryExecutor
-      - AIRFLOW_DATABASE_NAME=bitnami_airflow
-      - AIRFLOW_DATABASE_USERNAME=bn_airflow
-      - AIRFLOW_DATABASE_PASSWORD=bitnami1
-      - AIRFLOW_PASSWORD=bitnami
-      - AIRFLOW_USERNAME=user
-      - AIRFLOW_EMAIL=user@email.com
-      - AIRFLOW__SMTP__SMTP_HOST=smtp@gmail.com
-      - AIRFLOW__SMTP__SMTP_USER=your_email@gmail.com
-      - AIRFLOW__SMTP__SMTP_PASSWORD=your_password
-      - AIRFLOW__SMTP__SMTP_PORT=587
-    ports:
-      - 8080:8080
-```
-
-- For manual execution:
-
-```console
-docker run -d --name airflow -p 8080:8080 \
-    -e AIRFLOW_FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho= \
-    -e AIRFLOW_SECRET_KEY=a25mQ1FHTUh3MnFRSk5KMEIyVVU2YmN0VGRyYTVXY08= \
-    -e AIRFLOW_EXECUTOR=CeleryExecutor \
-    -e AIRFLOW_DATABASE_NAME=bitnami_airflow \
-    -e AIRFLOW_DATABASE_USERNAME=bn_airflow \
-    -e AIRFLOW_DATABASE_PASSWORD=bitnami1 \
-    -e AIRFLOW_PASSWORD=bitnami123 \
-    -e AIRFLOW_USERNAME=user \
-    -e AIRFLOW_EMAIL=user@example.com \
-    -e AIRFLOW__SMTP__SMTP_HOST=smtp@gmail.com \
-    -e AIRFLOW__SMTP__SMTP_USER=your_email@gmail.com \
-    -e AIRFLOW__SMTP__SMTP_PASSWORD=your_password \
-    -e AIRFLOW__SMTP__SMTP_PORT=587 \
-    bitnami/airflow:latest
-```
-
 ### FIPS configuration in Bitnami Secure Images
 
 The Bitnami Apache Airflow Docker image from the [Bitnami Secure Images](https://go-vmware.broadcom.com/contact-us) catalog includes extra features and settings to configure the container with FIPS capabilities. You can configure the next environment variables:
 
 - `OPENSSL_FIPS`: whether OpenSSL runs in FIPS mode or not. `yes` (default), `no`.
 
-## Notable Changes
+## Notable changes
+
+The following subsections describe notable changes.
 
 ### Starting October 30, 2024
 
@@ -490,14 +175,6 @@ The Bitnami Apache Airflow Docker image from the [Bitnami Secure Images](https:/
 
 - The size of the container image has been decreased.
 - The configuration logic is now based on Bash scripts in the *rootfs/* folder.
-
-## Contributing
-
-We'd love for you to contribute to this Docker image. You can request new features by creating an [issue](https://github.com/bitnami/containers/issues) or submitting a [pull request](https://github.com/bitnami/containers/pulls) with your contribution.
-
-## Issues
-
-If you encountered a problem running this container, you can file an [issue](https://github.com/bitnami/containers/issues/new/choose). For us to provide better support, be sure to fill the issue template.
 
 ## License
 

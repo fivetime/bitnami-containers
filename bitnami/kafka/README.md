@@ -1,7 +1,5 @@
 # Bitnami Secure Image for Apache Kafka
 
-## What is Apache Kafka?
-
 > Apache Kafka is a distributed streaming platform designed to build real-time pipelines and can be used as a message broker or as a replacement for a log aggregation solution for big data applications.
 
 [Overview of Apache Kafka](https://kafka.apache.org/)
@@ -12,6 +10,14 @@ Trademarks: This software listing is packaged by Bitnami. The respective tradema
 ```console
 docker run --name kafka bitnami/kafka:latest
 ```
+
+## Using `docker-compose.yml`
+
+The docker-compose.yaml file of this container can be found in the [Bitnami Containers repository](https://github.com/bitnami/containers/).
+
+[https://github.com/bitnami/containers/tree/main/bitnami/kafka/docker-compose.yml](https://github.com/bitnami/containers/tree/main/bitnami/kafka/docker-compose.yml)
+
+Please be aware this file has not undergone internal testing. Consequently, we advise its use exclusively for development or testing purposes. For production-ready deployments, we highly recommend utilizing its associated [Bitnami Helm chart](https://github.com/bitnami/charts/tree/main/bitnami/kafka).
 
 ## Why use Bitnami Secure Images?
 
@@ -42,55 +48,19 @@ Non-root container images add an extra layer of security and are generally recom
 
 Learn more about the Bitnami tagging policy and the difference between rolling tags and immutable tags [in our documentation page](https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-understand-rolling-tags-containers-index.html).
 
-You can see the equivalence between the different tags by taking a look at the `tags-info.yaml` file present in the branch folder, i.e `bitnami/ASSET/BRANCH/DISTRO/tags-info.yaml`.
-
-Subscribe to project updates by watching the [bitnami/containers GitHub repo](https://github.com/bitnami/containers).
-
 ## Get this image
 
-The recommended way to get the Bitnami Apache Kafka Docker Image is to pull the prebuilt image from the [Docker Hub Registry](https://hub.docker.com/r/bitnami/kafka).
-
-```console
-docker pull bitnami/kafka:latest
-```
-
-To use a specific version, you can pull a versioned tag. You can view the
-[list of available versions](https://hub.docker.com/r/bitnami/kafka/tags/)
-in the Docker Hub Registry.
-
-```console
-docker pull bitnami/kafka:[TAG]
-```
-
-If you wish, you can also build the image yourself by cloning the repository, changing to the directory containing the Dockerfile and executing the `docker build` command. Remember to replace the `APP`, `VERSION` and `OPERATING-SYSTEM` path placeholders in the example command below with the correct values.
-
-```console
-git clone https://github.com/bitnami/containers.git
-cd bitnami/APP/VERSION/OPERATING-SYSTEM
-docker build -t bitnami/APP:latest .
-```
+The Bitnami Apache Kafka Docker image is only available to [Bitnami Secure Images](https://bitnami.com) customers.
 
 ## Persisting your data
 
 If you remove the container all your data and configurations will be lost, and the next time you run the image the database will be reinitialized. To avoid this loss of data, you should mount a volume that will persist even after the container is removed.
 
-> Note: If you have already started using your database, follow the steps on [backing up](#backing-up-your-container) and [restoring](#restoring-a-backup) to pull the data from your running container down to your host.
+> Note: If you have already started using your data, preserve the `/bitnami/kafka` volume contents before removing the container so you can mount the same data in a new container.
 
 The image exposes a volume at `/bitnami/kafka` for the Apache Kafka data. For persistence you can mount a directory at this location from your host. If the mounted directory is empty, it will be initialized on the first run.
 
-Using Docker Compose:
-
-This requires a minor change to the [`docker-compose.yml`](https://github.com/bitnami/containers/blob/main/bitnami/kafka/docker-compose.yml) file present in this repository:
-
-```yaml
-kafka:
-  ...
-  volumes:
-    - /path/to/kafka-persistence:/bitnami/kafka
-  ...
-```
-
-> NOTE: As this is a non-root container, the mounted files and directories must have the proper permissions for the UID `1001`.
+> **NOTE** As this is a non-root container, the mounted files and directories must have the proper permissions for the UID `1001`.
 
 ## Connecting to other containers
 
@@ -98,83 +68,13 @@ Using [Docker container networking](https://docs.docker.com/engine/userguide/net
 
 Containers attached to the same network can communicate with each other using the container name as the hostname.
 
-### Using the Command Line
-
-In this example, we will create an Apache Kafka client instance that will connect to the server instance that is running on the same docker network as the client.
-
-#### Step 1: Create a network
-
-```console
-docker network create app-tier --driver bridge
-```
-
-#### Step 2: Launch the Apache Kafka server instance
-
-Use the `--network app-tier` argument to the `docker run` command to attach the Apache Kafka container to the `app-tier` network.
-
-```console
-docker run -d --name kafka-server --hostname kafka-server \
-    --network app-tier \
-    -e KAFKA_CFG_NODE_ID=0 \
-    -e KAFKA_CFG_PROCESS_ROLES=controller,broker \
-    -e KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093 \
-    -e KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT \
-    -e KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER \
-    bitnami/kafka:latest
-```
-
-#### Step 3: Launch your Apache Kafka client instance
-
-Finally we create a new container instance to launch the Apache Kafka client and connect to the server created in the previous step:
-
-```console
-docker run -it --rm \
-    --network app-tier \
-    bitnami/kafka:latest kafka-topics.sh --list  --bootstrap-server kafka-server:9092
-```
-
-### Using a Docker Compose file
-
-When not specified, Docker Compose automatically sets up a new network and attaches all deployed services to that network. However, we will explicitly define a new `bridge` network named `app-tier`. In this example we assume that you want to connect to the Apache Kafka server from your own custom application image which is identified in the following snippet by the service name `myapp`.
-
-```yaml
-version: '2'
-
-networks:
-  app-tier:
-    driver: bridge
-
-services:
-  kafka:
-    image: bitnami/kafka:latest
-    networks:
-      - app-tier
-    environment:
-      - KAFKA_CFG_NODE_ID=0
-      - KAFKA_CFG_PROCESS_ROLES=controller,broker
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-  myapp:
-    image: YOUR_APPLICATION_IMAGE
-    networks:
-      - app-tier
-```
-
-> **IMPORTANT**:
->
-> 1. Please update the `YOUR_APPLICATION_IMAGE` placeholder in the above snippet with your application image
-> 2. In your application container, use the hostname `kafka` to connect to the Apache Kafka server
-
-Launch the containers using:
-
-```console
-docker-compose up -d
-```
-
 ## Configuration
 
+The following section describes the supported environment variables
+
 ### Environment variables
+
+The following tables list the main variables you can set.
 
 #### Customizable environment variables
 
@@ -232,93 +132,6 @@ Additionally, any environment variable beginning with `KAFKA_CFG_` will be mappe
 docker run --name kafka -e KAFKA_CFG_PROCESS_ROLES ... -e KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true bitnami/kafka:latest
 ```
 
-or by modifying the [`docker-compose.yml`](https://github.com/bitnami/containers/blob/main/bitnami/kafka/docker-compose.yml) file present in this repository:
-
-```yaml
-kafka:
-  ...
-  environment:
-    - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
-  ...
-```
-
-### Apache Kafka development setup example
-
-To use Apache Kafka in a development setup, create the following `docker-compose.yml` file:
-
-```yaml
-version: "3"
-services:
-  kafka:
-    image: bitnami/kafka:latest
-    ports:
-      - 9092:9092
-    environment:
-      - KAFKA_CFG_NODE_ID=0
-      - KAFKA_CFG_PROCESS_ROLES=controller,broker
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-```
-
-To deploy it, run the following command in the directory where the `docker-compose.yml` file is located:
-
-```console
-docker-compose up -d
-```
-
-### Accessing Apache Kafka with internal and external clients
-
-In order to use internal and external clients to access Apache Kafka brokers you need to configure one listener for each kind of client.
-
-To do so, add the following environment variables to your docker-compose:
-
-```diff
-    environment:
-      - KAFKA_CFG_NODE_ID=0
-      - KAFKA_CFG_PROCESS_ROLES=controller,broker
-+     - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
-+     - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094
-+     - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-```
-
-And expose the external port:
-
-(the internal, client one can still be used within the docker network)
-
-```diff
-    ports:
--     - 9092:9092
-+     - 9094:9094
-```
-
-**Note**: To connect from an external machine, change `localhost` above to your host's external IP/hostname and include `EXTERNAL://0.0.0.0:9094` in `KAFKA_CFG_LISTENERS` to allow for remote connections.
-
-#### Producer and consumer using external client
-
-These clients, from the same host, will use `localhost` to connect to Apache Kafka.
-
-```console
-kafka-console-producer.sh --producer.config /opt/bitnami/kafka/config/producer.properties --bootstrap-server 127.0.0.1:9094 --topic test
-kafka-console-consumer.sh --consumer.config /opt/bitnami/kafka/config/consumer.properties --bootstrap-server 127.0.0.1:9094 --topic test --from-beginning
-```
-
-If running these commands from another machine, change the address accordingly.
-
-#### Producer and consumer using internal client
-
-These clients, from other containers on the same Docker network, will use the kafka container service hostname to connect to Apache Kafka.
-
-```console
-kafka-console-producer.sh --producer.config /opt/bitnami/kafka/config/producer.properties --bootstrap-server kafka:9092 --topic test
-kafka-console-consumer.sh --consumer.config /opt/bitnami/kafka/config/consumer.properties --bootstrap-server kafka:9092 --topic test --from-beginning
-```
-
-Similarly, application code will need to use `bootstrap.servers=kafka:9092`
-
-More info about Apache Kafka listeners can be found in [this great article](https://rmoff.net/2018/08/02/kafka-listeners-explained/)
-
 ### Security
 
 In order to configure authentication, you must configure the Apache Kafka listeners properly. Let's see an example to configure Apache Kafka with `SASL_SSL` authentication for communications with clients, and `SASL` authentication for controller-related communications.
@@ -353,68 +166,7 @@ Keep in mind the following notes:
 - Set the Common Name or FQDN values to your Apache Kafka container hostname, e.g. `kafka.example.com`. After entering this value, when prompted "What is your first and last name?", enter this value as well.
   - As an alternative, you can disable host name verification setting the environment variable `KAFKA_CFG_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM` to an empty string.
 - When setting up a Apache Kafka Cluster (check the "Setting up an Apache Kafka Cluster") for more information), each Apache Kafka broker and logical client needs its own keystore. You will have to repeat the process for each of the brokers in the cluster.
-
-The following docker-compose file is an example showing how to mount your JKS certificates protected by the password `certificatePassword123`. Additionally it is specifying the Apache Kafka container hostname and the credentials for the client user.
-
-```yaml
-version: '2'
-
-services:
-  kafka:
-    image: bitnami/kafka:latest
-    hostname: kafka.example.com
-    ports:
-      - 9092
-    environment:
-      # KRaft
-      - KAFKA_CFG_NODE_ID=0
-      - KAFKA_CFG_PROCESS_ROLES=controller,broker
-      # Listeners
-      - KAFKA_CFG_LISTENERS=SASL_SSL://:9092,CONTROLLER://:9093
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:SASL_PLAINTEXT,SASL_SSL:SASL_SSL
-      - KAFKA_CFG_ADVERTISED_LISTENERS=SASL_SSL://:9092
-      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=SASL_SSL
-      - KAFKA_CLIENT_LISTENER_NAME=SASL_SSL # Remove this line if consumer/producer.properties are not required
-      # SASL
-      - KAFKA_CFG_SASL_MECHANISM_CONTROLLER_PROTOCOL=PLAIN
-      - KAFKA_CFG_SASL_MECHANISM_INTER_BROKER_PROTOCOL=PLAIN
-      - KAFKA_CONTROLLER_USER=controller_user
-      - KAFKA_CONTROLLER_PASSWORD=controller_password
-      - KAFKA_INTER_BROKER_USER=interbroker_user
-      - KAFKA_INTER_BROKER_PASSWORD=interbroker_password
-      - KAFKA_CLIENT_USERS=user
-      - KAFKA_CLIENT_PASSWORDS=password
-      # SSL
-      - KAFKA_TLS_TYPE=JKS # or PEM
-      - KAFKA_CERTIFICATE_PASSWORD=certificatePassword123
-    volumes:
-      # Both .jks and .pem files are supported
-      # - ./kafka.keystore.pem:/opt/bitnami/kafka/config/certs/kafka.keystore.pem:ro
-      # - ./kafka.keystore.key:/opt/bitnami/kafka/config/certs/kafka.keystore.key:ro
-      # - ./kafka.truststore.pem:/opt/bitnami/kafka/config/certs/kafka.truststore.pem:ro
-      - ./kafka.keystore.jks:/opt/bitnami/kafka/config/certs/kafka.keystore.jks:ro
-      - ./kafka.truststore.jks:/opt/bitnami/kafka/config/certs/kafka.truststore.jks:ro
-```
-
-In order to get the required credentials to consume and produce messages you need to provide the credentials in the client. If your Apache Kafka client allows it, use the credentials you've provided.
-
-While producing and consuming messages using the `bitnami/kafka` image, you'll need to point to the `consumer.properties` and/or `producer.properties` file, which contains the needed configuration
-to work. You can find this files in the `/opt/bitnami/kafka/config` directory.
-
-Use this to generate messages using a secure setup:
-
-```console
-kafka-console-producer.sh --bootstrap-server 127.0.0.1:9092 --topic test --producer.config /opt/bitnami/kafka/config/producer.properties
-```
-
-Use this to consume messages using a secure setup
-
-```console
-kafka-console-consumer.sh --bootstrap-server 127.0.0.1:9092 --topic test --consumer.config /opt/bitnami/kafka/config/consumer.properties
-```
-
-If you use other tools to use your Apache Kafka cluster, you'll need to provide the required information. You can find the required information in the files located at `/opt/bitnami/kafka/config` directory.
+- While producing and consuming messages using the `bitnami/kafka` image, you'll need to point to the `consumer.properties` and/or `producer.properties` file, which contains the needed configuration
 
 #### Inter-Broker communications
 
@@ -491,146 +243,6 @@ An Apache Kafka cluster can easily be setup with the Bitnami Apache Kafka Docker
 - `KAFKA_CFG_CONTROLLER_QUORUM_BOOTSTRAP_SERVERS`: List of endpoints to use for bootstrapping the cluster metadata. The endpoints are specified in comma-separated list of {host}:{port} entries.
 - `KAFKA_INITIAL_CONTROLLERS`: Used to initialize a server with the specified dynamic quorum. The argument is a comma-separated list of id@hostname:port:directory. The same values must be used to format all nodes.
 
-#### Step 1: Create the first node for Apache Kafka
-
-The first step is to create one Apache Kafka instance.
-
-```console
-docker run --name kafka-0 \
-  --network app-tier \
-  -e KAFKA_CFG_NODE_ID=0 \
-  -e KAFKA_CFG_PROCESS_ROLES=controller,broker \
-  -e KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093 \
-  -e KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT \
-  -e KAFKA_CFG_CONTROLLER_QUORUM_BOOTSTRAP_SERVERS=kafka-0:9093,kafka-1:9093,kafka-2:9093 \
-  -e KAFKA_INITIAL_CONTROLLERS=0@kafka-0:9093:bcdefghijklmnopqrstuvw,1@kafka-1:9093:cdefghijklmnopqrstuvwx,2@kafka-2:9093:defghijklmnopqrstuvwxy \
-  -e KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR=3 \
-  -e KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=3 \
-  -e KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR=2 \
-  -e KAFKA_CLUSTER_ID=abcdefghijklmnopqrstuv \
-  -p :9092 \
-  -p :9093 \
-  bitnami/kafka:latest
-```
-
-#### Step 2: Create the second node
-
-Next we start a new Apache Kafka container.
-
-```console
-docker run --name kafka-1 \
-  --network app-tier \
-  -e KAFKA_CFG_NODE_ID=1 \
-  -e KAFKA_CFG_PROCESS_ROLES=controller,broker \
-  -e KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093 \
-  -e KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT \
-  -e KAFKA_CFG_CONTROLLER_QUORUM_BOOTSTRAP_SERVERS=kafka-0:9093,kafka-1:9093,kafka-2:9093 \
-  -e KAFKA_INITIAL_CONTROLLERS=0@kafka-0:9093:bcdefghijklmnopqrstuvw,1@kafka-1:9093:cdefghijklmnopqrstuvwx,2@kafka-2:9093:defghijklmnopqrstuvwxy \
-  -e KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR=3 \
-  -e KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=3 \
-  -e KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR=2 \
-  -e KAFKA_CLUSTER_ID=abcdefghijklmnopqrstuv \
-  -p :9092 \
-  -p :9093 \
-  bitnami/kafka:latest
-```
-
-### Step 3: Create the third node
-
-Next we start another new Apache Kafka container.
-
-```console
-docker run --name kafka-3 \
-  --network app-tier \
-  -e KAFKA_CFG_NODE_ID=3 \
-  -e KAFKA_CFG_PROCESS_ROLES=controller,broker \
-  -e KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093 \
-  -e KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT \
-  -e KAFKA_CFG_CONTROLLER_QUORUM_BOOTSTRAP_SERVERS=kafka-0:9093,kafka-1:9093,kafka-2:9093 \
-  -e KAFKA_INITIAL_CONTROLLERS=0@kafka-0:9093:bcdefghijklmnopqrstuvw,1@kafka-1:9093:cdefghijklmnopqrstuvwx,2@kafka-2:9093:defghijklmnopqrstuvwxy \
-  -e KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR=3 \
-  -e KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=3 \
-  -e KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR=2 \
-  -e KAFKA_CLUSTER_ID=abcdefghijklmnopqrstuv \
-  -p :9092 \
-  -p :9093 \
-  bitnami/kafka:latest
-```
-
-You now have an Apache Kafka cluster up and running. You can scale the cluster by adding/removing slaves without incurring any downtime.
-
-A docker-compose version of this deployment can be found in the file `docker-compose-cluster.yml`.
-
-#### Example: Create a replicated topic
-
-A replicated topic could be created using the following command:
-
-```console
-root@kafka-0:/# /opt/bitnami/kafka/bin/kafka-topics.sh --create --bootstrap-server localhost:9092 --topic mytopic --partitions 3 --replication-factor 3
-Created topic "mytopic".
-
-root@kafka-0:/# /opt/bitnami/kafka/bin/kafka-topics.sh --describe --bootstrap-server localhost:9092 --topic mytopic
-Topic:mytopic   PartitionCount:3        ReplicationFactor:3     Configs:
-        Topic: mytopic  Partition: 0    Leader: 2       Replicas: 2,3,1 Isr: 2,3,1
-        Topic: mytopic  Partition: 1    Leader: 3       Replicas: 3,1,2 Isr: 3,1,2
-        Topic: mytopic  Partition: 2    Leader: 1       Replicas: 1,2,3 Isr: 1,2,3
-```
-
-### Setting up a Apache Kafka KRaft cluster with dedicated nodes
-
-The following docker-compose can be use as guide to build a Apache Kafka cluster with dedicated nodes.
-Please note this deployment is not suited for production usage as it does not met quorum minimums to prevent split-brain scenarios.
-
-```yaml
-version: '2'
-
-services:
-  kafka-combined:
-    image: docker.io/bitnami/kafka:latest
-    ports:
-      - 9092:9092
-    environment:
-      - KAFKA_CFG_NODE_ID=0
-      - KAFKA_CFG_PROCESS_ROLES=controller,broker
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      - KAFKA_CFG_CONTROLLER_QUORUM_BOOTSTRAP_SERVERS=kafka-0:9093,kafka-1:9093
-      - KAFKA_INITIAL_CONTROLLERS=0@kafka-0:9093:bcdefghijklmnopqrstuvw,1@kafka-1:9093:cdefghijklmnopqrstuvwx
-      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      - KAFKA_CLUSTER_ID=abcdefghijklmnopqrstuv
-    volumes:
-      - kafka_0_data:/bitnami/kafka
-  kafka-controller:
-    image: docker.io/bitnami/kafka:latest
-    environment:
-      - KAFKA_CFG_NODE_ID=1
-      - KAFKA_CFG_PROCESS_ROLES=controller
-      - KAFKA_CFG_LISTENERS=CONTROLLER://:9093
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT
-      - KAFKA_CFG_CONTROLLER_QUORUM_BOOTSTRAP_SERVERS=kafka-0:9093,kafka-1:9093
-      - KAFKA_INITIAL_CONTROLLERS=0@kafka-0:9093:bcdefghijklmnopqrstuvw,1@kafka-1:9093:cdefghijklmnopqrstuvwx
-      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      - KAFKA_CLUSTER_ID=abcdefghijklmnopqrstuv
-    volumes:
-      - kafka_1_data:/bitnami/kafka
-  kafka-broker:
-    image: docker.io/bitnami/kafka:latest
-    environment:
-      - KAFKA_CFG_NODE_ID=2
-      - KAFKA_CFG_PROCESS_ROLES=broker
-      - KAFKA_CFG_CONTROLLER_QUORUM_BOOTSTRAP_SERVERS=kafka-0:9093,kafka-1:9093
-    volumes:
-      - kafka_2_data:/bitnami/kafka
-
-volumes:
-  kafka_0_data:
-    driver: local
-  kafka_1_data:
-    driver: local
-  kafka_2_data:
-    driver: local
-```
-
 ### Full configuration
 
 The image looks for configuration files (server.properties, log4j2.yaml, etc.) in the `/bitnami/kafka/config/`, this can be changed by setting the KAFKA_MOUNTED_CONF_DIR environment variable.
@@ -639,212 +251,16 @@ The image looks for configuration files (server.properties, log4j2.yaml, etc.) i
 docker run --name kafka -v /path/to/server.properties:/bitnami/kafka/config/server.properties bitnami/kafka:latest
 ```
 
-After that, your changes will be taken into account in the server's behaviour.
-
-#### Step 1: Run the Apache Kafka image
-
-Run the Apache Kafka image, mounting a directory from your host.
-
-Modify the [`docker-compose.yml`](https://github.com/bitnami/containers/blob/main/bitnami/kafka/docker-compose.yml) file present in this repository:
-
-```diff
-...
-services:
-  kafka:
-    ...
-    volumes:
-      - kafka_data:/bitnami
-+     - /path/to/server.properties:/bitnami/kafka/config/server.properties
-```
-
-#### Step 2: Edit the configuration
-
-Edit the configuration on your host using your favorite editor.
-
-```console
-vi /path/to/server.properties
-```
-
-#### Step 3: Restart Apache Kafka
-
-After changing the configuration, restart your Apache Kafka container for changes to take effect.
-
-```console
-docker restart kafka
-```
-
-Or using Docker Compose:
-
-```console
-docker-compose restart kafka
-```
-
 ### FIPS configuration in Bitnami Secure Images
 
 The Bitnami Apache Kafka Docker image from the [Bitnami Secure Images](https://go-vmware.broadcom.com/contact-us) catalog includes extra features and settings to configure the container with FIPS capabilities. You can configure the next environment variables:
 
 - `OPENSSL_FIPS`: whether OpenSSL runs in FIPS mode or not. `yes` (default), `no`.
+- `JAVA_TOOL_OPTIONS`: controls Java FIPS mode. Use `-Djava.security.properties==/opt/bitnami/java/conf/security/java.security.restricted` (restricted), `-Djava.security.properties==/opt/bitnami/java/conf/security/java.security.relaxed` (relaxed), or `-Djava.security.properties==/opt/bitnami/java/conf/security/java.security.original` (off).
 
 ## Logging
 
-The Bitnami Apache Kafka Docker image sends the container logs to the `stdout`. To view the logs:
-
-```console
-docker logs kafka
-```
-
-Or using Docker Compose:
-
-```console
-docker-compose logs kafka
-```
-
-You can configure the containers [logging driver](https://docs.docker.com/engine/admin/logging/overview/) using the `--log-driver` option if you wish to consume the container logs differently. In the default configuration docker uses the `json-file` driver.
-
-## Maintenance
-
-### Backing up your container
-
-To backup your data, configuration and logs, follow these simple steps:
-
-#### Step 1: Stop the currently running container
-
-```console
-docker stop kafka
-```
-
-Or using Docker Compose:
-
-```console
-docker-compose stop kafka
-```
-
-#### Step 2: Run the backup command
-
-We need to mount two volumes in a container we will use to create the backup: a directory on your host to store the backup in, and the volumes from the container we just stopped so we can access the data.
-
-```console
-docker run --rm -v /path/to/kafka-backups:/backups --volumes-from kafka busybox \
-  cp -a /bitnami/kafka /backups/latest
-```
-
-Or using Docker Compose:
-
-```console
-docker run --rm -v /path/to/kafka-backups:/backups --volumes-from `docker-compose ps -q kafka` busybox \
-  cp -a /bitnami/kafka /backups/latest
-```
-
-### Restoring a backup
-
-Restoring a backup is as simple as mounting the backup as volumes in the container.
-
-```console
-docker run -v /path/to/kafka-backups/latest:/bitnami/kafka bitnami/kafka:latest
-```
-
-You can also modify the [`docker-compose.yml`](https://github.com/bitnami/containers/blob/main/bitnami/kafka/docker-compose.yml) file present in this repository:
-
-```yaml
-kafka:
-  volumes:
-    - /path/to/kafka-backups/latest:/bitnami/kafka
-```
-
-### Upgrade this image
-
-Bitnami provides up-to-date versions of Apache Kafka, including security patches, soon after they are made upstream. We recommend that you follow these steps to upgrade your container.
-
-#### Step 1: Get the updated image
-
-```console
-docker pull bitnami/kafka:latest
-```
-
-or if you're using Docker Compose, update the value of the image property to
-`bitnami/kafka:latest`.
-
-#### Step 2: Stop and backup the currently running container
-
-Before continuing, you should backup your container's data, configuration and logs.
-
-Follow the steps on [creating a backup](#backing-up-your-container).
-
-#### Step 3: Remove the currently running container
-
-```console
-docker rm -v kafka
-```
-
-Or using Docker Compose:
-
-```console
-docker-compose rm -v kafka
-```
-
-#### Step 4: Run the new image
-
-Re-create your container from the new image, [restoring your backup](#restoring-a-backup) if necessary.
-
-```console
-docker run --name kafka bitnami/kafka:latest
-```
-
-Or using Docker Compose:
-
-```console
-docker-compose up kafka
-```
-
-## Migrating from Zookeeper mode to KRaft mode
-
-This guide covers how to execute the Kafka migration from Zookeeper mode to KRaft mode as explained in the [upstream documentation](https://docs.confluent.io/platform/current/installation/migrate-zk-kraft.html) when using the `bitnami/kafka:3` container.
-
-1. Retrieve the cluster ID from Zookeeper
-
-2. Configure Controller quorum by adding the following env variables in the nodes you'd like to configure as controller-eligible nodes:
-
-    ```console
-    KAFKA_CFG_PROCESS_ROLES=controller
-    KAFKA_CFG_NODE_ID=<unique_id>
-    KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=<controller1_node_id>@<controller1_host>:9093,<controller2_node_id>@<controller2_host>:9093,...
-    KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-    KAFKA_CFG_LISTENERS=CONTROLLER://:9093
-    KAFKA_CFG_ZOOKEEPER_METADATA_MIGRATION_ENABLE=true
-    KAFKA_CFG_ZOOKEEPER_CONNECT=<zk_host>:<zk_port>
-    KAFKA_CLUSTER_ID=<cluster_id_step1>
-    ```
-
-3. Configure brokers with migration settings:
-
-    ```console
-    KAFKA_CFG_BROKER_ID=<current_broker_id>
-    KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=<controller1_node_id>@<controller1_host>:9093,<controller2_node_id>@<controller2_host>:9093,...
-    KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-    KAFKA_CFG_INTER_BROKER_PROTOCOL_VERSION=3.4
-    KAFKA_CFG_ZOOKEEPER_METADATA_MIGRATION_ENABLE=true
-    KAFKA_CFG_ZOOKEEPER_CONNECT=<zk_host>:<zk_port>
-    ```
-
-4. Migrate brokers:
-
-    ```console
-    KAFKA_CFG_PROCESS_ROLES=broker
-    KAFKA_CFG_NODE_ID=<unique_id>
-    KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=<controller1_node_id>@<controller1_host>:9093,<controller2_node_id>@<controller2_host>:9093,...
-    KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-    ```
-
-5. Disable migration mode on controllers:
-
-    ```console
-    KAFKA_CFG_PROCESS_ROLES=controller
-    KAFKA_CFG_NODE_ID=<unique_id>
-    KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=<controller1_node_id>@<controller1_host>:9093,<controller2_node_id>@<controller2_host>:9093,...
-    KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-    KAFKA_CFG_LISTENERS=CONTROLLER://:9093
-    KAFKA_CLUSTER_ID=<cluster_id_step1>
-    ```
+The Bitnami Apache Kafka Docker image sends the container logs to the `stdout`. You can configure the containers [logging driver](https://docs.docker.com/engine/admin/logging/overview/) using the `--log-driver` option if you wish to consume the container logs differently. In the default configuration docker uses the `json-file` driver.
 
 ## Notable Changes
 
@@ -920,7 +336,7 @@ The configuration directory was changed to `/opt/bitnami/kafka/config`. Configur
 
 ### 1.1.1-debian-9-r224, 2.2.1-debian-9-r16, 1.1.1-ol-7-r306 and 2.2.1-ol-7-r14
 
-- The following environment variables were beingly wrongly translated into `KAFKA_CFG_` environment variables, and therefore they were being wrongly mapped into Apache Kafka keys:
+- The following environment variables were being wrongly translated into `KAFKA_CFG_` environment variables, and therefore they were being wrongly mapped into Apache Kafka keys:
 
   - `KAFKA_LOGS_DIRS` -> `KAFKA_CFG_LOG_DIRS`
   - `KAFKA_PORT_NUMBER` -> `KAFKA_CFG_PORT`
@@ -979,26 +395,6 @@ Configuration changes. Most environment variables now start with `KAFKA_CFG_`, a
 ### 0.10.2.1-r0
 
 - New Bitnami release
-
-## Using `docker-compose.yaml`
-
-Please be aware this file has not undergone internal testing. Consequently, we advise its use exclusively for development or testing purposes. For production-ready deployments, we highly recommend utilizing its associated [Bitnami Helm chart](https://github.com/bitnami/charts/tree/main/bitnami/kafka).
-
-If you detect any issue in the `docker-compose.yaml` file, feel free to report it or contribute with a fix by following our [Contributing Guidelines](https://github.com/bitnami/containers/blob/main/CONTRIBUTING.md).
-
-## Contributing
-
-We'd love for you to contribute to this Docker image. You can request new features by creating an [issue](https://github.com/bitnami/containers/issues) or submitting a [pull request](https://github.com/bitnami/containers/pulls) with your contribution.
-
-## Issues
-
-If you encountered a problem running this container, you can file an [issue](https://github.com/bitnami/containers/issues/new/choose). For us to provide better support, be sure to include the following information in your issue:
-
-- Host OS and version
-- Docker version (`docker version`)
-- Output of `docker info`
-- Version of this container
-- The command you used to run the container, and any relevant output you saw (masking any sensitive information)
 
 ## License
 

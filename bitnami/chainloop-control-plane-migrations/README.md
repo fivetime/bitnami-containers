@@ -1,7 +1,5 @@
 # Bitnami Secure Image for Chainloop Control Plane migrations
 
-## What is Chainloop Control Plane migrations?
-
 > Atlas-based database migration controller for Chainloop.
 
 [Overview of Chainloop Control Plane migrations](https://chainloop.dev)
@@ -12,6 +10,14 @@ Trademarks: This software listing is packaged by Bitnami. The respective tradema
 ```console
 docker run --name chainloop-control-plane-migrations bitnami/chainloop-control-plane-migrations:latest
 ```
+
+## Using `docker-compose.yml`
+
+The docker-compose.yaml file of this container can be found in the [Bitnami Containers repository](https://github.com/bitnami/containers/).
+
+[https://github.com/bitnami/containers/tree/main/bitnami/chainloop-control-plane-migrations/docker-compose.yml](https://github.com/bitnami/containers/tree/main/bitnami/chainloop-control-plane-migrations/docker-compose.yml)
+
+Please be aware this file has not undergone internal testing. Consequently, we advise its use exclusively for development or testing purposes. For production-ready deployments, we highly recommend utilizing its associated [Bitnami Helm chart](https://github.com/bitnami/charts/tree/main/bitnami/chainloop).
 
 ## Why use Bitnami Secure Images?
 
@@ -40,27 +46,11 @@ Learn more about the Bitnami tagging policy and the difference between rolling t
 
 ## Get this image
 
-The recommended way to get the Bitnami Chainloop Control Plane migrations Docker Image is to pull the prebuilt image from the [Docker Hub Registry](https://hub.docker.com/r/bitnami/chainloop-control-plane-migrations).
-
-```console
-docker pull bitnami/chainloop-control-plane-migrations:latest
-```
-
-To use a specific version, you can pull a versioned tag. You can view the [list of available versions](https://hub.docker.com/r/bitnami/chainloop-control-plane-migrations/tags/) in the Docker Hub Registry.
-
-```console
-docker pull bitnami/chainloop-control-plane-migrations:[TAG]
-```
-
-If you wish, you can also build the image yourself by cloning the repository, changing to the directory containing the Dockerfile and executing the `docker build` command. Remember to replace the `APP`, `VERSION` and `OPERATING-SYSTEM` path placeholders in the example command below with the correct values.
-
-```console
-git clone https://github.com/bitnami/containers.git
-cd bitnami/APP/VERSION/OPERATING-SYSTEM
-docker build -t bitnami/APP:latest .
-```
+The Bitnami Chainloop Control Plane migrations Docker image is only available to [Bitnami Secure Images](https://bitnami.com) customers.
 
 ## Configuration
+
+The following section describes how to run commands
 
 ### Running commands
 
@@ -72,13 +62,12 @@ docker run --rm --name chainloop-control-plane-migrations bitnami/chainloop-cont
 
 Check the [official Chainloop Control Plane migrations documentation](https://github.com/chainloop-dev/chainloop/tree/main/app/controlplane) for more information about configuration options.
 
-## Contributing
 
-We'd love for you to contribute to this container. You can request new features by creating an [issue](https://github.com/bitnami/containers/issues) or submitting a [pull request](https://github.com/bitnami/containers/pulls) with your contribution.
+### FIPS configuration in Bitnami Secure Images
 
-## Issues
+The Bitnami Chainloop Control Plane migrations Docker image from the [Bitnami Secure Images](https://go-vmware.broadcom.com/contact-us) catalog includes extra features and settings to configure the container with FIPS capabilities. You can configure the next environment variables:
 
-If you encountered a problem running this container, you can file an [issue](https://github.com/bitnami/containers/issues/new/choose). For us to provide better support, be sure to fill the issue template.
+- `OPENSSL_FIPS`: whether OpenSSL runs in FIPS mode or not. `yes` (default), `no`.
 
 ## License
 

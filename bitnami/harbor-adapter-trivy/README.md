@@ -1,15 +1,11 @@
 # Bitnami Secure Image for Harbor Adapter Trivy
 
-## What is Harbor Adapter Trivy?
-
 > Harbor Adapter for Trivy translates the Harbor API into Trivy API calls and allows Harbor to provide vulnerability reports on images through Trivy as part of its vulnerability scan.
 
 [Overview of Harbor Adapter Trivy](https://goharbor.io/)
 Trademarks: This software listing is packaged by Bitnami. The respective trademarks mentioned in the offering are owned by the respective companies, and use of them does not imply any affiliation or endorsement.
 
 ## TL;DR
-
-This container is part of the [Harbor solution](https://github.com/bitnami/charts/tree/main/bitnami/harbor) that is primarily intended to be deployed in Kubernetes.
 
 ```console
 docker run --name harbor-adapter-trivy bitnami/harbor-adapter-trivy:latest
@@ -40,31 +36,9 @@ Non-root container images add an extra layer of security and are generally recom
 
 Learn more about the Bitnami tagging policy and the difference between rolling tags and immutable tags [in our documentation page](https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-understand-rolling-tags-containers-index.html).
 
-You can see the equivalence between the different tags by taking a look at the `tags-info.yaml` file present in the branch folder, i.e `bitnami/ASSET/BRANCH/DISTRO/tags-info.yaml`.
-
-Subscribe to project updates by watching the [bitnami/containers GitHub repo](https://github.com/bitnami/containers).
-
 ## Get this image
 
-The recommended way to get the Bitnami Harbor-Adapter-Trivy Docker Image is to pull the prebuilt image from the [Docker Hub Registry](https://hub.docker.com/r/bitnami/harbor-adapter-trivy).
-
-```console
-docker pull bitnami/harbor-adapter-trivy:latest
-```
-
-To use a specific version, you can pull a versioned tag. You can view the [list of available versions](https://hub.docker.com/r/bitnami/harbor-adapter-trivy/tags/) in the Docker Hub Registry.
-
-```console
-docker pull bitnami/harbor-adapter-trivy:[TAG]
-```
-
-If you wish, you can also build the image yourself by cloning the repository, changing to the directory containing the Dockerfile and executing the `docker build` command. Remember to replace the `APP`, `VERSION` and `OPERATING-SYSTEM` path placeholders in the example command below with the correct values.
-
-```console
-git clone https://github.com/bitnami/containers.git
-cd bitnami/APP/VERSION/OPERATING-SYSTEM
-docker build -t bitnami/APP:latest .
-```
+The Bitnami Harbor Adapter Trivy Docker image is only available to [Bitnami Secure Images](https://bitnami.com) customers.
 
 ## Persisting your application
 
@@ -82,27 +56,29 @@ docker run \
 
 Using [Docker container networking](https://docs.docker.com/engine/userguide/networking/), a different server running inside a container can easily be accessed by your application containers and vice-versa.
 
-Containers attached to the same network can communicate with each other using the container name as the hostname.
+Containers attached to the same network can communicate with each other using the container name as the host name.
 
-### Using the Command Line
+### Using the command line
 
-#### Step 1: Create a network
+Follow these steps to run the container using the Docker command line.
 
-```console
-docker network create harbor-adapter-trivy-network --driver bridge
-```
+1. Create a network.
 
-#### Step 2: Launch the Harbor-Adapter-Trivy container within your network
+    ```console
+    docker network create harbor-adapter-trivy-network --driver bridge
+    ```
 
-Use the `--network <NETWORK>` argument to the `docker run` command to attach the container to the `harbor-adapter-trivy-network` network.
+2. Launch the Harbor-Adapter-Trivy container within your network.
 
-```console
-docker run --name harbor-adapter-trivy-node1 --network harbor-adapter-trivy-network bitnami/harbor-adapter-trivy:latest
-```
+    Use the `--network <NETWORK>` argument to the `docker run` command to attach the container to the `harbor-adapter-trivy-network` network.
 
-#### Step 3: Run another containers
+    ```console
+    docker run --name harbor-adapter-trivy-node1 --network harbor-adapter-trivy-network bitnami/harbor-adapter-trivy:latest
+    ```
 
-We can launch another containers using the same flag (`--network NETWORK`) in the `docker run` command. If you also set a name to your container, you will be able to use it as hostname in your network.
+3. Run another container.
+
+    We can launch another container using the same flag (`--network NETWORK`) in the `docker run` command. If you also set a name to your container, you will be able to use it as host name in your network.
 
 ## Configuration
 
@@ -111,6 +87,8 @@ Harbor Adapter Trivy is a component of the Harbor application. In order to get t
 For further information about the specific component itself, please refer to the [source repository documentation](https://goharbor.io/#configuration).
 
 ### Environment variables
+
+The following tables list the main variables you can set.
 
 #### Customizable environment variables
 
@@ -136,61 +114,15 @@ The Bitnami Harbor Adapter Trivy Docker image from the [Bitnami Secure Images](h
 
 ## Logging
 
-The Bitnami Harbor-Adapter-Trivy Docker image sends the container logs to `stdout`. To view the logs:
+The Bitnami Harbor Adapter Trivy Docker image sends the container logs to the `stdout`. You can configure the containers [logging driver](https://docs.docker.com/engine/admin/logging/overview/) using the `--log-driver` option if you wish to consume the container logs differently. In the default configuration docker uses the `json-file` driver.
 
-```console
-docker logs harbor-adapter-trivy
-```
+## Notable changes
 
-You can configure the containers [logging driver](https://docs.docker.com/engine/admin/logging/overview/) using the `--log-driver` option if you wish to consume the container logs differently. In the default configuration docker uses the `json-file` driver.
-
-## Maintenance
-
-### Upgrade this image
-
-Bitnami provides up-to-date versions of Harbor-Adapter-Trivy, including security patches, soon after they are made upstream. We recommend that you follow these steps to upgrade your container.
-
-#### Step 1: Get the updated image
-
-```console
-docker pull bitnami/harbor-adapter-trivy:latest
-```
-
-#### Step 2: Stop the running container
-
-Stop the currently running container using the command
-
-```console
-docker stop harbor-adapter-trivy
-```
-
-#### Step 3: Remove the currently running container
-
-```console
-docker rm -v harbor-adapter-trivy
-```
-
-#### Step 4: Run the new image
-
-Re-create your container from the new image.
-
-```console
-docker run --name harbor-adapter-trivy bitnami/harbor-adapter-trivy:latest
-```
-
-## Notable Changes
+The following subsections describe notable changes.
 
 ### Starting January 16, 2024
 
 - The `docker-compose.yaml` file has been removed, as it was solely intended for internal testing purposes.
-
-## Contributing
-
-We'd love for you to contribute to this container. You can request new features by creating an [issue](https://github.com/bitnami/containers/issues) or submitting a [pull request](https://github.com/bitnami/containers/pulls) with your contribution.
-
-## Issues
-
-If you encountered a problem running this container, you can file an [issue](https://github.com/bitnami/containers/issues/new/choose). For us to provide better support, be sure to fill the issue template.
 
 ## License
 

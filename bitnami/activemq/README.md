@@ -1,7 +1,5 @@
 # Bitnami Secure Image for ActiveMQ
 
-## What is ActiveMQ?
-
 > Apache ActiveMQ is an open source message broker written in Java together with a full Java Message Service (JMS) client.
 [Overview of ActiveMQ](https://activemq.apache.org/)
 Trademarks: This software listing is packaged by Bitnami. The respective trademarks mentioned in the offering are owned by the respective companies, and use of them does not imply any affiliation or endorsement.
@@ -33,37 +31,17 @@ If you are looking for our previous generation of images based on Debian Linux, 
 
 Learn more about the Bitnami tagging policy and the difference between rolling tags and immutable tags [in our documentation page](https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-understand-rolling-tags-containers-index.html).
 
-You can see the equivalence between the different tags by taking a look at the `tags-info.yaml` file present in the branch folder, i.e `bitnami/ASSET/BRANCH/DISTRO/tags-info.yaml`.
-
-Subscribe to project updates by watching the [bitnami/containers GitHub repo](https://github.com/bitnami/containers).
-
 ## Get this image
 
-The recommended way to get the Bitnami ActiveMQ Docker Image is to pull the prebuilt image from the [Docker Hub Registry](https://hub.docker.com/r/bitnami/activemq).
-
-```console
-docker pull bitnami/activemq:latest
-```
-
-To use a specific version, you can pull a versioned tag. You can view the [list of available versions](https://hub.docker.com/r/bitnami/activemq/tags/) in the Docker Hub Registry.
-
-```console
-docker pull bitnami/activemq:[TAG]
-```
-
-If you wish, you can also build the image yourself by cloning the repository, changing to the directory containing the Dockerfile and executing the `docker build` command. Remember to replace the `APP`, `VERSION` and `OPERATING-SYSTEM` path placeholders in the example command below with the correct values.
-
-```console
-git clone https://github.com/bitnami/containers.git
-cd bitnami/APP/VERSION/OPERATING-SYSTEM
-docker build -t bitnami/APP:latest .
-```
+The Bitnami ActiveMQ Docker image is only available to [Bitnami Secure Images](https://bitnami.com) customers.
 
 ## Why use a non-root container?
 
 Non-root container images add an extra layer of security and are generally recommended for production environments. However, because they run as a non-root user, privileged tasks are typically off-limits. Learn more about non-root containers [in our docs](https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-work-with-non-root-containers-index.html).
 
 ## Configuration
+
+The following section describes how to run commands
 
 ### Running commands
 
@@ -73,9 +51,11 @@ To run commands inside this container, you can use `docker run`, for example to 
 docker run --rm --name activemq bitnami/activemq:latest -- --help
 ```
 
-Check the [official ActiveMQ documentation](https://activemq.apache.org/ for more information.
+Check the [official ActiveMQ documentation](https://activemq.apache.org/) for more information.
 
 ### Environment variables
+
+The following tables list the main variables you can set.
 
 #### Customizable environment variables
 
@@ -88,9 +68,8 @@ Check the [official ActiveMQ documentation](https://activemq.apache.org/ for mor
 | `ACTIVEMQ_STOMP_PORT_NUMBER`     | ActiveMQ STOMP port number.                                                                   | `61613`                       |
 | `ACTIVEMQ_WEBSOCKET_PORT_NUMBER` | ActiveMQ WebSocket port number.                                                               | `61614`                       |
 | `ACTIVEMQ_OPENWIRE_PORT_NUMBER`  | ActiveMQ OpenWire port number.                                                                | `61616`                       |
-| `ACTIVEMQ_USERNAME`              | ActiveMQ username.                                                                            | `admin`                       |
-| `ACTIVEMQ_PASSWORD`              | ActiveMQ password.                                                                            | `password`                    |
-| `ACTIVEMQ_SECRET`                | ActiveMQ secret for encryption.                                                               | `bitnami`                     |
+| `ACTIVEMQ_PASSWORD`              | ActiveMQ password.                                                                            | `nil`                         |
+| `ACTIVEMQ_SECRET`                | ActiveMQ secret for encryption.                                                               | `nil`                         |
 
 #### Read-only environment variables
 
@@ -114,13 +93,12 @@ Check the [official ActiveMQ documentation](https://activemq.apache.org/ for mor
 | `ACTIVEMQ_PIDFILE`          | ActiveMQ output destination                          | `${ACTIVEMQ_PID_FILE}`              |
 | `ACTIVEMQ_OUT`              | ActiveMQ output destination                          | `${ACTIVEMQ_LOG_FILE}`              |
 
-## Contributing
+### FIPS configuration in Bitnami Secure Images
 
-We'd love for you to contribute to this container. You can request new features by creating an [issue](https://github.com/bitnami/containers/issues) or submitting a [pull request](https://github.com/bitnami/containers/pulls) with your contribution.
+The Bitnami ActiveMQ Docker image from the [Bitnami Secure Images](https://go-vmware.broadcom.com/contact-us) catalog includes extra features and settings to configure the container with FIPS capabilities. You can configure the next environment variables:
 
-## Issues
-
-If you encounter a problem running this container, you can file an [issue](https://github.com/bitnami/containers/issues/new/choose). For us to provide better support, be sure to fill the issue template.
+- `OPENSSL_FIPS`: whether OpenSSL runs in FIPS mode or not. `yes` (default), `no`.
+- `JAVA_TOOL_OPTIONS`: controls Java FIPS mode. Use `-Djava.security.properties==/opt/bitnami/java/conf/security/java.security.restricted` (restricted), `-Djava.security.properties==/opt/bitnami/java/conf/security/java.security.relaxed` (relaxed), or `-Djava.security.properties==/opt/bitnami/java/conf/security/java.security.original` (off).
 
 ## License
 

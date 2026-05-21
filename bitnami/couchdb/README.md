@@ -1,7 +1,5 @@
 # Bitnami Secure Image for CouchDB
 
-## What is CouchDB?
-
 > CouchDB is an open source NoSQL database that stores your data with JSON documents, which you can access via HTTP. It allows you to index, combine, and transform your documents with JavaScript.
 
 [Overview of CouchDB](https://couchdb.apache.org)
@@ -12,6 +10,12 @@ Trademarks: This software listing is packaged by Bitnami. The respective tradema
 ```console
 docker run --name couchdb bitnami/couchdb:latest
 ```
+
+## Using `docker-compose.yml`
+
+The docker-compose.yaml file of this container can be found in the [Bitnami Containers repository](https://github.com/bitnami/containers/).
+
+[https://github.com/bitnami/containers/tree/main/bitnami/couchdb/docker-compose.yml](https://github.com/bitnami/containers/tree/main/bitnami/couchdb/docker-compose.yml)
 
 ## Why use Bitnami Secure Images?
 
@@ -38,31 +42,9 @@ Non-root container images add an extra layer of security and are generally recom
 
 Learn more about the Bitnami tagging policy and the difference between rolling tags and immutable tags [in our documentation page](https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-understand-rolling-tags-containers-index.html).
 
-You can see the equivalence between the different tags by taking a look at the `tags-info.yaml` file present in the branch folder, i.e `bitnami/ASSET/BRANCH/DISTRO/tags-info.yaml`.
-
-Subscribe to project updates by watching the [bitnami/containers GitHub repo](https://github.com/bitnami/containers).
-
 ## Get this image
 
-The recommended way to get the Bitnami CouchDB Docker Image is to pull the prebuilt image from the [Docker Hub Registry](https://hub.docker.com/r/bitnami/couchdb).
-
-```console
-docker pull bitnami/couchdb:latest
-```
-
-To use a specific version, you can pull a versioned tag. You can view the [list of available versions](https://hub.docker.com/r/bitnami/couchdb/tags/) in the Docker Hub Registry.
-
-```console
-docker pull bitnami/couchdb:[TAG]
-```
-
-If you wish, you can also build the image yourself by cloning the repository, changing to the directory containing the Dockerfile and executing the `docker build` command. Remember to replace the `APP`, `VERSION` and `OPERATING-SYSTEM` path placeholders in the example command below with the correct values.
-
-```console
-git clone https://github.com/bitnami/containers.git
-cd bitnami/APP/VERSION/OPERATING-SYSTEM
-docker build -t bitnami/APP:latest .
-```
+The Bitnami CouchDB Docker image is only available to [Bitnami Secure Images](https://bitnami.com) customers.
 
 ## Persisting your application
 
@@ -76,17 +58,7 @@ docker run \
     bitnami/couchdb:latest
 ```
 
-You can also do this with a minor change to the [`docker-compose.yml`](https://github.com/bitnami/containers/blob/main/bitnami/couchdb/docker-compose.yml) file present in this repository:
-
-```yaml
-couchdb:
-  ...
-  volumes:
-    - /path/to/couchdb-persistence:/bitnami/couchdb
-  ...
-```
-
-> NOTE: As this is a non-root container, the mounted files and directories must have the proper permissions for the UID `1001`.
+> **NOTE** As this is a non-root container, the mounted files and directories must have the proper permissions for the UID `1001`.
 
 ## Connecting to other containers
 
@@ -94,127 +66,56 @@ Using [Docker container networking](https://docs.docker.com/engine/userguide/net
 
 Containers attached to the same network can communicate with each other using the container name as the hostname.
 
-### Using the Command Line
-
-#### Step 1: Create a network
-
-```console
-docker network create couchdb-network --driver bridge
-```
-
-#### Step 2: Launch the CouchDB container within your network
-
-Use the `--network <NETWORK>` argument to the `docker run` command to attach the container to the `couchdb-network` network.
-
-```console
-docker run --name couchdb-node1 --network couchdb-network bitnami/couchdb:latest
-```
-
-#### Step 3: Run another containers
-
-We can launch another containers using the same flag (`--network NETWORK`) in the `docker run` command. If you also set a name to your container, you will be able to use it as hostname in your network.
-
 ## Configuration
+
+The following sections describe environment variables and related settings.
 
 ### Environment variables
 
+The following tables list the main variables you can set.
+
 #### Customizable environment variables
 
-| Name                          | Description                                                                              | Default Value |
-|-------------------------------|------------------------------------------------------------------------------------------|---------------|
-| `COUCHDB_NODENAME`            | Name of the CouchDB node.                                                                | `nil`         |
-| `COUCHDB_PORT_NUMBER`         | Port number used by CouchDB.                                                             | `nil`         |
-| `COUCHDB_CLUSTER_PORT_NUMBER` | Port number used by CouchDB for clustering.                                              | `nil`         |
-| `COUCHDB_BIND_ADDRESS`        | Address to which the CouchDB process will bind to.                                       | `nil`         |
-| `COUCHDB_CREATE_DATABASES`    | Whether to create CouchDB system databases during initialization. Useful for clustering. | `yes`         |
-| `COUCHDB_USER`                | CouchDB admin username.                                                                  | `admin`       |
-| `COUCHDB_PASSWORD`            | Password for the CouchDB admin user.                                                     | `couchdb`     |
-| `COUCHDB_SECRET`              | CouchDB secret/token used for proxy and cookie authentication.                           | `bitnami`     |
+| Name                            | Description                                                                                           | Default Value |
+|---------------------------------|-------------------------------------------------------------------------------------------------------|---------------|
+| `COUCHDB_NODENAME`              | Name of the CouchDB node.                                                                             | `nil`         |
+| `COUCHDB_PORT_NUMBER`           | Port number used by CouchDB.                                                                          | `nil`         |
+| `COUCHDB_CLUSTER_PORT_NUMBER`   | Port number used by CouchDB for clustering.                                                           | `nil`         |
+| `COUCHDB_BIND_ADDRESS`          | Address to which the CouchDB process will bind to.                                                    | `nil`         |
+| `COUCHDB_CREATE_DATABASES`      | Whether to create CouchDB system databases during initialization. Useful for clustering.              | `yes`         |
+| `COUCHDB_IGNORE_INITDB_SCRIPTS` | Skip execution of init scripts from COUCHDB_INITSCRIPTS_DIR. Set to yes on non-primary cluster nodes. | `no`          |
+| `COUCHDB_USER`                  | CouchDB admin username.                                                                               | `admin`       |
+| `COUCHDB_PASSWORD`              | Password for the CouchDB admin user.                                                                  | `couchdb`     |
+| `COUCHDB_SECRET`                | CouchDB secret/token used for proxy and cookie authentication.                                        | `bitnami`     |
+| `COUCHDB_ERLANG_HMAX`           | Per-process Erlang heap cap in bytes. Used to compute +hmax (value / 8 = word count).                 | `nil`         |
+| `COUCHDB_EXTRA_VM_ARGS`         | Additional Erlang VM arguments appended to vm.args.                                                   | `nil`         |
+| `COUCHDB_INTERNODE_TLS_ENABLED` | Enable TLS encryption for the Erlang distribution protocol (inter-node communication).                | `no`          |
+| `COUCHDB_TLS_CERT_FILE`         | Path to the TLS certificate file used for Erlang distribution encryption.                             | `nil`         |
+| `COUCHDB_TLS_KEY_FILE`          | Path to the TLS private key file used for Erlang distribution encryption.                             | `nil`         |
+| `COUCHDB_TLS_CA_FILE`           | Path to the CA certificate file used to verify peers during Erlang distribution.                      | `nil`         |
 
 #### Read-only environment variables
 
-| Name                   | Description                               | Value                                          |
-|------------------------|-------------------------------------------|------------------------------------------------|
-| `COUCHDB_BASE_DIR`     | CouchDB installation directory.           | `${BITNAMI_ROOT_DIR}/couchdb`                  |
-| `COUCHDB_VOLUME_DIR`   | CouchDB persistence directory.            | `/bitnami/couchdb`                             |
-| `COUCHDB_BIN_DIR`      | CouchDB directory for binary executables. | `${COUCHDB_BASE_DIR}/bin`                      |
-| `COUCHDB_CONF_DIR`     | CouchDB configuration directory.          | `${COUCHDB_BASE_DIR}/etc`                      |
-| `COUCHDB_CONF_FILE`    | CouchDB configuration file.               | `${COUCHDB_CONF_DIR}/default.d/10-bitnami.ini` |
-| `COUCHDB_DATA_DIR`     | CouchDB directory where data is stored.   | `${COUCHDB_VOLUME_DIR}/data`                   |
-| `COUCHDB_DAEMON_USER`  | CouchDB system user.                      | `couchdb`                                      |
-| `COUCHDB_DAEMON_GROUP` | CouchDB system group.                     | `couchdb`                                      |
-
-You can specify these environment variables in the `docker run` command:
-
-```console
-docker run --name couchdb -e COUCHDB_PORT_NUMBER=7777 bitnami/couchdb:latest
-```
-
-or by modifying the [`docker-compose.yml`](https://github.com/bitnami/containers/blob/main/bitnami/couchdb/docker-compose.yml) file present in this repository:
-
-```yaml
-services:
-  couchdb:
-  ...
-    environment:
-      - COUCHDB_PORT_NUMBER=7777
-  ...
-```
+| Name                           | Description                                                                                                                                     | Value                                                    |
+|--------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------|
+| `COUCHDB_BASE_DIR`             | CouchDB installation directory.                                                                                                                 | `${BITNAMI_ROOT_DIR}/couchdb`                            |
+| `COUCHDB_VOLUME_DIR`           | CouchDB persistence directory.                                                                                                                  | `/bitnami/couchdb`                                       |
+| `COUCHDB_BIN_DIR`              | CouchDB directory for binary executables.                                                                                                       | `${COUCHDB_BASE_DIR}/bin`                                |
+| `COUCHDB_CONF_DIR`             | CouchDB configuration directory.                                                                                                                | `${COUCHDB_BASE_DIR}/etc`                                |
+| `COUCHDB_CONF_FILE`            | CouchDB configuration file.                                                                                                                     | `${COUCHDB_CONF_DIR}/default.d/10-bitnami.ini`           |
+| `COUCHDB_DATA_DIR`             | CouchDB directory where data is stored.                                                                                                         | `${COUCHDB_VOLUME_DIR}/data`                             |
+| `COUCHDB_PERSISTENT_CONF_FILE` | Path to the persistent CouchDB configuration file (survives container restarts). Admin credentials are written here so password rotation works. | `${COUCHDB_VOLUME_DIR}/persist-conf/99-runtime-conf.ini` |
+| `COUCHDB_INITSCRIPTS_DIR`      | Path to directory containing custom init scripts executed on first boot.                                                                        | `/docker-entrypoint-initdb.d`                            |
+| `COUCHDB_TMP_DIR`              | Directory where CouchDB temporary files are stored.                                                                                             | `${COUCHDB_BASE_DIR}/var/run`                            |
+| `COUCHDB_PID_FILE`             | Path to the PID file for CouchDB.                                                                                                               | `${COUCHDB_TMP_DIR}/couchdb.pid`                         |
+| `COUCHDB_DAEMON_USER`          | CouchDB system user.                                                                                                                            | `couchdb`                                                |
+| `COUCHDB_DAEMON_GROUP`         | CouchDB system group.                                                                                                                           | `couchdb`                                                |
 
 ### Mounting your own configuration files
 
 If you want to provide more specific configuration options to CouchDB, you can always mount your own configuration files under `/opt/bitnami/couchdb/etc/`. You can either add new ones under `./local.d` or override the existing ones.
 
 To understand the precedence of the different configuration files, please check [how CouchDB reads them](https://docs.couchdb.org/en/stable/config/intro.html#configuration-files).
-
-#### Step 1: Run the CouchDB image
-
-Run the CouchDB image, mounting a directory from your host.
-
-```console
-docker run --name couchdb -v /path/to/config/dir:/opt/bitnami/couchdb/etc bitnami/couchdb:latest
-```
-
-or using Docker Compose:
-
-```yaml
-services:
-  couchdb:
-  ...
-    volumes:
-      - /path/to/config/dir:/opt/bitnami/couchdb/etc/
-  ...
-```
-
-#### Step 2: Edit the configuration
-
-Edit the configuration on your host using your favorite editor.
-
-```console
-vi /path/to/config/file/10-custom.ini
-```
-
-#### Step 3: Restart CouchDB
-
-After changing the configuration, restart your CouchDB container for changes to take effect.
-
-```console
-docker restart couchdb
-```
-
-or using Docker Compose:
-
-```console
-docker-compose restart couchdb
-```
-
-### Clustering configuration
-
-In order to configure CouchDB as a cluster of nodes, please make sure you set proper values for the following environment variables:
-
-- `COUCHDB_NODENAME`. A server alias. It should be different on each container.
-- `COUCHDB_CLUSTER_PORT_NUMBER`: Port for cluster communication. Default: **9100**
-- `COUCHDB_CREATE_DATABASES`: Whether to create the system databases or not. You should only set it to yes in one of the nodes. Default: **yes**
 
 ### FIPS configuration in Bitnami Secure Images
 
@@ -224,13 +125,7 @@ The Bitnami CouchDB Docker image from the [Bitnami Secure Images](https://go-vmw
 
 ## Logging
 
-The Bitnami CouchDB Docker image sends the container logs to `stdout`. To view the logs:
-
-```console
-docker logs couchdb
-```
-
-You can configure the containers [logging driver](https://docs.docker.com/engine/admin/logging/overview/) using the `--log-driver` option if you wish to consume the container logs differently. In the default configuration docker uses the `json-file` driver.
+The Bitnami CouchDB Docker image sends the container logs to the `stdout`. You can configure the containers [logging driver](https://docs.docker.com/engine/admin/logging/overview/) using the `--log-driver` option if you wish to consume the container logs differently. In the default configuration docker uses the `json-file` driver.
 
 ## Customize this image
 
@@ -251,105 +146,13 @@ FROM bitnami/couchdb
 ...
 ```
 
-Here is an example of extending the image with the following modifications:
+## Notable changes
 
-- Install the `vim` editor
-- Modify the port used by CouchDB
-- Change the user that runs the container
-
-```Dockerfile
-FROM bitnami/couchdb
-
-### Change user to perform privileged actions
-USER 0
-### Install 'vim'
-RUN install_packages vim
-### Revert to the original non-root user
-USER 1001
-
-### Modify the ports used by NGINX by default
-ENV COUCHDB_PORT_NUMBER=1234 # It is also possible to change this environment variable at runtime
-EXPOSE 1234 4369
-
-### Modify the default container user
-USER 1002
-```
-
-Based on the extended image, you can use a Docker Compose file like the one below to add other features:
-
-- Add a custom configuration file
-
-```yaml
-version: '2'
-services:
-  couchdb:
-    build: .
-    environment:
-      - COUCHDB_PASSWORD=couchdb
-    ports:
-      - 1234:1234
-      - 4369:4369
-    volumes:
-      - couchdb_data:/bitnami/couchdb
-      - /path/to/config/file/10-custom.ini:/opt/bitnami/couchdb/etc/local.d/10-custom.ini
-volumes:
-  couchdb_data:
-    driver: local
-```
-
-## Maintenance
-
-### Upgrade this image
-
-Bitnami provides up-to-date versions of CouchDB, including security patches, soon after they are made upstream. We recommend that you follow these steps to upgrade your container.
-
-#### Step 1: Get the updated image
-
-```console
-docker pull bitnami/couchdb:latest
-```
-
-#### Step 2: Stop the running container
-
-Stop the currently running container using the command
-
-```console
-docker stop couchdb
-```
-
-#### Step 3: Remove the currently running container
-
-```console
-docker rm -v couchdb
-```
-
-#### Step 4: Run the new image
-
-Re-create your container from the new image.
-
-```console
-docker run --name couchdb bitnami/couchdb:latest
-```
-
-## Notable Changes
+The following subsections describe notable changes.
 
 ### 3.0.0-0-debian-10-r0
 
 - The usage of 'ALLOW_ANONYMOUS_LOGIN' is now deprecated. Please, specify a password for the admin user (defaults to "admin") by setting the 'COUCHDB_PASSWORD' environment variable.
-
-## Using `docker-compose.yaml`
-
-Please be aware this file has not undergone internal testing. Consequently, we advise its use exclusively for development or testing purposes. For production-ready deployments, we highly recommend utilizing its associated [Bitnami Helm chart](https://github.com/bitnami/charts/tree/main/bitnami/couchdb).
-
-If you detect any issue in the `docker-compose.yaml` file, feel free to report it or contribute with a fix by following our [Contributing Guidelines](https://github.com/bitnami/containers/blob/main/CONTRIBUTING.md).
-
-## Contributing
-
-We'd love for you to contribute to this container. You can request new features by creating an [issue](https://github.com/bitnami/containers/issues) or submitting a [pull request](https://github.com/bitnami/containers/pulls) with your contribution.
-
-## Issues
-
-If you encountered a problem running this container, you can file an [issue](https://github.com/bitnami/containers/issues/new/choose). For us to provide better support, be sure to fill the issue template.
 
 ## License
 

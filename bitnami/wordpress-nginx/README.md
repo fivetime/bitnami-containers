@@ -1,7 +1,5 @@
 # Bitnami Secure Image for WordPress with NGINX
 
-## What is WordPress with NGINX?
-
 > WordPress with NGINX combines the most popular blogging application with the power of the NGINX web server.
 
 [Overview of WordPress with NGINX](https://wordpress.org)
@@ -13,7 +11,13 @@ Trademarks: This software listing is packaged by Bitnami. The respective tradema
 docker run --name wordpress-nginx bitnami/wordpress-nginx:latest
 ```
 
-**Warning**: This quick setup is only intended for development environments. You are encouraged to change the insecure default credentials and check out the available configuration options in the [Environment Variables](#environment-variables) section for a more secure deployment.
+## Using `docker-compose.yml`
+
+The docker-compose.yaml file of this container can be found in the [Bitnami Containers repository](https://github.com/bitnami/containers/).
+
+[https://github.com/bitnami/containers/tree/main/bitnami/wordpress-nginx/docker-compose.yml](https://github.com/bitnami/containers/tree/main/bitnami/wordpress-nginx/docker-compose.yml)
+
+Please be aware this file has not undergone internal testing. Consequently, we advise its use exclusively for development or testing purposes. For production-ready deployments, we highly recommend utilizing its associated [Bitnami Helm chart](https://github.com/bitnami/charts/tree/main/bitnami/wordpress).
 
 ## Why use Bitnami Secure Images?
 
@@ -40,85 +44,17 @@ Non-root container images add an extra layer of security and are generally recom
 
 Learn more about the Bitnami tagging policy and the difference between rolling tags and immutable tags [in our documentation page](https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-understand-rolling-tags-containers-index.html).
 
-You can see the equivalence between the different tags by taking a look at the `tags-info.yaml` file present in the branch folder, i.e `bitnami/ASSET/BRANCH/DISTRO/tags-info.yaml`.
-
-Subscribe to project updates by watching the [bitnami/containers GitHub repo](https://github.com/bitnami/containers).
-
 ## Get this image
 
-The recommended way to get the Bitnami WordPress with NGINX Docker Image is to pull the prebuilt image from the [Docker Hub Registry](https://hub.docker.com/r/bitnami/wordpress-nginx).
-
-```console
-docker pull bitnami/wordpress-nginx:latest
-```
-
-To use a specific version, you can pull a versioned tag. You can view the [list of available versions](https://hub.docker.com/r/bitnami/wordpress-nginx/tags/) in the Docker Hub Registry.
-
-```console
-docker pull bitnami/wordpress-nginx:[TAG]
-```
-
-If you wish, you can also build the image yourself by cloning the repository, changing to the directory containing the Dockerfile and executing the `docker build` command. Remember to replace the `APP`, `VERSION` and `OPERATING-SYSTEM` path placeholders in the example command below with the correct values.
-
-```console
-git clone https://github.com/bitnami/containers.git
-cd bitnami/APP/VERSION/OPERATING-SYSTEM
-docker build -t bitnami/APP:latest .
-```
+The Bitnami WordPress with NGINX Docker image is only available to [Bitnami Secure Images](https://bitnami.com) customers.
 
 ## How to use this image
 
 WordPress requires access to a MySQL or MariaDB database to store information. We'll use the [Bitnami Docker Image for MariaDB](https://github.com/bitnami/containers/tree/main/bitnami/mariadb) for the database requirements.
 
-### Using the Docker Command Line
-
-#### Step 1: Create a network
-
-```console
-docker network create wordpress-network
-```
-
-#### Step 2: Create a volume for MariaDB persistence and create a MariaDB container
-
-```console
-$ docker volume create --name mariadb_data
-docker run -d --name mariadb \
-  --env ALLOW_EMPTY_PASSWORD=yes \
-  --env MARIADB_USER=bn_wordpress \
-  --env MARIADB_PASSWORD=bitnami \
-  --env MARIADB_DATABASE=bitnami_wordpress \
-  --network wordpress-network \
-  --volume mariadb_data:/bitnami/mariadb \
-  bitnami/mariadb:latest
-```
-
-#### Step 3: Create volumes for WordPress persistence and launch the container
-
-```console
-$ docker volume create --name wordpress_data
-docker run -d --name wordpress \
-  -p 8080:8080 -p 8443:8443 \
-  --env ALLOW_EMPTY_PASSWORD=yes \
-  --env WORDPRESS_DATABASE_USER=bn_wordpress \
-  --env WORDPRESS_DATABASE_PASSWORD=bitnami \
-  --env WORDPRESS_DATABASE_NAME=bitnami_wordpress \
-  --network wordpress-network \
-  --volume wordpress_data:/bitnami/wordpress \
-  bitnami/wordpress-nginx:latest
-```
-
-Access your application at `http://your-ip/`
-
 ### Run the application using Docker Compose
 
-```console
-curl -sSL https://raw.githubusercontent.com/bitnami/containers/main/bitnami/wordpress-nginx/docker-compose.yml > docker-compose.yml
-docker-compose up
-```
-
 Please be aware this file has not undergone internal testing. Consequently, we advise its use exclusively for development or testing purposes.
-
-If you detect any issue in the `docker-compose.yaml` file, feel free to report it or contribute with a fix by following our [Contributing Guidelines](https://github.com/bitnami/containers/blob/main/CONTRIBUTING.md).
 
 ## Persisting your application
 
@@ -130,74 +66,15 @@ The above examples define the Docker volumes named `mariadb_data` and `wordpress
 
 To avoid inadvertent removal of volumes, you can [mount host directories as data volumes](https://docs.docker.com/engine/tutorials/dockervolumes/). Alternatively you can make use of volume plugins to host the volume data.
 
-### Mount host directories as data volumes with Docker Compose
-
-This requires a minor change to the [`docker-compose.yml`](https://github.com/bitnami/containers/blob/main/bitnami/wordpress-nginx/docker-compose.yml) file present in this repository:
-
-```diff
-   mariadb:
-     ...
-     volumes:
--      - mariadb_data:/bitnami/mariadb
-+      - /path/to/mariadb-persistence:/bitnami/mariadb
-   ...
-   wordpress:
-      ...
-     volumes:
--      - wordpress_data:/bitnami/wordpress
-+      - /path/to/wordpress-persistence:/bitnami/wordpress
-   ...
--volumes:
--  mariadb_data:
--    driver: local
--  wordpress_data:
--    driver: local
-```
-
-> NOTE: As this is a non-root container, the mounted files and directories must have the proper permissions for the UID `1001`.
-
-### Mount host directories as data volumes using the Docker command line
-
-#### Step 1: Create a network (if it does not exist)
-
-```console
-docker network create wordpress-network
-```
-
-#### Step 2. Create a MariaDB container with host volume
-
-```console
-docker run -d --name mariadb \
-  --env ALLOW_EMPTY_PASSWORD=yes \
-  --env MARIADB_USER=bn_wordpress \
-  --env MARIADB_PASSWORD=bitnami \
-  --env MARIADB_DATABASE=bitnami_wordpress \
-  --network wordpress-network \
-  --volume /path/to/mariadb-persistence:/bitnami/mariadb \
-  bitnami/mariadb:latest
-```
-
-> NOTE: As this is a non-root container, the mounted files and directories must have the proper permissions for the UID `1001`.
-
-#### Step 3. Create the WordPress container with host volumes
-
-```console
-docker run -d --name wordpress \
-  -p 8080:8080 -p 8443:8443 \
-  --env ALLOW_EMPTY_PASSWORD=yes \
-  --env WORDPRESS_DATABASE_USER=bn_wordpress \
-  --env WORDPRESS_DATABASE_PASSWORD=bitnami \
-  --env WORDPRESS_DATABASE_NAME=bitnami_wordpress \
-  --network wordpress-network \
-  --volume /path/to/wordpress-persistence:/bitnami/wordpress \
-  bitnami/wordpress-nginx:latest
-```
-
-> NOTE: As this is a non-root container, the mounted files and directories must have the proper permissions for the UID `1001`.
+> **NOTE** As this is a non-root container, the mounted files and directories must have the proper permissions for the UID `1001`.
 
 ## Configuration
 
+The following section describes the supported environment variables
+
 ### Environment variables
+
+The following tables list the main variables you can set.
 
 #### Customizable environment variables
 
@@ -276,99 +153,15 @@ docker run -d --name wordpress \
 | `WP_CLI_DAEMON_USER`              | WP-CLI system user.                                  | `daemon`                              |
 | `WP_CLI_DAEMON_GROUP`             | WP-CLI system group.                                 | `daemon`                              |
 
-When you start the WordPress image, you can adjust the configuration of the instance by passing one or more environment variables either on the docker-compose file or on the `docker run` command line. If you want to add a new environment variable:
-
-- For docker-compose add the variable name and value under the application section in the [`docker-compose.yml`](https://github.com/bitnami/containers/blob/main/bitnami/wordpress-nginx/docker-compose.yml) file present in this repository:
-
-    ```yaml
-    wordpress:
-      ...
-      environment:
-        - WORDPRESS_PASSWORD=my_password
-      ...
-    ```
-
-- For manual execution add a `--env` option with each variable and value:
-
-    ```console
-    $ docker run -d --name wordpress -p 80:8080 -p 443:8443 \
-      --env WORDPRESS_PASSWORD=my_password \
-      --network wordpress-tier \
-      --volume /path/to/wordpress-persistence:/bitnami \
-      bitnami/wordpress-nginx:latest
-    ```
-
 ### Examples
 
-#### SMTP configuration using a Gmail account
+#### SMTP configuration
 
-This would be an example of SMTP configuration using a Gmail account:
-
-- Modify the [`docker-compose.yml`](https://github.com/bitnami/containers/blob/main/bitnami/wordpress-nginx/docker-compose.yml) file present in this repository:
-
-    ```yaml
-      wordpress:
-        ...
-        environment:
-          - WORDPRESS_DATABASE_USER=bn_wordpress
-          - WORDPRESS_DATABASE_NAME=bitnami_wordpress
-          - ALLOW_EMPTY_PASSWORD=yes
-          - WORDPRESS_SMTP_HOST=smtp.gmail.com
-          - WORDPRESS_SMTP_PORT=587
-          - WORDPRESS_SMTP_USER=your_email@gmail.com
-          - WORDPRESS_SMTP_PASSWORD=your_password
-      ...
-    ```
-
-- For manual execution:
-
-    ```console
-    $ docker run -d --name wordpress -p 80:8080 -p 443:8443 \
-      --env WORDPRESS_DATABASE_USER=bn_wordpress \
-      --env WORDPRESS_DATABASE_NAME=bitnami_wordpress \
-      --env WORDPRESS_SMTP_HOST=smtp.gmail.com \
-      --env WORDPRESS_SMTP_PORT=587 \
-      --env WORDPRESS_SMTP_USER=your_email@gmail.com \
-      --env WORDPRESS_SMTP_PASSWORD=your_password \
-      --network wordpress-tier \
-      --volume /path/to/wordpress-persistence:/bitnami \
-      bitnami/wordpress-nginx:latest
-    ```
+The `WORDPRESS_SMTP_*` environment variables allows you configure the SMTP settings in the application. Please take a look at the environment variables information above for more information.
 
 ##### Connect WordPress container to an existing database
 
 The Bitnami WordPress container supports connecting the WordPress application to an external database. This would be an example of using an external database for WordPress.
-
-- Modify the [`docker-compose.yml`](https://github.com/bitnami/containers/blob/main/bitnami/wordpress-nginx/docker-compose.yml) file present in this repository:
-
-    ```diff
-       wordpress:
-         ...
-         environment:
-    -      - WORDPRESS_DATABASE_HOST=mariadb
-    +      - WORDPRESS_DATABASE_HOST=mariadb_host
-           - WORDPRESS_DATABASE_PORT_NUMBER=3306
-           - WORDPRESS_DATABASE_NAME=wordpress_db
-           - WORDPRESS_DATABASE_USER=wordpress_user
-    -      - ALLOW_EMPTY_PASSWORD=yes
-    +      - WORDPRESS_DATABASE_PASSWORD=wordpress_password
-         ...
-    ```
-
-- For manual execution:
-
-    ```console
-    $ docker run -d --name wordpress\
-      -p 8080:8080 -p 8443:8443 \
-      --network wordpress-network \
-      --env WORDPRESS_DATABASE_HOST=mariadb_host \
-      --env WORDPRESS_DATABASE_PORT_NUMBER=3306 \
-      --env WORDPRESS_DATABASE_NAME=wordpress_db \
-      --env WORDPRESS_DATABASE_USER=wordpress_user \
-      --env WORDPRESS_DATABASE_PASSWORD=wordpress_password \
-      --volume wordpress_data:/bitnami/wordpress \
-      bitnami/wordpress-nginx:latest
-    ```
 
 In case the database already contains data from a previous WordPress installation, you need to set the variable `WORDPRESS_SKIP_BOOTSTRAP` to `yes`. Otherwise, the container would execute the installation wizard and could modify the existing data in the database. Note that, when setting `WORDPRESS_SKIP_BOOTSTRAP` to `yes`, values for environment variables such as `WORDPRESS_USERNAME`, `WORDPRESS_PASSWORD` or `WORDPRESS_EMAIL` will be ignored. Make sure that, in this imported database, the table prefix matches the one set in `WORDPRESS_TABLE_PREFIX`.
 
@@ -384,14 +177,6 @@ The Bitnami WordPress container includes the command line interface **wp-cli** t
 
 This would be an example of using **wp-cli** to display the help menu:
 
-- Using `docker-compose` command:
-
-```console
-docker-compose exec wordpress wp help
-```
-
-- Using `docker` command:
-
 ```console
 docker exec wordpress wp help
 ```
@@ -400,110 +185,7 @@ Find more information about parameters available in the tool in the [official do
 
 ## Logging
 
-The Bitnami WordPress Docker image sends the container logs to `stdout`. To view the logs:
-
-```console
-docker logs wordpress
-```
-
-Or using Docker Compose:
-
-```console
-docker-compose logs wordpress
-```
-
-You can configure the containers [logging driver](https://docs.docker.com/engine/admin/logging/overview/) using the `--log-driver` option if you wish to consume the container logs differently. In the default configuration docker uses the `json-file` driver.
-
-## Maintenance
-
-### Backing up your container
-
-To backup your data, configuration and logs, follow these simple steps:
-
-#### Step 1: Stop the currently running container
-
-```console
-docker stop wordpress
-```
-
-Or using Docker Compose:
-
-```console
-docker-compose stop wordpress
-```
-
-#### Step 2: Run the backup command
-
-We need to mount two volumes in a container we will use to create the backup: a directory on your host to store the backup in, and the volumes from the container we just stopped so we can access the data.
-
-```console
-docker run --rm -v /path/to/wordpress-backups:/backups --volumes-from wordpress busybox \
-  cp -a /bitnami/wordpress /backups/latest
-```
-
-### Restoring a backup
-
-Restoring a backup is as simple as mounting the backup as volumes in the containers.
-
-For the MariaDB database container:
-
-```diff
- $ docker run -d --name mariadb \
-   ...
--  --volume /path/to/mariadb-persistence:/bitnami/mariadb \
-+  --volume /path/to/mariadb-backups/latest:/bitnami/mariadb \
-   bitnami/mariadb:latest
-```
-
-For the WordPress container:
-
-```diff
- $ docker run -d --name wordpress \
-   ...
--  --volume /path/to/wordpress-persistence:/bitnami/wordpress \
-+  --volume /path/to/wordpress-backups/latest:/bitnami/wordpress \
-   bitnami/wordpress:latest
-```
-
-### Upgrade this image
-
-Bitnami provides up-to-date versions of MariaDB and WordPress, including security patches, soon after they are made upstream. We recommend that you follow these steps to upgrade your container. We will cover here the upgrade of the WordPress container. For the MariaDB upgrade see <https://github.com/bitnami/containers/tree/main/bitnami/mariadb#upgrade-this-image>
-
-The `bitnami/wordpress-nginx:latest` tag always points to the most recent release. To get the most recent release you can simple repull the `latest` tag from the Docker Hub with `docker pull bitnami/wordpress-nginx:latest`. However it is recommended to use [tagged versions](https://hub.docker.com/r/bitnami/wordpress-nginx/tags/).
-
-#### Step 1: Get the updated image
-
-```console
-docker pull bitnami/wordpress-nginx:latest
-```
-
-#### Step 2: Stop the running container
-
-Stop the currently running container using the command
-
-```console
-docker-compose stop wordpress
-```
-
-#### Step 3: Take a snapshot of the application state
-
-Follow the steps in [Backing up your container](#backing-up-your-container) to take a snapshot of the current application state.
-
-#### Step 4: Remove the currently running container
-
-Remove the currently running container by executing the following command:
-
-```console
-docker-compose rm -v wordpress
-```
-
-#### Step 5: Run the new image
-
-Update the image tag in `docker-compose.yml` and re-create your container with the new image:
-
-```console
-docker-compose up -d
-```
+The Bitnami WordPress with NGINX Docker image sends the container logs to the `stdout`. You can configure the containers [logging driver](https://docs.docker.com/engine/admin/logging/overview/) using the `--log-driver` option if you wish to consume the container logs differently. In the default configuration docker uses the `json-file` driver.
 
 ## Customize this image
 
@@ -524,48 +206,6 @@ If your desired customizations cannot be covered using the methods mentioned abo
 FROM bitnami/wordpress-nginx
 ## Put your customizations below
 ...
-```
-
-Here is an example of extending the image with the following modifications:
-
-- Install the `vim` editor
-- Modify the NGINX configuration file
-- Modify the ports used by NGINX
-
-```Dockerfile
-FROM bitnami/wordpress-nginx
-
-## Change user to perform privileged actions
-USER 0
-## Install 'vim'
-RUN install_packages vim
-## Revert to the original non-root user
-USER 1001
-
-## Modify 'worker_connections' on NGINX config file to '512'
-RUN sed -i -r "s#(\s+worker_connections\s+)[0-9]+;#\1512;#" /opt/bitnami/nginx/conf/nginx.conf
-
-## Modify the ports used by NGINX by default
-# It is also possible to change these environment variables at runtime
-ENV NGINX_HTTP_PORT_NUMBER=8181
-ENV NGINX_HTTPS_PORT_NUMBER=8143
-EXPOSE 8181 8143
-```
-
-Based on the extended image, you can update the [`docker-compose.yml`](https://github.com/bitnami/containers/blob/main/bitnami/wordpress-nginx/docker-compose.yml) file present in this repository to add other features:
-
-```diff
-   wordpress:
--    image: bitnami/wordpress-nginx:latest
-+    build: .
-     ports:
--      - 80:8080
--      - 443:8443
-+      - 80:8181
-+      - 443:8143
-     environment:
-+      - PHP_MEMORY_LIMIT=512m
-     ...
 ```
 
 ## Notable Changes
@@ -598,14 +238,6 @@ Based on the extended image, you can update the [`docker-compose.yml`](https://g
 - This image has been adapted so it's easier to customize. See the [Customize this image](#customize-this-image) section for more information.
 - The PHP configuration volume (`/bitnami/php`) has been deprecated, and support for this feature will be dropped in the near future. Until then, the container will enable the PHP configuration from that volume if it exists. By default, and if the configuration volume does not exist, the configuration files will be regenerated each time the container is created. Users wanting to apply custom PHP configuration files are advised to mount a volume for the configuration at `/opt/bitnami/php/conf`, or mount specific configuration files individually.
 - Enabling custom NGINX certificates by placing them at `/opt/bitnami/nginx/certs` has been deprecated, and support for this functionality will be dropped in the near future. Users wanting to enable custom certificates are advised to mount their certificate files on top of the preconfigured ones at `/certs`.
-
-## Contributing
-
-We'd love for you to contribute to this container. You can request new features by creating an [issue](https://github.com/bitnami/containers/issues) or submitting a [pull request](https://github.com/bitnami/containers/pulls) with your contribution.
-
-## Issues
-
-If you encountered a problem running this container, you can file an [issue](https://github.com/bitnami/containers/issues/new/choose). For us to provide better support, be sure to fill the issue template.
 
 ## License
 

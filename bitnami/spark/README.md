@@ -1,7 +1,5 @@
 # Bitnami Secure Image for Apache Spark
 
-## What is Apache Spark?
-
 > Apache Spark is a high-performance engine for large-scale computing tasks, such as data processing, machine learning and real-time data streaming. It includes APIs for Java, Python, Scala and R.
 
 [Overview of Apache Spark](https://spark.apache.org/)
@@ -9,13 +7,17 @@ Trademarks: This software listing is packaged by Bitnami. The respective tradema
 
 ## TL;DR
 
-### Docker Compose
-
 ```console
 docker run --name spark bitnami/spark:latest
 ```
 
-You can find the available configuration options in the [Environment Variables](#environment-variables) section.
+## Using `docker-compose.yml`
+
+The docker-compose.yaml file of this container can be found in the [Bitnami Containers repository](https://github.com/bitnami/containers/).
+
+[https://github.com/bitnami/containers/tree/main/bitnami/spark/docker-compose.yml](https://github.com/bitnami/containers/tree/main/bitnami/spark/docker-compose.yml)
+
+Please be aware this file has not undergone internal testing. Consequently, we advise its use exclusively for development or testing purposes. For production-ready deployments, we highly recommend utilizing its associated [Bitnami Helm chart](https://github.com/bitnami/charts/tree/main/bitnami/spark).
 
 ## Why use Bitnami Secure Images?
 
@@ -34,7 +36,7 @@ Each image comes with valuable security metadata. You can view the metadata in [
 
 If you are looking for our previous generation of images based on Debian Linux, please see the [Bitnami Legacy registry](https://hub.docker.com/u/bitnamilegacy).
 
-## How to deploy Apache Spark in Kubernetes?
+## How to deploy Apache Spark in Kubernetes
 
 Deploying Bitnami applications as Helm Charts is the easiest way to get started with our applications on Kubernetes. Read more about the installation in the [Bitnami Apache Spark Chart GitHub repository](https://github.com/bitnami/charts/tree/master/bitnami/spark).
 
@@ -46,37 +48,17 @@ Non-root container images add an extra layer of security and are generally recom
 
 Learn more about the Bitnami tagging policy and the difference between rolling tags and immutable tags [in our documentation page](https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-understand-rolling-tags-containers-index.html).
 
-You can see the equivalence between the different tags by taking a look at the `tags-info.yaml` file present in the branch folder, i.e `bitnami/ASSET/BRANCH/DISTRO/tags-info.yaml`.
-
-Subscribe to project updates by watching the [bitnami/containers GitHub repo](https://github.com/bitnami/containers).
-
 ## Get this image
 
-The recommended way to get the Bitnami Apache Spark Docker Image is to pull the prebuilt image from the [Docker Hub Registry](https://hub.docker.com/r/bitnami/spark).
-
-```console
-docker pull bitnami/spark:latest
-```
-
-To use a specific version, you can pull a versioned tag. You can view the
-[list of available versions](https://hub.docker.com/r/bitnami/spark/tags/)
-in the Docker Hub Registry.
-
-```console
-docker pull bitnami/spark:[TAG]
-```
-
-If you wish, you can also build the image yourself by cloning the repository, changing to the directory containing the Dockerfile and executing the `docker build` command. Remember to replace the `APP`, `VERSION` and `OPERATING-SYSTEM` path placeholders in the example command below with the correct values.
-
-```console
-git clone https://github.com/bitnami/containers.git
-cd bitnami/APP/VERSION/OPERATING-SYSTEM
-docker build -t bitnami/APP:latest .
-```
+The Bitnami Apache Spark Docker image is only available to [Bitnami Secure Images](https://bitnami.com) customers.
 
 ## Configuration
 
+The following sections describe environment variables and related settings.
+
 ### Environment variables
+
+The following tables list the main variables you can set.
 
 #### Customizable environment variables
 
@@ -121,30 +103,9 @@ Additionally, more environment variables natively supported by Apache Spark can 
 
 For example, you could still use `SPARK_WORKER_CORES` or `SPARK_WORKER_MEMORY` to configure the number of cores and the amount of memory to be used by a worker machine.
 
-When you start the spark image, you can adjust the configuration of the instance by passing one or more environment variables either on the docker-compose file or on the `docker run` command line. If you want to add a new environment variable:
-
-- For docker-compose add the variable name and value under the application section in the [`docker-compose.yml`](https://github.com/bitnami/containers/blob/main/bitnami/spark/docker-compose.yml) file present in this repository:
-
-```yaml
-spark:
-  ...
-  environment:
-    - SPARK_MODE=master
-  ...
-```
-
-- For manual execution add a -e option with each variable and value:
-
-```console
-docker run -d --name spark \
-  --network=spark_network \
-  -e SPARK_MODE=master \
-  bitnami/spark
-```
-
 ### Security
 
-The Bitnani Apache Spark docker image supports enabling RPC authentication, RPC encryption and local storage encryption easily using the following env vars in all the nodes of the cluster.
+The Bitnami Apache Spark docker image supports enabling RPC authentication, RPC encryption and local storage encryption easily using the following environment variables in all the nodes of the cluster.
 
 ```diff
 + SPARK_RPC_AUTHENTICATION_ENABLED=yes
@@ -158,7 +119,7 @@ The Bitnani Apache Spark docker image supports enabling RPC authentication, RPC 
 
 Additionally, SSL configuration can be easily activated following the next steps:
 
-1. Enable SSL configuration by setting the following env vars:
+1. Enable SSL configuration by setting the following environment variables:
 
     ```diff
     + SPARK_SSL_ENABLED=yes
@@ -171,40 +132,11 @@ Additionally, SSL configuration can be easily activated following the next steps
 
     > Please note that `KEY_PASSWORD`, `KEYSTORE_PASSWORD`, and `TRUSTSTORE_PASSWORD` are placeholders that needs to be updated with a correct value.
 
-2. You need to mount your spark keystore and truststore files to `/opt/bitnami/spark/conf/certs`. Please note they should be called `spark-keystore.jks` and `spark-truststore.jks` and they should be in JKS format.
-
-### Setting up an Apache Spark Cluster
-
-A Apache Spark cluster can easily be setup with the default docker-compose.yml file from the root of this repo. The docker-compose includes two different services, `spark-master` and `spark-worker.`
-
-By default, when you deploy the docker-compose file you will get an Apache Spark cluster with 1 master and 1 worker.
-
-If you want N workers, all you need to do is start the docker-compose deployment with the following command:
-
-```console
-docker-compose up --scale spark-worker=3
-```
+2. You need to mount your spark `keystore` and `truststore` files to `/opt/bitnami/spark/conf/certs`. Please note they should be called `spark-keystore.jks` and `spark-truststore.jks` and they should be in JKS format.
 
 ### Mount a custom configuration file
 
 The image looks for configuration in the `conf/` directory of `/opt/bitnami/spark`.
-
-#### Using docker-compose
-
-```yaml
-...
-volumes:
-  - /path/to/spark-defaults.conf:/opt/bitnami/spark/conf/spark-defaults.conf
-...
-```
-
-#### Using the command line
-
-```console
-docker run --name spark -v /path/to/spark-defaults.conf:/opt/bitnami/spark/conf/spark-defaults.conf bitnami/spark:latest
-```
-
-After that, your changes will be taken into account in the server's behaviour.
 
 ### Installing additional jars
 
@@ -222,7 +154,7 @@ RUN curl https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.7
 
 In a similar way that in the previous section, you may want to use a different version of Hadoop jars.
 
-Go to <https://spark.apache.org/downloads.html> and copy the download url bundling the Hadoop version you want and matching the Apache Spark version of the container. Extend the Bitnami container image as below:
+Go to <https://spark.apache.org/downloads.html> and copy the download URL bundling the Hadoop version you want and matching the Apache Spark version of the container. Extend the Bitnami container image as below:
 
 ```Dockerfile
 FROM bitnami/spark:latest
@@ -247,122 +179,15 @@ $ pyspark
 The Bitnami Apache Spark Docker image from the [Bitnami Secure Images](https://go-vmware.broadcom.com/contact-us) catalog includes extra features and settings to configure the container with FIPS capabilities. You can configure the next environment variables:
 
 - `OPENSSL_FIPS`: whether OpenSSL runs in FIPS mode or not. `yes` (default), `no`.
+- `JAVA_TOOL_OPTIONS`: controls Java FIPS mode. Use `-Djava.security.properties==/opt/bitnami/java/conf/security/java.security.restricted` (restricted), `-Djava.security.properties==/opt/bitnami/java/conf/security/java.security.relaxed` (relaxed), or `-Djava.security.properties==/opt/bitnami/java/conf/security/java.security.original` (off).
 
 ## Logging
 
-The Bitnami Apache Spark Docker image sends the container logs to the `stdout`. To view the logs:
+The Bitnami Apache Spark Docker image sends the container logs to the `stdout`. You can configure the containers [logging driver](https://docs.docker.com/engine/admin/logging/overview/) using the `--log-driver` option if you wish to consume the container logs differently. In the default configuration docker uses the `json-file` driver.
 
-```console
-docker logs spark
-```
+## Notable changes
 
-or using Docker Compose:
-
-```console
-docker-compose logs spark
-```
-
-You can configure the containers [logging driver](https://docs.docker.com/engine/admin/logging/overview/) using the `--log-driver` option if you wish to consume the container logs differently. In the default configuration docker uses the `json-file` driver.
-
-## Maintenance
-
-### Backing up your container
-
-To backup your data, configuration and logs, follow these simple steps:
-
-#### Step 1: Stop the currently running container
-
-```console
-docker stop spark
-```
-
-or using Docker Compose:
-
-```console
-docker-compose stop spark
-```
-
-#### Step 2: Run the backup command
-
-We need to mount two volumes in a container we will use to create the backup: a directory on your host to store the backup in, and the volumes from the container we just stopped so we can access the data.
-
-```console
-docker run --rm -v /path/to/spark-backups:/backups --volumes-from spark busybox \
-  cp -a /bitnami/spark /backups/latest
-```
-
-or using Docker Compose:
-
-```console
-docker run --rm -v /path/to/spark-backups:/backups --volumes-from `docker-compose ps -q spark` busybox \
-  cp -a /bitnami/spark /backups/latest
-```
-
-### Restoring a backup
-
-Restoring a backup is as simple as mounting the backup as volumes in the container.
-
-```console
-docker run -v /path/to/spark-backups/latest:/bitnami/spark bitnami/spark:latest
-```
-
-or by modifying the [`docker-compose.yml`](https://github.com/bitnami/containers/blob/main/bitnami/spark/docker-compose.yml) file present in this repository:
-
-```yaml
-services:
-  spark:
-  ...
-    volumes:
-      - /path/to/spark-backups/latest:/bitnami/spark
-  ...
-```
-
-### Upgrade this image
-
-Bitnami provides up-to-date versions of spark, including security patches, soon after they are made upstream. We recommend that you follow these steps to upgrade your container.
-
-#### Step 1: Get the updated image
-
-```console
-docker pull bitnami/spark:latest
-```
-
-or if you're using Docker Compose, update the value of the image property to
-`bitnami/spark:latest`.
-
-#### Step 2: Stop and backup the currently running container
-
-Before continuing, you should backup your container's data, configuration and logs.
-
-Follow the steps on [creating a backup](#backing-up-your-container).
-
-#### Step 3: Remove the currently running container
-
-```console
-docker rm -v spark
-```
-
-or using Docker Compose:
-
-```console
-docker-compose rm -v spark
-```
-
-#### Step 4: Run the new image
-
-Re-create your container from the new image, [restoring your backup](#restoring-a-backup) if necessary.
-
-```console
-docker run --name spark bitnami/spark:latest
-```
-
-or using Docker Compose:
-
-```console
-docker-compose up spark
-```
-
-## Notable Changes
+The following subsections describe notable changes.
 
 ### 4.0.0-debian-10-r2
 
@@ -375,20 +200,6 @@ docker-compose up spark
 ### 2.4.5-debian-10-r49
 
 - This image now has an aws-cli and two jars: `hadoop-aws` and `aws-java-sdk` for provide an easier way to use AWS.
-
-## Using `docker-compose.yaml`
-
-Please be aware this file has not undergone internal testing. Consequently, we advise its use exclusively for development or testing purposes. For production-ready deployments, we highly recommend utilizing its associated [Bitnami Helm chart](https://github.com/bitnami/charts/tree/main/bitnami/spark).
-
-If you detect any issue in the `docker-compose.yaml` file, feel free to report it or contribute with a fix by following our [Contributing Guidelines](https://github.com/bitnami/containers/blob/main/CONTRIBUTING.md).
-
-## Contributing
-
-We'd love for you to contribute to this container. You can request new features by creating an [issue](https://github.com/bitnami/containers/issues) or submitting a [pull request](https://github.com/bitnami/containers/pulls) with your contribution.
-
-## Issues
-
-If you encountered a problem running this container, you can file an [issue](https://github.com/bitnami/containers/issues/new/choose). For us to provide better support, be sure to fill the issue template.
 
 ## License
 

@@ -1,7 +1,5 @@
 # Bitnami Secure Image for Parse Dashboard
 
-## What is Parse Dashboard?
-
 > Parse Dashboard is a standalone dashboard for managing your Parse apps. You can use it to manage your Parse Server apps.
 
 [Overview of Parse Dashboard](https://parseplatform.org/)
@@ -37,10 +35,6 @@ Non-root container images add an extra layer of security and are generally recom
 ## Supported tags and respective `Dockerfile` links
 
 Learn more about the Bitnami tagging policy and the difference between rolling tags and immutable tags [in our documentation page](https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-understand-rolling-tags-containers-index.html).
-
-## Prerequisites
-
-To run this application you need Docker Engine 1.10.0.
 
 ## How to use this image
 
@@ -158,7 +152,11 @@ Bitnami provides up-to-date versions of Parse Dashboard, including security patc
 
 ## Configuration
 
+The following section describes the supported environment variables
+
 ### Environment variables
+
+The following tables list the main variables you can set.
 
 #### Customizable environment variables
 
@@ -229,14 +227,6 @@ The Bitnami Parse Dashboard Docker image from the [Bitnami Secure Images](https:
 ### 1.2.0-r69
 
 - The Parse Dashboard container has been migrated to a non-root user approach. Previously the container ran as the `root` user and the Parse Dashboard daemon was started as the `parsedashboard` user. From now on, both the container and the Parse Dashboard daemon run as user `1001`. As a consequence, the data directory must be writable by that user. You can revert this behavior by changing `USER 1001` to `USER root` in the Dockerfile.
-
-## Contributing
-
-We'd love for you to contribute to this container. You can request new features by creating an [issue](https://github.com/bitnami/containers/issues) or submitting a [pull request](https://github.com/bitnami/containers/pulls) with your contribution.
-
-## Issues
-
-If you encountered a problem running this container, you can file an [issue](https://github.com/bitnami/containers/issues/new/choose). For us to provide better support, be sure to fill the issue template.
 
 ## License
 

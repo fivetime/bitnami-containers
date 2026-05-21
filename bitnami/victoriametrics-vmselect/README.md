@@ -1,7 +1,5 @@
 # Bitnami Secure Image for VictoriaMetrics
 
-## What is VictoriaMetrics?
-
 > VictoriaMetrics is a fast, cost-effective, and scalable monitoring solution and time series database, compatible with Prometheus and Graphite
 
 [Overview of VictoriaMetrics](https://victoriametrics.com/)
@@ -34,31 +32,9 @@ If you are looking for our previous generation of images based on Debian Linux, 
 
 Learn more about the Bitnami tagging policy and the difference between rolling tags and immutable tags [in our documentation page](https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-understand-rolling-tags-containers-index.html).
 
-You can see the equivalence between the different tags by taking a look at the `tags-info.yaml` file present in the branch folder, i.e `bitnami/ASSET/BRANCH/DISTRO/tags-info.yaml`.
-
-Subscribe to project updates by watching the [bitnami/containers GitHub repo](https://github.com/bitnami/containers).
-
 ## Get this image
 
-The recommended way to get the Bitnami VictoriaMetrics Docker Image is to pull the prebuilt image from the [Docker Hub Registry](https://hub.docker.com/r/bitnami/victoriametrics-vmselect).
-
-```console
-docker pull bitnami/victoriametrics-vmselect:latest
-```
-
-To use a specific version, you can pull a versioned tag. You can view the [list of available versions](https://hub.docker.com/r/bitnami/victoriametrics-vmselect/tags/) in the Docker Hub Registry.
-
-```console
-docker pull bitnami/victoriametrics-vmselect:[TAG]
-```
-
-If you wish, you can also build the image yourself by cloning the repository, changing to the directory containing the Dockerfile and executing the `docker build` command. Remember to replace the `APP`, `VERSION` and `OPERATING-SYSTEM` path placeholders in the example command below with the correct values.
-
-```console
-git clone https://github.com/bitnami/containers.git
-cd bitnami/APP/VERSION/OPERATING-SYSTEM
-docker build -t bitnami/APP:latest .
-```
+The Bitnami VictoriaMetrics Docker image is only available to [Bitnami Secure Images](https://bitnami.com) customers.
 
 ## Why use a non-root container?
 
@@ -66,9 +42,11 @@ Non-root container images add an extra layer of security and are generally recom
 
 ## Configuration
 
+The following section describes how to run commands inside the container.
+
 ### Running commands
 
-To run commands inside this container you can use `docker run`, for example to execute `vmselect --help` you can follow the example below:
+To run commands inside this container you can use `docker run`. For example, to execute `vmselect --help` you can run the following command:
 
 ```console
 docker run --rm --name victoriametrics-vmselect bitnami/victoriametrics-vmselect:latest --  --help
@@ -76,13 +54,12 @@ docker run --rm --name victoriametrics-vmselect bitnami/victoriametrics-vmselect
 
 Check the [official VictoriaMetrics documentation](https://victoriametrics.com/) for more information.
 
-## Contributing
+### FIPS configuration in Bitnami Secure Images
 
-We'd love for you to contribute to this container. You can request new features by creating an [issue](https://github.com/bitnami/containers/issues) or submitting a [pull request](https://github.com/bitnami/containers/pulls) with your contribution.
+The Bitnami VictoriaMetrics Docker image from the [Bitnami Secure Images](https://go-vmware.broadcom.com/contact-us) catalog includes extra features and settings to configure the container with FIPS capabilities. You can configure the next environment variables:
 
-## Issues
-
-If you encountered a problem running this container, you can file an [issue](https://github.com/bitnami/containers/issues/new/choose). For us to provide better support, be sure to fill the issue template.
+- `OPENSSL_FIPS`: whether OpenSSL runs in FIPS mode or not. `yes` (default), `no`.
+- `GODEBUG`: controls Go FIPS mode. Use `fips140=only` (restricted), `fips140=on` (relaxed), or `fips140=off` (disabled).
 
 ## License
 

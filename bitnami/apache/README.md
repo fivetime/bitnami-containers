@@ -1,7 +1,5 @@
 # Bitnami Secure Image for Apache
 
-## What is Apache?
-
 > Apache HTTP Server is an open-source HTTP server. The goal of this project is to provide a secure, efficient and extensible server that provides HTTP services in sync with the current HTTP standards.
 
 [Overview of Apache](https://httpd.apache.org/)
@@ -13,7 +11,13 @@ Trademarks: This software listing is packaged by Bitnami. The respective tradema
 docker run --name apache bitnami/apache:latest
 ```
 
-You can find the available configuration options in the [Environment Variables](#environment-variables) section.
+## Using `docker-compose.yml`
+
+The docker-compose.yaml file of this container can be found in the [Bitnami Containers repository](https://github.com/bitnami/containers/).
+
+[https://github.com/bitnami/containers/tree/main/bitnami/apache/docker-compose.yml](https://github.com/bitnami/containers/tree/main/bitnami/apache/docker-compose.yml)
+
+Please be aware this file has not undergone internal testing. Consequently, we advise its use exclusively for development or testing purposes. For production-ready deployments, we highly recommend utilizing its associated [Bitnami Helm chart](https://github.com/bitnami/charts/tree/main/bitnami/apache).
 
 ## Why use Bitnami Secure Images?
 
@@ -44,31 +48,9 @@ Non-root container images add an extra layer of security and are generally recom
 
 Learn more about the Bitnami tagging policy and the difference between rolling tags and immutable tags [in our documentation page](https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-understand-rolling-tags-containers-index.html).
 
-You can see the equivalence between the different tags by taking a look at the `tags-info.yaml` file present in the branch folder, i.e `bitnami/ASSET/BRANCH/DISTRO/tags-info.yaml`.
-
-Subscribe to project updates by watching the [bitnami/containers GitHub repo](https://github.com/bitnami/containers).
-
 ## Get this image
 
-The recommended way to get the Bitnami Apache Docker Image is to pull the prebuilt image from the [Docker Hub Registry](https://hub.docker.com/r/bitnami/apache).
-
-```console
-docker pull bitnami/apache:latest
-```
-
-To use a specific version, you can pull a versioned tag. You can view the [list of available versions](https://hub.docker.com/r/bitnami/apache/tags/) in the Docker Hub Registry.
-
-```console
-docker pull bitnami/apache:[TAG]
-```
-
-If you wish, you can also build the image yourself by cloning the repository, changing to the directory containing the Dockerfile and executing the `docker build` command. Remember to replace the `APP`, `VERSION` and `OPERATING-SYSTEM` path placeholders in the example command below with the correct values.
-
-```console
-git clone https://github.com/bitnami/containers.git
-cd bitnami/APP/VERSION/OPERATING-SYSTEM
-docker build -t bitnami/APP:latest .
-```
+The Bitnami Apache Docker image is only available to [Bitnami Secure Images](https://bitnami.com) customers.
 
 ## Hosting a static website
 
@@ -93,7 +75,7 @@ services:
       - /path/to/app:/app
 ```
 
-> NOTE: As this is a non-root container, the mounted files and directories must have the proper permissions for the UID `1001`.
+> **NOTE** As this is a non-root container, the mounted files and directories must have the proper permissions for the UID `1001`.
 
 ## Accessing your server from the host
 
@@ -121,7 +103,11 @@ Access your web server in the browser by navigating to `http://localhost:8080/`.
 
 ## Configuration
 
+The following section describes the supported environment variables
+
 ### Environment variables
+
+The following tables list the main variables you can set.
 
 #### Customizable environment variables
 
@@ -151,32 +137,6 @@ Access your web server in the browser by navigating to `http://localhost:8080/`.
 | `APACHE_DAEMON_GROUP`              | Apache system group.                                      | `daemon`                          |
 | `APACHE_DEFAULT_HTTP_PORT_NUMBER`  | Default Apache HTTP port number to enable at build time.  | `8080`                            |
 | `APACHE_DEFAULT_HTTPS_PORT_NUMBER` | Default Apache HTTPS port number to enable at build time. | `8443`                            |
-
-When you start the Apache image, you can adjust the configuration of the instance by passing one or more environment variables either on the docker-compose file or on the `docker run` command line. If you want to add a new environment variable:
-
-- For docker-compose add the variable name and value under the application section:
-
-```yaml
-version: '2'
-
-services:
-  apache:
-    image: bitnami/apache:latest
-    ports:
-      - 80:8081
-      - 443:8443
-    environment:
-      - APACHE_HTTP_PORT_NUMBER=8081
-```
-
-- For manual execution add a `-e` option with each variable and value:
-
-```console
-docker run -d --name apache -p 80:8081 -p 443:443 \
-  --network apache-tier \
-  --e APACHE_HTTP_PORT_NUMBER=8081 \
-  bitnami/apache:latest
-```
 
 ### Adding custom virtual hosts
 
@@ -303,19 +263,7 @@ Apache can be used to reverse proxy to other containers using Docker's linking s
 
 ## Logging
 
-The Bitnami Apache Docker image sends the container logs to the `stdout`. To view the logs:
-
-```console
-docker logs apache
-```
-
-or using Docker Compose:
-
-```console
-docker-compose logs apache
-```
-
-You can configure the containers [logging driver](https://docs.docker.com/engine/admin/logging/overview/) using the `--log-driver` option if you wish to consume the container logs differently. In the default configuration docker uses the `json-file` driver.
+The Bitnami Apache Docker image sends the container logs to the `stdout`. You can configure the containers [logging driver](https://docs.docker.com/engine/admin/logging/overview/) using the `--log-driver` option if you wish to consume the container logs differently. In the default configuration docker uses the `json-file` driver.
 
 ## Customize this image
 
@@ -401,69 +349,6 @@ volumes:
     driver: local
 ```
 
-## Maintenance
-
-### Upgrade this image
-
-Bitnami provides up-to-date versions of Apache, including security patches, soon after they are made upstream. We recommend that you follow these steps to upgrade your container.
-
-#### Step 1: Get the updated image
-
-```console
-docker pull bitnami/apache:latest
-```
-
-or if you're using Docker Compose, update the value of the image property to
-`bitnami/apache:latest`.
-
-#### Step 2: Stop and backup the currently running container
-
-Stop the currently running container using the command
-
-```console
-docker stop apache
-```
-
-or using Docker Compose:
-
-```console
-docker-compose stop apache
-```
-
-Next, take a snapshot of the persistent volume `/path/to/apache-persistence` using:
-
-```console
-rsync -a /path/to/apache-persistence /path/to/apache-persistence.bkp.$(date +%Y%m%d-%H.%M.%S)
-```
-
-You can use this snapshot to restore the database state should the upgrade fail.
-
-#### Step 3: Remove the currently running container
-
-```console
-docker rm -v apache
-```
-
-or using Docker Compose:
-
-```console
-docker-compose rm -v apache
-```
-
-#### Step 4: Run the new image
-
-Re-create your container from the new image.
-
-```console
-docker run --name apache bitnami/apache:latest
-```
-
-or using Docker Compose:
-
-```console
-docker-compose up apache
-```
-
 ## Useful Links
 
 - [Create An AMP Development Environment With Bitnami Containers](https://docs.bitnami.com/containers/how-to/create-amp-environment-containers/)
@@ -521,20 +406,6 @@ docker-compose up apache
 ### 2.4.12-4-r01
 
 - The `/app` directory is no longer exported as a volume. This caused problems when building on top of the image, since changes in the volume are not persisted between Dockerfile `RUN` instructions. To keep the previous behavior (so that you can mount the volume in another container), create the container with the `-v /app` option.
-
-## Using `docker-compose.yaml`
-
-Please be aware this file has not undergone internal testing. Consequently, we advise its use exclusively for development or testing purposes. For production-ready deployments, we highly recommend utilizing its associated [Bitnami Helm chart](https://github.com/bitnami/charts/tree/main/bitnami/apache).
-
-If you detect any issue in the `docker-compose.yaml` file, feel free to report it or contribute with a fix by following our [Contributing Guidelines](https://github.com/bitnami/containers/blob/main/CONTRIBUTING.md).
-
-## Contributing
-
-We'd love for you to contribute to this container. You can request new features by creating an [issue](https://github.com/bitnami/containers/issues) or submitting a [pull request](https://github.com/bitnami/containers/pulls) with your contribution.
-
-## Issues
-
-If you encountered a problem running this container, you can file an [issue](https://github.com/bitnami/containers/issues/new/choose). For us to provide better support, be sure to fill the issue template.
 
 ## License
 

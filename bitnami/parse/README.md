@@ -1,7 +1,5 @@
 # Bitnami Secure Image for Parse Server
 
-## What is Parse Server?
-
 > Parse is a platform that enables users to add a scalable and powerful backend to launch a full-featured app for iOS, Android, JavaScript, Windows, Unity, and more.
 
 [Overview of Parse Server](https://parseplatform.org/)
@@ -14,6 +12,14 @@ docker run --name parse bitnami/parse:latest
 ```
 
 You can find the default credentials and available configuration options in the [Environment Variables](#environment-variables) section.
+
+## Using `docker-compose.yml`
+
+The docker-compose.yaml file of this container can be found in the [Bitnami Containers repository](https://github.com/bitnami/containers/).
+
+[https://github.com/bitnami/containers/tree/main/bitnami/parse/docker-compose.yml](https://github.com/bitnami/containers/tree/main/bitnami/parse/docker-compose.yml)
+
+Please be aware this file has not undergone internal testing. Consequently, we advise its use exclusively for development or testing purposes. For production-ready deployments, we highly recommend utilizing its associated [Bitnami Helm chart](https://github.com/bitnami/charts/tree/main/bitnami/parse).
 
 ## Why use Bitnami Secure Images?
 
@@ -44,52 +50,13 @@ Non-root container images add an extra layer of security and are generally recom
 
 Learn more about the Bitnami tagging policy and the difference between rolling tags and immutable tags [in our documentation page](https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-understand-rolling-tags-containers-index.html).
 
-## Prerequisites
-
-To run this application you need Docker Engine 1.10.0. Docker Compose is recomended with a version 1.6.0 or later.
-
 ## How to use this image
 
 ### Run Parse with a Database Container
 
-Running Parse with a database server is the recommended way. You can either use docker-compose or run the containers manually.
-
-#### Run the application manually
-
-If you want to run the application manually instead of using docker-compose, these are the basic steps you need to run:
-
-1. Create a new network for the application and the database:
-
-    ```console
-    docker network create parse_network
-    ```
-
-2. Start a MongoDB&reg; database in the network generated:
-
-    ```console
-    docker run -d --name mongodb --net=parse_network bitnami/mongodb
-    ```
-
-    *Note:* You need to give the container a name in order to Parse to resolve the host
-
-3. Run the Parse container:
-
-    ```console
-    docker run -d -p 1337:1337 --name parse --net=parse_network bitnami/parse
-    ```
-
-    Then you can access your application at `http://your-ip/parse`
-
 #### Run the application using Docker Compose
 
-```console
-curl -sSL https://raw.githubusercontent.com/bitnami/containers/main/bitnami/parse/docker-compose.yml > docker-compose.yml
-docker-compose up -d
-```
-
 Please be aware this file has not undergone internal testing. Consequently, we advise its use exclusively for development or testing purposes. For production-ready deployments, we highly recommend utilizing its associated [Bitnami Helm chart](https://github.com/bitnami/charts/tree/main/bitnami/parse).
-
-If you detect any issue in the `docker-compose.yaml` file, feel free to report it or contribute with a fix by following our [Contributing Guidelines](https://github.com/bitnami/containers/blob/main/CONTRIBUTING.md).
 
 ### Persisting your application
 
@@ -101,93 +68,15 @@ The above examples define docker volumes namely `mongodb_data` and `parse_data`.
 
 To avoid inadvertent removal of these volumes you can [mount host directories as data volumes](https://docs.docker.com/engine/tutorials/dockervolumes/). Alternatively you can make use of volume plugins to host the volume data.
 
-> NOTE: As this is a non-root container, the mounted files and directories must have the proper permissions for the UID `1001`.
-
-#### Mount host directories as data volumes with Docker Compose
-
-This requires a minor change to the [`docker-compose.yml`](https://github.com/bitnami/containers/blob/main/bitnami/parse/docker-compose.yml) file present in this repository:
-
-```yaml
-  mongodb:
-  ...
-    volumes:
-      - /path/to/your/local/mongodb_data:/bitnami
-  ...
-  parse:
-  ...
-    volumes:
-      - /path/to/parse-persistence:/bitnami
-  ...
-```
-
-#### Mount host directories as data volumes using the Docker command line
-
-In this case you need to specify the directories to mount on the run command. The process is the same than the one previously shown:
-
-1. Create a network (if it does not exist):
-
-    ```console
-    docker network create parse-tier
-    ```
-
-2. Create a MongoDB&reg; container with host volume:
-
-    ```console
-    docker run -d --name mongodb \
-      --net parse-tier \
-      --volume /path/to/mongodb-persistence:/bitnami \
-      bitnami/mongodb:latest
-    ```
-
-    *Note:* You need to give the container a name in order to Parse to resolve the host
-
-3. Run the Parse container:
-
-    ```console
-    docker run -d --name parse -p 1337:1337 \
-      --net parse-tier \
-      --volume /path/to/parse-persistence:/bitnami \
-       bitnami/parse:latest
-    ```
-
-## Upgrade this application
-
-Bitnami provides up-to-date versions of Mongodb and Parse, including security patches, soon after they are made upstream. We recommend that you follow these steps to upgrade your container. We will cover here the upgrade of the Parse container. For the Mongodb upgrade see <https://github.com/bitnami/containers/tree/main/bitnami/mongodb#user-content-upgrade-this-image>
-
-1. Get the updated images:
-
-   ```console
-   docker pull bitnami/parse:latest
-   ```
-
-2. Stop your container
-
-    - For docker-compose: `$ docker-compose stop parse`
-    - For manual execution: `$ docker stop parse`
-
-3. Take a snapshot of the application state
-
-    ```console
-    rsync -a /path/to/parse-persistence /path/to/parse-persistence.bkp.$(date +%Y%m%d-%H.%M.%S)
-    ```
-
-    Additionally, [snapshot the MongoDB&reg; data](https://github.com/bitnami/containers/blob/main/bitnami/mongodb#step-2-stop-and-backup-the-currently-running-container)
-
-    You can use these snapshots to restore the application state should the upgrade fail.
-
-4. Remove the currently running container
-
-    - For docker-compose: `$ docker-compose rm parse`
-    - For manual execution: `$ docker rm parse`
-
-5. Run the new image
-
-    - For docker-compose: `$ docker-compose up parse`
-    - For manual execution (mount the directories if needed): `docker run --name parse bitnami/parse:latest`
+> **NOTE** As this is a non-root container, the mounted files and directories must have the proper permissions for the UID `1001`.
 
 ## Configuration
 
+The following section describes the supported environment variables
+
 ### Environment variables
+
+The following tables list the main variables you can set.
 
 #### Customizable environment variables
 
@@ -224,24 +113,6 @@ Bitnami provides up-to-date versions of Mongodb and Parse, including security pa
 | `PARSE_DAEMON_GROUP`          | Parse system group.                              | `parse`                         |
 | `PARSE_DEFAULT_DATABASE_HOST` | Default database server host.                    | `mongodb`                       |
 
-When you start the parse image, you can adjust the configuration of the instance by passing one or more environment variables either on the docker-compose file or on the `docker run` command line. If you want to add a new environment variable:
-
-- For docker-compose add the variable name and value under the application section in the [`docker-compose.yml`](https://github.com/bitnami/containers/blob/main/bitnami/parse/docker-compose.yml) file present in this repository:
-
-```yaml
-parse:
-  ...
-  environment:
-    - PARSE_HOST=my_host
-  ...
-```
-
-- For manual execution add a `-e` option with each variable and value:
-
-```console
- docker run -d -e PARSE_HOST=my_host -p 1337:1337 --name parse -v /your/local/path/bitnami/parse:/bitnami --network=parse_network bitnami/parse
-```
-
 ### How to deploy your Cloud functions with Parse Cloud Code?
 
 You can use Cloud Code to run a piece of code in your Parse Server instead of the user's mobile devices. To run your Cloud functions using this image, follow the steps below:
@@ -257,51 +128,7 @@ Parse.Cloud.define("sayHelloWorld", function(request, response) {
 EOF
 ```
 
-- Mount the directory as a data volume at the `/opt/bitnami/parse/cloud` path on your Parse Container and set the environment variable `PARSE_ENABLE_CLOUD_CODE` to `yes`. You can use the `docker-compose.yml` below:
-
-> NOTE: In the example below, Parse Dashboard is also deployed.
-
-```yaml
-version: '2'
-services:
-  mongodb:
-    image: bitnami/mongodb:latest
-    volumes:
-      - mongodb_data:/bitnami
-  parse:
-    image: bitnami/parse:latest
-    ports:
-      - 1337:1337
-    environment:
-      - PARSE_ENABLE_CLOUD_CODE=yes
-    volumes:
-      - parse_data:/bitnami
-      - /path/to/home/directory/cloud:/opt/bitnami/parse/cloud
-    depends_on:
-      - mongodb
-  parse-dashboard:
-    image: bitnami/parse-dashboard:latest
-    ports:
-      - 80:4040
-    volumes:
-      - parse_dashboard_data:/bitnami
-    depends_on:
-      - parse
-volumes:
-  mongodb_data:
-    driver: local
-  parse_data:
-    driver: local
-  parse_dashboard_data:
-    driver: local
-```
-
-- Use the `docker-compose` tool to deploy Parse and Parse Dashboard:
-
-```console
-docker-compose up -d
-```
-
+- Mount the directory as a data volume at the `/opt/bitnami/parse/cloud` path on your Parse Container and set the environment variable `PARSE_ENABLE_CLOUD_CODE` to `yes`.
 - Once both Parse and Parse Dashboard are running, access Parse Dashboard and browse to 'My Dashboard -> API Console'.
 - Then, send a 'test query' of type 'POST' using 'functions/sayHelloWorld' as endpoint. Ensure you activate the 'Master Key' parameter.
 - Everything should be working now and you should receive a 'Hello World' message in the results.
@@ -328,14 +155,6 @@ The Bitnami Parse Server Docker image from the [Bitnami Secure Images](https://g
 ### 3.1.2-r14
 
 - The Parse container has been migrated to a non-root user approach. Previously the container ran as the `root` user and the Parse daemon was started as the `parse` user. From now on, both the container and the Parse daemon run as user `1001`. As a consequence, the data directory must be writable by that user. You can revert this behavior by changing `USER 1001` to `USER root` in the Dockerfile.
-
-## Contributing
-
-We'd love for you to contribute to this container. You can request new features by creating an [issue](https://github.com/bitnami/containers/issues) or submitting a [pull request](https://github.com/bitnami/containers/pulls) with your contribution.
-
-## Issues
-
-If you encountered a problem running this container, you can file an [issue](https://github.com/bitnami/containers/issues/new/choose). For us to provide better support, be sure to fill the issue template.
 
 ## License
 

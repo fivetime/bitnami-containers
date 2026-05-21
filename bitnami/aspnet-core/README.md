@@ -1,7 +1,5 @@
 # Bitnami Secure Image for ASP.NET Core
 
-## What is ASP.NET Core?
-
 > ASP.NET Core is an open-source framework for web application development created by Microsoft. It runs on both the full .NET Framework, on Windows, and the cross-platform .NET Core.
 
 [Overview of ASP.NET Core](https://github.com/dotnet/aspnetcore)
@@ -12,6 +10,14 @@ Trademarks: This software listing is packaged by Bitnami. The respective tradema
 ```console
 docker run --name aspnet-core bitnami/aspnet-core:latest
 ```
+
+## Using `docker-compose.yml`
+
+The docker-compose.yaml file of this container can be found in the [Bitnami Containers repository](https://github.com/bitnami/containers/).
+
+[https://github.com/bitnami/containers/tree/main/bitnami/aspnet-core/docker-compose.yml](https://github.com/bitnami/containers/tree/main/bitnami/aspnet-core/docker-compose.yml)
+
+Please be aware this file has not undergone internal testing. Consequently, we advise its use exclusively for development or testing purposes. For production-ready deployments, we highly recommend utilizing its associated [Bitnami Helm chart](https://github.com/bitnami/charts/tree/main/bitnami/aspnet-core).
 
 ## Why use Bitnami Secure Images?
 
@@ -66,31 +72,9 @@ Recommended for:
 
 Learn more about the Bitnami tagging policy and the difference between rolling tags and immutable tags [in our documentation page](https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-understand-rolling-tags-containers-index.html).
 
-You can see the equivalence between the different tags by taking a look at the `tags-info.yaml` file present in the branch folder, i.e `bitnami/ASSET/BRANCH/DISTRO/tags-info.yaml`.
-
-Subscribe to project updates by watching the [bitnami/containers GitHub repo](https://github.com/bitnami/containers).
-
 ## Get this image
 
-The recommended way to get the Bitnami aspnet-core Docker Image is to pull the prebuilt image from the [Docker Hub Registry](https://hub.docker.com/r/bitnami/aspnet-core).
-
-```console
-docker pull bitnami/aspnet-core:latest
-```
-
-To use a specific version, you can pull a versioned tag. You can view the [list of available versions](https://hub.docker.com/r/bitnami/aspnet-core/tags/) in the Docker Hub Registry.
-
-```console
-docker pull bitnami/aspnet-core:[TAG]
-```
-
-If you wish, you can also build the image yourself by cloning the repository, changing to the directory containing the Dockerfile and executing the `docker build` command. Remember to replace the `APP`, `VERSION` and `OPERATING-SYSTEM` path placeholders in the example command below with the correct values.
-
-```console
-git clone https://github.com/bitnami/containers.git
-cd bitnami/APP/VERSION/OPERATING-SYSTEM
-docker build -t bitnami/APP:latest .
-```
+The Bitnami ASP.NET Core Docker image is only available to [Bitnami Secure Images](https://bitnami.com) customers.
 
 ## Persisting your application
 
@@ -98,49 +82,15 @@ If you remove the container all your data will be lost, and the next time you ru
 
 For persistence you should mount a directory at the `/app` path. If the mounted directory is empty, it will be initialized on the first run.
 
-```console
-docker run \
-    -v /path/to/aspnet-core-persistence:/app \
-    bitnami/aspnet-core:latest
-```
-
-You can also do this with a minor change to the [`docker-compose.yml`](https://github.com/bitnami/containers/blob/main/bitnami/aspnet-core/docker-compose.yml) file present in this repository:
-
-```yaml
-aspnet-core:
-  ...
-  volumes:
-    - /path/to/aspnet-core-persistence:/app
-  ...
-```
-
 ## Connecting to other containers
 
 Using [Docker container networking](https://docs.docker.com/engine/userguide/networking/), a different server running inside a container can easily be accessed by your application containers and vice-versa.
 
 Containers attached to the same network can communicate with each other using the container name as the hostname.
 
-### Using the Command Line
-
-#### Step 1: Create a network
-
-```console
-docker network create aspnet-core-network --driver bridge
-```
-
-#### Step 2: Launch the aspnet-core container within your network
-
-Use the `--network <NETWORK>` argument to the `docker run` command to attach the container to the `aspnet-core-network` network.
-
-```console
-docker run --name aspnet-core-node1 --network aspnet-core-network bitnami/aspnet-core:latest
-```
-
-#### Step 3: Run another containers
-
-We can launch another containers using the same flag (`--network NETWORK`) in the `docker run` command. If you also set a name to your container, you will be able to use it as hostname in your network.
-
 ## Configuration
+
+The following section describes how to configure the application
 
 ### FIPS configuration in Bitnami Secure Images
 
@@ -150,61 +100,7 @@ The Bitnami ASP.NET Core Docker image from the [Bitnami Secure Images](https://g
 
 ## Logging
 
-The Bitnami aspnet-core Docker image sends the container logs to `stdout`. To view the logs:
-
-```console
-docker logs aspnet-core
-```
-
-You can configure the containers [logging driver](https://docs.docker.com/engine/admin/logging/overview/) using the `--log-driver` option if you wish to consume the container logs differently. In the default configuration docker uses the `json-file` driver.
-
-## Maintenance
-
-### Upgrade this image
-
-Bitnami provides up-to-date versions of aspnet-core, including security patches, soon after they are made upstream. We recommend that you follow these steps to upgrade your container.
-
-#### Step 1: Get the updated image
-
-```console
-docker pull bitnami/aspnet-core:latest
-```
-
-#### Step 2: Stop the running container
-
-Stop the currently running container using the command
-
-```console
-docker stop aspnet-core
-```
-
-#### Step 3: Remove the currently running container
-
-```console
-docker rm -v aspnet-core
-```
-
-#### Step 4: Run the new image
-
-Re-create your container from the new image.
-
-```console
-docker run --name aspnet-core bitnami/aspnet-core:latest
-```
-
-## Using `docker-compose.yaml`
-
-Please be aware this file has not undergone internal testing. Consequently, we advise its use exclusively for development or testing purposes. For production-ready deployments, we highly recommend utilizing its associated [Bitnami Helm chart](https://github.com/bitnami/charts/tree/main/bitnami/aspnet-core).
-
-If you detect any issue in the `docker-compose.yaml` file, feel free to report it or contribute with a fix by following our [Contributing Guidelines](https://github.com/bitnami/containers/blob/main/CONTRIBUTING.md).
-
-## Contributing
-
-We'd love for you to contribute to this container. You can request new features by creating an [issue](https://github.com/bitnami/containers/issues) or submitting a [pull request](https://github.com/bitnami/containers/pulls) with your contribution.
-
-## Issues
-
-If you encountered a problem running this container, you can file an [issue](https://github.com/bitnami/containers/issues/new/choose). For us to provide better support, be sure to fill the issue template.
+The Bitnami ASP.NET Core Docker image sends the container logs to the `stdout`. You can configure the containers [logging driver](https://docs.docker.com/engine/admin/logging/overview/) using the `--log-driver` option if you wish to consume the container logs differently. In the default configuration docker uses the `json-file` driver.
 
 ## License
 

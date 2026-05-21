@@ -1,15 +1,11 @@
 # Bitnami Secure Image for Kibana
 
-## What is Kibana?
-
 > Kibana is an open source, browser based analytics and search dashboard for Elasticsearch. Kibana strives to be easy to get started with, while also being flexible and powerful.
 
 [Overview of Kibana](https://www.elastic.co/products/kibana)
 Trademarks: This software listing is packaged by Bitnami. The respective trademarks mentioned in the offering are owned by the respective companies, and use of them does not imply any affiliation or endorsement.
 
 ## TL;DR
-
-### Docker Compose
 
 ```console
 docker run --name kibana bitnami/kibana:latest
@@ -40,31 +36,9 @@ Non-root container images add an extra layer of security and are generally recom
 
 Learn more about the Bitnami tagging policy and the difference between rolling tags and immutable tags [in our documentation page](https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-understand-rolling-tags-containers-index.html).
 
-You can see the equivalence between the different tags by taking a look at the `tags-info.yaml` file present in the branch folder, i.e `bitnami/ASSET/BRANCH/DISTRO/tags-info.yaml`.
-
-Subscribe to project updates by watching the [bitnami/containers GitHub repo](https://github.com/bitnami/containers).
-
 ## Get this image
 
-The recommended way to get the Bitnami Kibana Docker Image is to pull the prebuilt image from the [Docker Hub Registry](https://hub.docker.com/r/bitnami/kibana).
-
-```console
-docker pull bitnami/kibana:latest
-```
-
-To use a specific version, you can pull a versioned tag. You can view the [list of available versions](https://hub.docker.com/r/bitnami/kibana/tags/) in the Docker Hub Registry.
-
-```console
-docker pull bitnami/kibana:[TAG]
-```
-
-If you wish, you can also build the image yourself by cloning the repository, changing to the directory containing the Dockerfile and executing the `docker build` command. Remember to replace the `APP`, `VERSION` and `OPERATING-SYSTEM` path placeholders in the example command below with the correct values.
-
-```console
-git clone https://github.com/bitnami/containers.git
-cd bitnami/APP/VERSION/OPERATING-SYSTEM
-docker build -t bitnami/APP:latest .
-```
+The Bitnami Kibana Docker image is only available to [Bitnami Secure Images](https://bitnami.com) customers.
 
 ## How to use this image
 
@@ -108,7 +82,7 @@ To avoid inadvertent removal of these volumes you can [mount host directories as
 docker run -v /path/to/kibana-persistence:/bitnami/kibana bitnami/kibana:latest
 ```
 
-> NOTE: As this is a non-root container, the mounted files and directories must have the proper permissions for the UID `1001`.
+> **NOTE** As this is a non-root container, the mounted files and directories must have the proper permissions for the UID `1001`.
 
 ## Connecting to other containers
 
@@ -144,12 +118,16 @@ docker run -d --name myapp \
 
 > **IMPORTANT**:
 >
-> 1. Please update the **YOUR_APPLICATION_IMAGE_** placeholder in the above snippet with your application image
+> 1. Please update the **YOUR_APPLICATION_IMAGE** placeholder in the above snippet with your application image
 > 2. In your application container, use the hostname `kibana-server` to connect to the Kibana server
 
 ## Configuration
 
+The following section describes the supported environment variables
+
 ### Environment variables
+
+The following tables list the main variables you can set.
 
 #### Customizable environment variables
 
@@ -179,7 +157,7 @@ docker run -d --name myapp \
 | `KIBANA_ELASTICSEARCH_TLS_USE_PEM`           | Configure Elasticsearch TLS settings using PEM certificates.                                       | `false`                                                          |
 | `KIBANA_ELASTICSEARCH_CA_CERT_LOCATION`      | Path to Elasticsearch CA certificate.                                                              | `${SERVER_CERTS_DIR}/elasticsearch/ca.crt`                       |
 | `KIBANA_DISABLE_STRICT_CSP`                  | Disable strict Content Security Policy (CSP) for Kibana                                            | `no`                                                             |
-| `KIBANA_CREATE_USER`                         | Enable the creation of the kibana_system user, if it doesnt exists                                 | `false`                                                          |
+| `KIBANA_CREATE_USER`                         | Enable the creation of the kibana_system user, if it does not exist                                | `false`                                                          |
 | `KIBANA_ELASTICSEARCH_PASSWORD`              | Password for the elastic superuser. Required if KIBANA_CREATE_USER is enabled                      | `nil`                                                            |
 | `KIBANA_SERVER_PUBLICBASEURL`                | Publicly available URL that end-users access Kibana at                                             | `nil`                                                            |
 | `KIBANA_XPACK_SECURITY_ENCRYPTIONKEY`        | Encryption key so that sessions are not invalidated                                                | `nil`                                                            |
@@ -263,57 +241,7 @@ The Bitnami Kibana Docker image from the [Bitnami Secure Images](https://go-vmwa
 
 ## Logging
 
-The Bitnami Kibana Docker image sends the container logs to the `stdout`. To view the logs:
-
-```console
-docker logs kibana
-```
-
-You can configure the containers [logging driver](https://docs.docker.com/engine/admin/logging/overview/) using the `--log-driver` option if you wish to consume the container logs differently. In the default configuration docker uses the `json-file` driver.
-
-## Maintenance
-
-### Upgrade this image
-
-Bitnami provides up-to-date versions of Kibana, including security patches, soon after they are made upstream. We recommend that you follow these steps to upgrade your container.
-
-#### Step 1: Get the updated image
-
-```console
-docker pull bitnami/kibana:latest
-```
-
-#### Step 2: Stop and backup the currently running container
-
-Stop the currently running container using the command
-
-```console
-docker stop kibana
-```
-
-Next, take a snapshot of the persistent volume `/path/to/kibana-persistence` using:
-
-```console
-rsync -a /path/to/kibana-persistence /path/to/kibana-persistence.bkp.$(date +%Y%m%d-%H.%M.%S)
-```
-
-Additionally, [snapshot the Elasticsearch data](https://github.com/bitnami/containers/blob/main/bitnami/elasticsearch#step-2-stop-and-backup-the-currently-running-container)
-
-You can use these snapshots to restore the application state should the upgrade fail.
-
-#### Step 3: Remove the currently running container
-
-```console
-docker rm -v kibana
-```
-
-#### Step 4: Run the new image
-
-Re-create your container from the new image, restoring your backup if necessary.
-
-```console
-docker run --name kibana bitnami/kibana:latest
-```
+The Bitnami Kibana Docker image sends the container logs to the `stdout`. You can configure the containers [logging driver](https://docs.docker.com/engine/admin/logging/overview/) using the `--log-driver` option if you wish to consume the container logs differently. In the default configuration docker uses the `json-file` driver.
 
 ## Notable Changes
 
@@ -336,14 +264,6 @@ docker run --name kibana bitnami/kibana:latest
 
 - `ELASTICSEARCH_URL` parameter has been renamed to `KIBANA_ELASTICSEARCH_URL`.
 - `ELASTICSEARCH_PORT` parameter has been renamed to `KIBANA_ELASTICSEARCH_PORT`.
-
-## Contributing
-
-We'd love for you to contribute to this container. You can request new features by creating an [issue](https://github.com/bitnami/containers/issues) or submitting a [pull request](https://github.com/bitnami/containers/pulls) with your contribution.
-
-## Issues
-
-If you encountered a problem running this container, you can file an [issue](https://github.com/bitnami/containers/issues/new/choose). For us to provide better support, be sure to fill the issue template.
 
 ## License
 

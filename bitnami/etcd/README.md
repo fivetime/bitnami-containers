@@ -1,7 +1,5 @@
 # Bitnami Secure Image for Etcd
 
-## What is Etcd?
-
 > etcd is a distributed key-value store designed to securely store data across a cluster. etcd is widely used in production on account of its reliability, fault-tolerance and ease of use.
 
 [Overview of Etcd](https://etcd.io/)
@@ -12,6 +10,14 @@ Trademarks: This software listing is packaged by Bitnami. The respective tradema
 ```console
 docker run -it --name etcd bitnami/etcd:latest
 ```
+
+## Using `docker-compose.yml`
+
+The docker-compose.yaml file of this container can be found in the [Bitnami Containers repository](https://github.com/bitnami/containers/).
+
+[https://github.com/bitnami/containers/tree/main/bitnami/etcd/docker-compose.yml](https://github.com/bitnami/containers/tree/main/bitnami/etcd/docker-compose.yml)
+
+Please be aware this file has not undergone internal testing. Consequently, we advise its use exclusively for development or testing purposes. For production-ready deployments, we highly recommend utilizing its associated [Bitnami Helm chart](https://github.com/bitnami/charts/tree/main/bitnami/etcd).
 
 ## Why use Bitnami Secure Images?
 
@@ -42,39 +48,11 @@ Non-root container images add an extra layer of security and are generally recom
 
 Learn more about the Bitnami tagging policy and the difference between rolling tags and immutable tags [in our documentation page](https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-understand-rolling-tags-containers-index.html).
 
-You can see the equivalence between the different tags by taking a look at the `tags-info.yaml` file present in the branch folder, i.e `bitnami/ASSET/BRANCH/DISTRO/tags-info.yaml`.
-
-Subscribe to project updates by watching the [bitnami/containers GitHub repo](https://github.com/bitnami/containers).
-
 > Please note ARM support in branch 3.4 is experimental/unstable according to [upstream docs](https://github.com/etcd-io/website/blob/main/content/en/docs/v3.4/op-guide/supported-platform.md), therefore branch 3.4 is only supported for AMD archs while branch 3.5 supports multiarch (AMD and ARM)
-
-## Prerequisites
-
-To run this application you need [Docker Engine](https://www.docker.com/products/docker-engine) >= `1.10.0`. [Docker Compose](https://docs.docker.com/compose/) is recommended with a version `1.6.0` or later.
 
 ## Get this image
 
-The recommended way to get the Bitnami Etcd Docker Image is to pull the prebuilt image from the [Docker Hub Registry](https://hub.docker.com/r/bitnami/etcd).
-
-```console
-docker pull bitnami/etcd:latest
-```
-
-To use a specific version, you can pull a versioned tag. You can view the
-[list of available versions](https://hub.docker.com/r/bitnami/etcd/tags/)
-in the Docker Hub Registry.
-
-```console
-docker pull bitnami/etcd:[TAG]
-```
-
-If you wish, you can also build the image yourself by cloning the repository, changing to the directory containing the Dockerfile and executing the `docker build` command. Remember to replace the `APP`, `VERSION` and `OPERATING-SYSTEM` path placeholders in the example command below with the correct values.
-
-```console
-git clone https://github.com/bitnami/containers.git
-cd bitnami/APP/VERSION/OPERATING-SYSTEM
-docker build -t bitnami/APP:latest .
-```
+The Bitnami Etcd Docker image is only available to [Bitnami Secure Images](https://bitnami.com) customers.
 
 ## Connecting to other containers
 
@@ -82,101 +60,9 @@ Using [Docker container networking](https://docs.docker.com/engine/userguide/net
 
 Containers attached to the same network can communicate with each other using the container name as the hostname.
 
-### Using the Command Line
-
-In this example, we will create a Etcd client instance that will connect to the server instance that is running on the same docker network as the client.
-
-#### Step 1: Create a network
-
-```console
-docker network create app-tier --driver bridge
-```
-
-#### Step 2: Launch the Etcd server instance
-
-Use the `--network app-tier` argument to the `docker run` command to attach the Etcd container to the `app-tier` network.
-
-```console
-docker run -d --name Etcd-server \
-    --network app-tier \
-    --publish 2379:2379 \
-    --publish 2380:2380 \
-    --env ALLOW_NONE_AUTHENTICATION=yes \
-    --env ETCD_ADVERTISE_CLIENT_URLS=http://etcd-server:2379 \
-    bitnami/etcd:latest
-```
-
-#### Step 3: Launch your Etcd client instance
-
-Finally we create a new container instance to launch the Etcd client and connect to the server created in the previous step:
-
-```console
-docker run -it --rm \
-    --network app-tier \
-    --env ALLOW_NONE_AUTHENTICATION=yes \
-    bitnami/etcd:latest etcdctl --endpoints http://etcd-server:2379 put /message Hello
-```
-
-### Using a Docker Compose file
-
-When not specified, Docker Compose automatically sets up a new network and attaches all deployed services to that network. However, we will explicitly define a new `bridge` network named `app-tier`. In this example we assume that you want to connect to the Etcd server from your own custom application image which is identified in the following snippet by the service name `myapp`.
-
-```yaml
-version: '2'
-
-networks:
-  app-tier:
-    driver: bridge
-
-services:
-  Etcd:
-    image: bitnami/etcd:latest
-    environment:
-      - ALLOW_NONE_AUTHENTICATION=yes
-      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
-    ports:
-      - 2379:2379
-      - 2380:2380
-    networks:
-      - app-tier
-  myapp:
-    image: YOUR_APPLICATION_IMAGE
-    networks:
-      - app-tier
-```
-
-> **IMPORTANT**:
->
-> 1. Please update the placeholder `YOUR_APPLICATION_IMAGE` in the above snippet with your application image
-> 2. In your application container, use the hostname `etcd` to connect to the Etcd server
-
-Launch the containers using:
-
-```console
-docker-compose up -d
-```
-
 ## Configuration
 
-The configuration can easily be setup by mounting your own configuration file on the directory `/opt/bitnami/etcd/conf`:
-
-```console
-docker run --name Etcd -v /path/to/Etcd.conf.yml:/opt/bitnami/Etcd/conf/etcd.conf.yml bitnami/etcd:latest
-```
-
-After that, your configuration will be taken into account in the server's behaviour.
-
-You can also do this by changing the [`docker-compose.yml`](https://github.com/bitnami/containers/blob/main/bitnami/etcd/docker-compose.yml) file present in this repository:
-
-```yaml
-Etcd:
-  ...
-  volumes:
-    - /path/to/Etcd.conf.yml:/opt/bitnami/etcd/conf/etcd.conf.yml
-  ...
-```
-
-You can find a sample configuration file on this [link](https://github.com/coreos/etcd/blob/master/etcd.conf.yml.sample)
+The following section describes the supported environment variables
 
 ### Environment variables
 
@@ -215,27 +101,34 @@ Apart from providing your custom configuration file, you can also modify the ser
 
 #### Read-only environment variables
 
-| Name                        | Description                                                          | Value                              |
-|-----------------------------|----------------------------------------------------------------------|------------------------------------|
-| `ETCD_BASE_DIR`             | etcd installation directory.                                         | `/opt/bitnami/etcd`                |
-| `ETCD_VOLUME_DIR`           | Persistence base directory.                                          | `/bitnami/etcd`                    |
-| `ETCD_BIN_DIR`              | etcd executables directory.                                          | `${ETCD_BASE_DIR}/bin`             |
-| `ETCD_DATA_DIR`             | etcd data directory.                                                 | `${ETCD_VOLUME_DIR}/data`          |
-| `ETCD_CONF_DIR`             | etcd configuration directory.                                        | `${ETCD_BASE_DIR}/conf`            |
-| `ETCD_DEFAULT_CONF_DIR`     | etcd default configuration directory.                                | `${ETCD_BASE_DIR}/conf.default`    |
-| `ETCD_TMP_DIR`              | Directory where ETCD temporary files are stored.                     | `${ETCD_BASE_DIR}/tmp`             |
-| `ETCD_CONF_FILE`            | ETCD configuration file.                                             | `${ETCD_CONF_DIR}/etcd.yaml`       |
-| `ETCD_NEW_MEMBERS_ENV_FILE` | File containining the etcd environment to use after adding a member. | `${ETCD_DATA_DIR}/new_member_envs` |
-| `ETCD_DAEMON_USER`          | etcd system user name.                                               | `etcd`                             |
-| `ETCD_DAEMON_GROUP`         | etcd system user group.                                              | `etcd`                             |
+| Name                        | Description                                                        | Value                              |
+|-----------------------------|--------------------------------------------------------------------|------------------------------------|
+| `ETCD_BASE_DIR`             | etcd installation directory.                                       | `/opt/bitnami/etcd`                |
+| `ETCD_VOLUME_DIR`           | Persistence base directory.                                        | `/bitnami/etcd`                    |
+| `ETCD_BIN_DIR`              | etcd executables directory.                                        | `${ETCD_BASE_DIR}/bin`             |
+| `ETCD_DATA_DIR`             | etcd data directory.                                               | `${ETCD_VOLUME_DIR}/data`          |
+| `ETCD_CONF_DIR`             | etcd configuration directory.                                      | `${ETCD_BASE_DIR}/conf`            |
+| `ETCD_DEFAULT_CONF_DIR`     | etcd default configuration directory.                              | `${ETCD_BASE_DIR}/conf.default`    |
+| `ETCD_TMP_DIR`              | Directory where ETCD temporary files are stored.                   | `${ETCD_BASE_DIR}/tmp`             |
+| `ETCD_CONF_FILE`            | ETCD configuration file.                                           | `${ETCD_CONF_DIR}/etcd.yaml`       |
+| `ETCD_NEW_MEMBERS_ENV_FILE` | File containing the etcd environment to use after adding a member. | `${ETCD_DATA_DIR}/new_member_envs` |
+| `ETCD_DAEMON_USER`          | etcd system user name.                                             | `etcd`                             |
+| `ETCD_DAEMON_GROUP`         | etcd system user group.                                            | `etcd`                             |
 
-Additionally, you can configure etcd using the upstream env variables [here](https://etcd.io/docs/v3.4/op-guide/configuration/)
+Additionally, you can configure etcd using the upstream env variables [here](https://etcd.io/docs/v3.6/op-guide/configuration/)
+
+### Configuration file
+
+The configuration can easily be setup by mounting your own configuration file on the directory `/opt/bitnami/etcd/conf`:
+
+You can find a sample configuration file on this [link](https://github.com/coreos/etcd/blob/master/etcd.conf.yml.sample)
 
 ### FIPS configuration in Bitnami Secure Images
 
 The Bitnami Etcd Docker image from the [Bitnami Secure Images](https://go-vmware.broadcom.com/contact-us) catalog includes extra features and settings to configure the container with FIPS capabilities. You can configure the next environment variables:
 
 - `OPENSSL_FIPS`: whether OpenSSL runs in FIPS mode or not. `yes` (default), `no`.
+- `GODEBUG`: controls Go FIPS mode. Use `fips140=only` (restricted), `fips140=on` (relaxed), or `fips140=off` (disabled).
 
 ## Notable Changes
 
@@ -262,20 +155,6 @@ The Bitnami Etcd Docker image from the [Bitnami Secure Images](https://go-vmware
 ## Further documentation
 
 For further documentation, please check [Etcd documentation](https://coreos.com/etcd/docs/latest/) or its [GitHub repository](https://github.com/coreos/etcd)
-
-## Using `docker-compose.yaml`
-
-Please be aware this file has not undergone internal testing. Consequently, we advise its use exclusively for development or testing purposes. For production-ready deployments, we highly recommend utilizing its associated [Bitnami Helm chart](https://github.com/bitnami/charts/tree/main/bitnami/etcd).
-
-If you detect any issue in the `docker-compose.yaml` file, feel free to report it or contribute with a fix by following our [Contributing Guidelines](https://github.com/bitnami/containers/blob/main/CONTRIBUTING.md).
-
-## Contributing
-
-We'd love for you to contribute to this container. You can request new features by creating an [issue](https://github.com/bitnami/containers/issues) or submitting a [pull request](https://github.com/bitnami/containers/pulls) with your contribution.
-
-## Issues
-
-If you encountered a problem running this container, you can file an [issue](https://github.com/bitnami/containers/issues/new/choose). For us to provide better support, be sure to fill the issue template.
 
 ## License
 

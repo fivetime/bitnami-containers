@@ -1,7 +1,5 @@
 # Bitnami Secure Image for Harbor Exporter
 
-## What is Harbor Exporter?
-
 > Harbor Exporter is one of the components of Harbor: a cloud-native registry that stores, signs, and scans content. This component expose Harbor metrics in Prometheus format.
 
 [Overview of Harbor Exporter](https://goharbor.io/)
@@ -44,10 +42,6 @@ Non-root container images add an extra layer of security and are generally recom
 
 Learn more about the Bitnami tagging policy and the difference between rolling tags and immutable tags [in our documentation page](https://techdocs.broadcom.com/us/en/vmware-tanzu/application-catalog/tanzu-application-catalog/services/tac-doc/apps-tutorials-understand-rolling-tags-containers-index.html).
 
-You can see the equivalence between the different tags by taking a look at the `tags-info.yaml` file present in the branch folder, i.e `bitnami/ASSET/BRANCH/DISTRO/tags-info.yaml`.
-
-Subscribe to project updates by watching the [bitnami/containers GitHub repo](https://github.com/bitnami/containers).
-
 ## Configuration
 
 Harbor Exporter is a component of the Harbor application. In order to get the Harbor application running on Kubernetes we encourage you to check the [bitnami/harbor Helm chart](https://github.com/bitnami/charts/tree/master/bitnami/harbor) and configure it using the options exposed in the values.yaml file.
@@ -56,25 +50,27 @@ For further information about the specific component itself, please refer to the
 
 ### Environment variables
 
+The following tables list the main variables you can set.
+
 #### Customizable environment variables
 
-| Name                           | Description                                                                                | Default Value                         |
-|--------------------------------|--------------------------------------------------------------------------------------------|---------------------------------------|
-| `HARBOR_EXPORTER_BASE_DIR`     | harbor-exporter installation directory.                                                    | `${BITNAMI_ROOT_DIR}/harbor-exporter` |
-| `HARBOR_DATABASE_HOST`         | The hostname of external database                                                          | `nil`                                 |
-| `HARBOR_DATABASE_PORT`         | The port of external database                                                              | `5432`                                |
-| `HARBOR_DATABASE_USERNAME`     | The username of external database                                                          | `nil`                                 |
-| `HARBOR_DATABASE_PASSWORD`     | The password of external database                                                          | `nil`                                 |
-| `HARBOR_DATABASE_DBNAME`       | The database used by core service                                                          | `nil`                                 |
-| `HARBOR_DATABASE_SSLMODE`      | Database certificate verfication: require, verify-full, verify-ca, disable (default value) | `disable`                             |
-| `HARBOR_SERVICE_SCHEME`        | Core service scheme (http or https)                                                        | `http`                                |
-| `HARBOR_SERVICE_HOST`          | Core service hostname                                                                      | `core`                                |
-| `HARBOR_SERVICE_PORT`          | Core service port                                                                          | `8080`                                |
-| `HARBOR_REDIS_URL`             | Redis URL for job service (scheme://[redis:password@]addr/db_index)                        | `nil`                                 |
-| `HARBOR_REDIS_NAMESPACE`       | Redis namespace for jobservice. Default `harbor_job_service_namespace                      | `harbor_job_service_namespace`        |
-| `HARBOR_REDIS_TIMEOUT`         | Redis connection timeout.                                                                  | `3600`                                |
-| `HARBOR_EXPORTER_PORT`         | Port for exporter metrics                                                                  | `9090`                                |
-| `HARBOR_EXPORTER_METRICS_PATH` | URL path for exporter metrics.                                                             | `/metrics`                            |
+| Name                           | Description                                                                                 | Default Value                         |
+|--------------------------------|---------------------------------------------------------------------------------------------|---------------------------------------|
+| `HARBOR_EXPORTER_BASE_DIR`     | harbor-exporter installation directory.                                                     | `${BITNAMI_ROOT_DIR}/harbor-exporter` |
+| `HARBOR_DATABASE_HOST`         | The hostname of external database                                                           | `nil`                                 |
+| `HARBOR_DATABASE_PORT`         | The port of external database                                                               | `5432`                                |
+| `HARBOR_DATABASE_USERNAME`     | The username of external database                                                           | `nil`                                 |
+| `HARBOR_DATABASE_PASSWORD`     | The password of external database                                                           | `nil`                                 |
+| `HARBOR_DATABASE_DBNAME`       | The database used by core service                                                           | `nil`                                 |
+| `HARBOR_DATABASE_SSLMODE`      | Database certificate verification: require, verify-full, verify-ca, disable (default value) | `disable`                             |
+| `HARBOR_SERVICE_SCHEME`        | Core service scheme (http or https)                                                         | `http`                                |
+| `HARBOR_SERVICE_HOST`          | Core service hostname                                                                       | `core`                                |
+| `HARBOR_SERVICE_PORT`          | Core service port                                                                           | `8080`                                |
+| `HARBOR_REDIS_URL`             | Redis URL for job service (scheme://[redis:password@]addr/db_index)                         | `nil`                                 |
+| `HARBOR_REDIS_NAMESPACE`       | Redis namespace for jobservice. Default `harbor_job_service_namespace                       | `harbor_job_service_namespace`        |
+| `HARBOR_REDIS_TIMEOUT`         | Redis connection timeout.                                                                   | `3600`                                |
+| `HARBOR_EXPORTER_PORT`         | Port for exporter metrics                                                                   | `9090`                                |
+| `HARBOR_EXPORTER_METRICS_PATH` | URL path for exporter metrics.                                                              | `/metrics`                            |
 
 #### Read-only environment variables
 
@@ -94,14 +90,7 @@ For further information about the specific component itself, please refer to the
 The Bitnami Harbor Exporter Docker image from the [Bitnami Secure Images](https://go-vmware.broadcom.com/contact-us) catalog includes extra features and settings to configure the container with FIPS capabilities. You can configure the next environment variables:
 
 - `OPENSSL_FIPS`: whether OpenSSL runs in FIPS mode or not. `yes` (default), `no`.
-
-## Contributing
-
-We'd love for you to contribute to this container. You can request new features by creating an [issue](https://github.com/bitnami/containers/issues) or submitting a [pull request](https://github.com/bitnami/containers/pulls) with your contribution.
-
-## Issues
-
-If you encountered a problem running this container, you can file an [issue](https://github.com/bitnami/containers/issues/new/choose). For us to provide better support, be sure to fill the issue template.
+- `GODEBUG`: controls Go FIPS mode. Use `fips140=only` (restricted), `fips140=on` (relaxed), or `fips140=off` (disabled).
 
 ## License
 
