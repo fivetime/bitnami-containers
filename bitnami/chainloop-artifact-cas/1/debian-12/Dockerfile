@@ -17,17 +17,17 @@ RUN --mount=type=secret,id=downloads_url,env=SECRET_DOWNLOADS_URL \
     DOWNLOADS_URL=${SECRET_DOWNLOADS_URL:-${DOWNLOADS_URL}} ; \
     mkdir -p /tmp/bitnami/pkg/cache/ ; cd /tmp/bitnami/pkg/cache/ || exit 1 ; \
     COMPONENTS=( \
-      "chainloop-artifact-cas-1.98.2-0-linux-${OS_ARCH}-debian-12" \
+      "chainloop-artifact-cas-1.99.0-2-linux-${OS_ARCH}-debian-12" \
     ) ; \
     for COMPONENT in "${COMPONENTS[@]}"; do \
       if [ ! -f "${COMPONENT}.tar.gz" ]; then \
         curl -SsLf "https://${DOWNLOADS_URL}/${COMPONENT}.tar.gz" -O ; \
-        curl -SsLf "https://${DOWNLOADS_URL}/${COMPONENT}.tar.gz.sha256" -O ; \
       fi ; \
-      sha256sum -c "${COMPONENT}.tar.gz.sha256" ; \
+      sha256sum -c "/opt/bitnami/checksums/${COMPONENT}.tar.gz.sha256" ; \
       tar -zxf "${COMPONENT}.tar.gz" -C /opt/bitnami --strip-components=2 --no-same-owner ; \
-      rm -rf "${COMPONENT}".tar.gz{,.sha256} ; \
-    done
+      rm -rf "${COMPONENT}".tar.gz ; \
+    done ; \
+    rm -rf /opt/bitnami/checksums ;
 RUN uninstall_packages curl
 
 ######
@@ -40,20 +40,20 @@ ARG TARGETARCH
 ENV OS_ARCH="${TARGETARCH:-amd64}"
 
 LABEL org.opencontainers.image.base.name="scratch" \
-      org.opencontainers.image.created="2026-05-20T16:44:16Z" \
+      org.opencontainers.image.created="2026-06-05T06:56:17Z" \
       org.opencontainers.image.description="Application packaged by Broadcom, Inc." \
       org.opencontainers.image.title="chainloop-artifact-cas" \
       org.opencontainers.image.vendor="Broadcom, Inc." \
-      org.opencontainers.image.version="1.98.2"
+      org.opencontainers.image.version="1.99.0"
 
 COPY rootfs /
 COPY --from=builder /opt/bitnami/chainloop/.spdx-chainloop-artifact-cas.spdx /opt/bitnami/chainloop/.spdx-chainloop-artifact-cas.spdx
 COPY --from=builder /opt/bitnami/chainloop/bin/artifact-cas /opt/bitnami/chainloop/bin/artifact-cas
 COPY --from=builder /opt/bitnami/chainloop/licenses /opt/bitnami/chainloop/licenses
 
-ENV APP_VERSION="1.98.2" \
+ENV APP_VERSION="1.99.0" \
     BITNAMI_APP_NAME="chainloop-artifact-cas" \
-    IMAGE_REVISION="0" \
+    IMAGE_REVISION="2" \
     PATH="/opt/bitnami/chainloop/bin:$PATH"
 
 USER 1001

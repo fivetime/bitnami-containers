@@ -32,16 +32,16 @@ couchdb_validate() {
         error "$1"
         error_code=1
     }
-
+    check_empty_value() {
+        if is_empty_value "${!1}"; then
+            print_validation_error "The $1 environment variable is empty or not set."
+        fi
+    }
     check_password_file() {
         if ! is_empty_value "${!1:-}" && ! [[ -f "${!1:-}" ]]; then
             print_validation_error "The variable $1 is defined but the file ${!1} is not accessible or does not exist."
         fi
     }
-
-    # CouchDB secret files validations
-    check_password_file COUCHDB_PASSWORD_FILE
-    check_password_file COUCHDB_SECRET_FILE
 
     # CouchDB authentication validations
     if is_boolean_yes "${ALLOW_ANONYMOUS_LOGIN:-}"; then
@@ -49,9 +49,13 @@ couchdb_validate() {
     elif ! is_empty_value "${ALLOW_ANONYMOUS_LOGIN:-}"; then
         warn "The usage of 'ALLOW_ANONYMOUS_LOGIN' is deprecated. It won't be taken into account."
     fi
+    check_empty_value COUCHDB_PASSWORD
+    check_password_file COUCHDB_PASSWORD_FILE
     if [[ "$COUCHDB_PASSWORD" = "couchdb" ]]; then
         warn "You set the environment variable COUCHDB_PASSWORD=couchdb. This is the default value when bootstrapping CouchDB and should not be used in production environments."
     fi
+    check_empty_value COUCHDB_SECRET
+    check_password_file COUCHDB_SECRET_FILE
 
     # CouchDB port validations
     for p in COUCHDB_PORT_NUMBER COUCHDB_CLUSTER_PORT_NUMBER; do
@@ -59,6 +63,13 @@ couchdb_validate() {
             print_validation_error "An invalid port was specified in the environment variable ${p}: ${err}"
         fi
     done
+
+    # CouchDB TLS server name indication validations
+    if is_boolean_yes "${COUCHDB_INTERNODE_TLS_ENABLED:-no}"; then
+        if [[ "${COUCHDB_TLS_SERVER_NAME_INDICATION:-}" = "disable" ]]; then
+            warn "COUCHDB_TLS_SERVER_NAME_INDICATION=disable suppresses hostname verification and makes internode TLS vulnerable to MITM. Only use this for troubleshooting, never in production."
+        fi
+    fi
 
     # CouchDB create database validations
     if ! is_yes_no_value "$COUCHDB_CREATE_DATABASES"; then
@@ -93,12 +104,12 @@ couchdb_initialize() {
 
     if is_dir_empty "$COUCHDB_DATA_DIR"; then
         info "Deploying CouchDB from scratch"
+        couchdb_start_bg
         if is_boolean_yes "$COUCHDB_CREATE_DATABASES"; then
-            couchdb_start_bg
             couchdb_create_initial_databases
         fi
         couchdb_run_init_scripts
-        is_couchdb_running && couchdb_stop
+        couchdb_stop
     else
         info "Deploying CouchDB with persisted data"
     fi
@@ -150,6 +161,12 @@ couchdb_update_vm_args_file() {
     fi
     if is_boolean_yes "${COUCHDB_INTERNODE_TLS_ENABLED:-no}"; then
         local ssl_dist_cfg="${COUCHDB_CONF_DIR}/ssl_dist.cfg"
+        local sni_option=""
+        if [[ "${COUCHDB_TLS_SERVER_NAME_INDICATION:-}" = "disable" ]]; then
+            print -v sni_option ',\n   {server_name_indication, disable}'
+        elif [[ -n "${COUCHDB_TLS_SERVER_NAME_INDICATION:-}" ]]; then
+            printf -v sni_option ',\n   {server_name_indication, "%s"}' "${COUCHDB_TLS_SERVER_NAME_INDICATION}"
+        fi
         cat > "${ssl_dist_cfg}" << EOF
 [{server,
   [{certfile, "${COUCHDB_TLS_CERT_FILE}"},
@@ -161,8 +178,7 @@ couchdb_update_vm_args_file() {
   [{certfile, "${COUCHDB_TLS_CERT_FILE}"},
    {keyfile, "${COUCHDB_TLS_KEY_FILE}"},
    {cacertfile, "${COUCHDB_TLS_CA_FILE}"},
-   {verify, verify_peer},
-   {server_name_indication, disable}]}].
+   {verify, verify_peer}${sni_option}]}].
 EOF
         couchdb_vm_args_set "-proto_dist" "couch"
         couchdb_vm_args_set "-couch_dist no_tls" "false"
@@ -307,10 +323,6 @@ couchdb_run_init_scripts() {
     fi
 
     info "Loading user's custom files from ${COUCHDB_INITSCRIPTS_DIR} ..."
-    if ! is_couchdb_running; then
-        couchdb_start_bg
-    fi
-
     for f in "${scripts[@]}"; do
         if [[ -x "$f" ]]; then
             debug "Executing $f"

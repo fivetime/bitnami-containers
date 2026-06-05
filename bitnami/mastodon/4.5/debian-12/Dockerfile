@@ -7,13 +7,13 @@ ARG DOWNLOADS_URL="downloads.bitnami.com/files/stacksmith"
 ARG TARGETARCH
 
 LABEL org.opencontainers.image.base.name="docker.io/bitnami/minideb:bookworm" \
-      org.opencontainers.image.created="2026-05-20T16:04:47Z" \
+      org.opencontainers.image.created="2026-06-03T14:21:59Z" \
       org.opencontainers.image.description="Application packaged by Broadcom, Inc." \
       org.opencontainers.image.documentation="https://github.com/bitnami/containers/tree/main/bitnami/mastodon/README.md" \
       org.opencontainers.image.source="https://github.com/bitnami/containers/tree/main/bitnami/mastodon" \
       org.opencontainers.image.title="mastodon" \
       org.opencontainers.image.vendor="Broadcom, Inc." \
-      org.opencontainers.image.version="4.5.10"
+      org.opencontainers.image.version="4.5.11"
 
 ENV HOME="/" \
     OS_ARCH="${TARGETARCH:-amd64}" \
@@ -31,20 +31,20 @@ RUN --mount=type=secret,id=downloads_url,env=SECRET_DOWNLOADS_URL \
       "node-22.22.3-0-linux-${OS_ARCH}-debian-12" \
       "python-3.14.5-2-linux-${OS_ARCH}-debian-12" \
       "postgresql-client-18.4.0-0-linux-${OS_ARCH}-debian-12" \
-      "wait-for-port-1.0.10-10-linux-${OS_ARCH}-debian-12" \
-      "redis-client-8.6.3-0-linux-${OS_ARCH}-debian-12" \
-      "ruby-3.4.9-2-linux-${OS_ARCH}-debian-12" \
-      "mastodon-4.5.10-0-linux-${OS_ARCH}-debian-12" \
+      "wait-for-port-1.0.10-11-linux-${OS_ARCH}-debian-12" \
+      "redis-client-8.8.0-0-linux-${OS_ARCH}-debian-12" \
+      "ruby-3.4.9-4-linux-${OS_ARCH}-debian-12" \
+      "mastodon-4.5.11-0-linux-${OS_ARCH}-debian-12" \
     ) ; \
     for COMPONENT in "${COMPONENTS[@]}"; do \
       if [ ! -f "${COMPONENT}.tar.gz" ]; then \
         curl -SsLf "https://${DOWNLOADS_URL}/${COMPONENT}.tar.gz" -O ; \
-        curl -SsLf "https://${DOWNLOADS_URL}/${COMPONENT}.tar.gz.sha256" -O ; \
       fi ; \
-      sha256sum -c "${COMPONENT}.tar.gz.sha256" ; \
+      sha256sum -c "/opt/bitnami/checksums/${COMPONENT}.tar.gz.sha256" ; \
       tar -zxf "${COMPONENT}.tar.gz" -C /opt/bitnami --strip-components=2 --no-same-owner ; \
-      rm -rf "${COMPONENT}".tar.gz{,.sha256} ; \
-    done
+      rm -rf "${COMPONENT}".tar.gz ; \
+    done ; \
+    rm -rf /opt/bitnami/checksums ;
 RUN apt-get update && apt-get upgrade -y && \
     apt-get clean && rm -rf /var/lib/apt/lists /var/cache/apt/archives
 RUN chmod g+rwX /opt/bitnami
@@ -52,10 +52,10 @@ RUN find / -perm /6000 -type f -exec chmod a-s {} \; || true
 
 COPY rootfs /
 RUN /opt/bitnami/scripts/mastodon/postunpack.sh
-ENV APP_VERSION="4.5.10" \
+ENV APP_VERSION="4.5.11" \
     BITNAMI_APP_NAME="mastodon" \
     IMAGE_REVISION="0" \
-    LD_LIBRARY_PATH="/opt/bitnami/common/lib:/opt/bitnami/postgresql/lib:$LD_LIBRARY_PATH" \
+    LD_LIBRARY_PATH="/opt/bitnami/common/lib:/opt/bitnami/postgresql/lib" \
     PATH="/opt/bitnami/common/bin:/opt/bitnami/node/bin:/opt/bitnami/python/bin:/opt/bitnami/postgresql/bin:/opt/bitnami/redis/bin:/opt/bitnami/ruby/bin:/opt/bitnami/mastodon/bin:$PATH"
 
 EXPOSE 3000

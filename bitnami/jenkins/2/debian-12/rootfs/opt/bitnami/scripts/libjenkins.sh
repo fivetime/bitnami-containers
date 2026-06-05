@@ -100,7 +100,6 @@ jenkins_cli_execute() {
     local -r jenkins_url="http://127.0.0.1:${http_port}"
     local -r args=("-jar" "${cli_jar}" "-s" "$jenkins_url" "-auth" "${JENKINS_USERNAME}:${JENKINS_PASSWORD}" "$@")
 
-    debug "Executing command: java ${args[*]}"
     if am_i_root; then
         debug_execute run_as_user "$JENKINS_DAEMON_USER" java "${args[@]}"
     else
@@ -179,6 +178,7 @@ jenkins_validate() {
 
     # Validate credentials
     check_empty_value "JENKINS_PASSWORD"
+    ! is_boolean_yes "$JENKINS_SKIP_JKS" && check_empty_value "JENKINS_KEYSTORE_PASSWORD"
     if [[ "${#JENKINS_PASSWORD}" -lt 6 ]]; then
         print_validation_error "The admin password must be at least 6 characters long. Set the environment variable JENKINS_PASSWORD with a longer value"
     fi
@@ -205,7 +205,7 @@ jenkins_initialize() {
     if am_i_root; then
         # Ensure Jenkins daemon user has proper permissions on Jenkins home directory
         info "Configuring file permissions for Jenkins"
-        is_mounted_dir_empty "$JENKINS_HOME" && configure_permissions_ownership "$JENKINS_HOME" -d "755" -f "644" -u "$JENKINS_DAEMON_USER" -g "$JENKINS_DAEMON_GROUP"
+        is_mounted_dir_empty "$JENKINS_HOME" && configure_permissions_ownership "$JENKINS_HOME" -d "755" -f "644" -u "$JENKINS_DAEMON_USER" -g "$JENKINS_DAEMON_GROUP" -n
     fi
 
     if is_mounted_dir_empty "$JENKINS_HOME"; then
@@ -213,7 +213,9 @@ jenkins_initialize() {
         if ! is_mounted_dir_empty "$JENKINS_MOUNTED_CONTENT_DIR"; then
             info "Moving custom mounted files to Jenkins home directory"
             echo "--- Copying files at $(date)" >>"${JENKINS_LOGS_DIR}/copy_reference_file.log"
-            find "$JENKINS_MOUNTED_CONTENT_DIR" \( -type f -o -type l \) -and -not -path "$JENKINS_MOUNTED_CONTENT_DIR/plugins/*" | xargs -I % -P10 bash -c '. /opt/bitnami/scripts/libjenkins.sh && jenkins_add_custom_file %'
+            while IFS= read -r -d '' custom_file; do
+                jenkins_add_custom_file "$custom_file"
+            done < <(find "$JENKINS_MOUNTED_CONTENT_DIR" \( -type f -o -type l \) -and -not -path "$JENKINS_MOUNTED_CONTENT_DIR/plugins/*" -print0 | sort -z)
         fi
         # Install Jenkins plugins defined in JENKINS_PLUGINS
         jenkins_install_plugins
@@ -223,15 +225,16 @@ jenkins_initialize() {
             info "Creating init script"
             ensure_dir_exists "${JENKINS_HOME}/init.groovy.d"
             jnlp_port="${JENKINS_JNLP_PORT_NUMBER:-"$JENKINS_DEFAULT_JNLP_PORT_NUMBER"}" render-template "$init_jenkins_groovy_tpl" >"${JENKINS_HOME}/init.groovy.d/init-jenkins.groovy"
+            # shellcheck disable=SC2064
+            trap "rm -f ${JENKINS_HOME}/init.groovy.d/init-jenkins.groovy" RETURN ERR INT TERM
             jenkins_start_bg
             # Configure host
             ! is_empty_value "$JENKINS_HOST" && jenkins_configure_host "$JENKINS_HOST"
             # Rotate the logs in Jenkins to clean the Jenkins warnings before actually configuring the app
             jenkins_stop
             # Generate jenkins.jks
-            "${JAVA_HOME}/bin/keytool" -genkey -keyalg RSA -keypass "${JENKINS_KEYSTORE_PASSWORD}" -storepass "${JENKINS_KEYSTORE_PASSWORD}" -keystore "${JENKINS_CERTS_DIR}/jenkins.jks" -dname "CN=${JENKINS_HOST}, O=${JENKINS_HOST}" -alias "${JENKINS_HOST}"
+            ! is_boolean_yes "$JENKINS_SKIP_JKS" && "${JAVA_HOME}/bin/keytool" -genkey -keyalg RSA -keypass "${JENKINS_KEYSTORE_PASSWORD}" -storepass "${JENKINS_KEYSTORE_PASSWORD}" -keystore "${JENKINS_CERTS_DIR}/jenkins.jks" -dname "CN=${JENKINS_HOST}, O=${JENKINS_HOST}" -alias "${JENKINS_HOST}"
             mv "$JENKINS_LOG_FILE" "${JENKINS_LOGS_DIR}/jenkins.firstboot.log"
-            rm "${JENKINS_HOME}/init.groovy.d/init-jenkins.groovy"
         else
             info "Skipping Bitnami initialization"
         fi
@@ -414,7 +417,7 @@ jenkins_install_plugins() {
         debug "Moving image plugins to $JENKINS_HOME"
         ensure_dir_exists "${JENKINS_HOME}/plugins"
         mv "${JENKINS_BASE_DIR}/plugins"/* "${JENKINS_HOME}/plugins"
-        am_i_root && configure_permissions_ownership "${JENKINS_HOME}/plugins" -d "755" -f "644" -u "$JENKINS_DAEMON_USER" -g "$JENKINS_DAEMON_GROUP"
+        am_i_root && configure_permissions_ownership "${JENKINS_HOME}/plugins" -d "755" -f "644" -u "$JENKINS_DAEMON_USER" -g "$JENKINS_DAEMON_GROUP" -n
     else
         debug "${JENKINS_BASE_DIR}/plugins is empty"
     fi
@@ -423,7 +426,9 @@ jenkins_install_plugins() {
     if ! is_mounted_dir_empty "$JENKINS_MOUNTED_CONTENT_DIR/plugins"; then
         debug "Moving custom mounted plugins to Jenkins home directory"
         echo "--- Copying files at $(date)" >>"${JENKINS_LOGS_DIR}/copy_reference_file.log"
-        find "$JENKINS_MOUNTED_CONTENT_DIR/plugins" \( -type f -o -type l \) | xargs -I % -P10 bash -c '. /opt/bitnami/scripts/libjenkins.sh && jenkins_add_custom_file %'
+        while IFS= read -r -d '' custom_file; do
+            jenkins_add_custom_file "$custom_file"
+        done < <(find "$JENKINS_MOUNTED_CONTENT_DIR/plugins" \( -type f -o -type l \) -print0 | sort -z)
     else
         debug "${JENKINS_MOUNTED_CONTENT_DIR}/plugins is empty"
     fi
@@ -476,7 +481,9 @@ jenkins_override_home_paths() {
         # Mount relative path from mounted content dir
         if ! is_mounted_dir_empty "$JENKINS_MOUNTED_CONTENT_DIR/${relpath}"; then
             debug "Copying mounted directory ${relpath} to Jenkins home directory"
-            find "$JENKINS_MOUNTED_CONTENT_DIR/${relpath}" \( -type f -o -type l \) | xargs -I % -P10 bash -c '. /opt/bitnami/scripts/libjenkins.sh && jenkins_add_custom_file %'
+            while IFS= read -r -d '' custom_file; do
+                jenkins_add_custom_file "$custom_file"
+            done < <(find "$JENKINS_MOUNTED_CONTENT_DIR/${relpath}" \( -type f -o -type l \) -print0 | sort -z)
         elif [[ -f "$JENKINS_MOUNTED_CONTENT_DIR/${relpath}" ]]; then
             debug "Copying mounted file ${relpath} to Jenkins home directory"
             jenkins_add_custom_file "$JENKINS_MOUNTED_CONTENT_DIR/${relpath}"

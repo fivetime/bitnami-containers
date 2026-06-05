@@ -126,12 +126,11 @@ wordpress_validate() {
     fi
 
     # Validate credentials
+    check_empty_value "WORDPRESS_PASSWORD"
     if is_boolean_yes "${ALLOW_EMPTY_PASSWORD:-}"; then
         warn "You set the environment variable ALLOW_EMPTY_PASSWORD=${ALLOW_EMPTY_PASSWORD:-}. For safety reasons, do not use this flag in a production environment."
     else
-        for empty_env_var in "WORDPRESS_DATABASE_PASSWORD" "WORDPRESS_PASSWORD"; do
-            is_empty_value "${!empty_env_var}" && print_validation_error "The ${empty_env_var} environment variable is empty or not set. Set the environment variable ALLOW_EMPTY_PASSWORD=yes to allow a blank password. This is only recommended for development environments."
-        done
+        is_empty_value "${WORDPRESS_DATABASE_PASSWORD}" && print_validation_error "The WORDPRESS_DATABASE_PASSWORD environment variable is empty or not set. Set the environment variable ALLOW_EMPTY_PASSWORD=yes to allow a blank password. This is only recommended for development environments."
     fi
 
     # Validate SMTP credentials
@@ -140,8 +139,8 @@ wordpress_validate() {
         for empty_env_var in "WORDPRESS_SMTP_USER" "WORDPRESS_SMTP_PASSWORD"; do
             is_empty_value "${!empty_env_var}" && warn "The ${empty_env_var} environment variable is empty or not set."
         done
-        is_empty_value "$WORDPRESS_SMTP_PORT_NUMBER" && print_validation_error "The WORDPRESS_SMTP_PORT_NUMBER environment variable is empty or not set."
-        ! is_empty_value "$WORDPRESS_SMTP_PORT_NUMBER" && check_valid_port "WORDPRESS_SMTP_PORT_NUMBER"
+        check_empty_value "WORDPRESS_SMTP_PORT_NUMBER"
+        check_valid_port "WORDPRESS_SMTP_PORT_NUMBER"
         ! is_empty_value "$WORDPRESS_SMTP_PROTOCOL" && check_multi_value "WORDPRESS_SMTP_PROTOCOL" "ssl tls"
     fi
 
@@ -236,7 +235,7 @@ wordpress_initialize() {
         info "Ensuring WordPress directories exist"
         ensure_dir_exists "$WORDPRESS_VOLUME_DIR"
         # Use daemon:root ownership for compatibility when running as a non-root user
-        am_i_root && configure_permissions_ownership "$WORDPRESS_VOLUME_DIR" -d "775" -f "664" -u "$WEB_SERVER_DAEMON_USER" -g "root"
+        am_i_root && configure_permissions_ownership "$WORDPRESS_VOLUME_DIR" -d "775" -f "664" -u "$WEB_SERVER_DAEMON_USER" -g "root" -n
         info "Trying to connect to the database server"
         wordpress_wait_for_mysql_connection "$WORDPRESS_DATABASE_HOST" "$WORDPRESS_DATABASE_PORT_NUMBER" "$WORDPRESS_DATABASE_NAME" "$WORDPRESS_DATABASE_USER" "$WORDPRESS_DATABASE_PASSWORD"
 
@@ -413,7 +412,7 @@ wordpress_initialize() {
             wp_config_path="$(readlink -f "$WORDPRESS_CONF_FILE")"
             if am_i_root; then
                 is_file_writable "$wp_config_path" && configure_permissions_ownership "$wp_config_path" -f "440" -u "$WEB_SERVER_DAEMON_USER" -g "root"
-                configure_permissions_ownership "${WORDPRESS_VOLUME_DIR}/wp-content" -d "775" -f "664" -u "$WEB_SERVER_DAEMON_USER" -g "root"
+                configure_permissions_ownership "${WORDPRESS_VOLUME_DIR}/wp-content" -d "775" -f "664" -u "$WEB_SERVER_DAEMON_USER" -g "root" -n
             else
                 is_file_writable "$wp_config_path" && configure_permissions_ownership "$wp_config_path" -f "440"
                 configure_permissions_ownership "${WORDPRESS_VOLUME_DIR}/wp-content" -d "775" -f "664"
@@ -497,7 +496,6 @@ wordpress_conf_set() {
     local -r key="${1:?key missing}"
     local -r value="${2:-}"
     local -r is_literal="${3:-no}"
-    debug "Setting ${key} to '${value}' in WordPress configuration (literal: ${is_literal})"
     # Note: Using an empty --url to avoid any failure if the current URL is not properly configured
     local -a cmd=("wp_execute" "--url=http:" "config" "set" "$key" "$value")
     if is_boolean_yes "$is_literal"; then
