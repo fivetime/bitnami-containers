@@ -294,7 +294,7 @@ ghost_initialize() {
                 "--no-setup-systemd" "--no-setup-linux-user"
                 "--no-check-mem"
                 "--url" "$base_url"
-                "--ip" "0.0.0.0"
+                "--ip" "127.0.0.1"
                 "--port" "$port"
                 "--log" "file"
                 "--process" "local" "--no-prompt" "--no-start" "--no-enable"
@@ -326,12 +326,16 @@ ghost_initialize() {
             # Configure Admin account
             ghost_pass_wizard
             mv "$GHOST_LOG_FILE" "${GHOST_BASE_DIR}/content/logs/ghost.setup.log"
+            # After passing the wizard, we can bind to 0.0.0.0
+            ghost_conf_set "server.host" "0.0.0.0"
         else
             info "An already initialized Ghost database was provided, configuration will be skipped"
         fi
 
         info "Persisting Ghost installation"
         persist_app "$app_name" "$GHOST_DATA_TO_PERSIST"
+        # After passing the wizard and persisting the app, we can restrict permissions on content directory
+        configure_permissions_ownership "${GHOST_VOLUME_DIR}/content" -d "775" -f "664"
     else
         info "Restoring persisted Ghost installation"
         restore_persisted_app "$app_name" "$GHOST_DATA_TO_PERSIST"
