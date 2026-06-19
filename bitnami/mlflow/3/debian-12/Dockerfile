@@ -3,17 +3,17 @@
 
 FROM docker.io/bitnami/minideb:bookworm
 
-ARG DOWNLOADS_URL="downloads.bitnami.com/files/stacksmith"
+ARG DOWNLOADS_URL="https://downloads.bitnami.com/files/stacksmith"
 ARG TARGETARCH
 
 LABEL org.opencontainers.image.base.name="docker.io/bitnami/minideb:bookworm" \
-      org.opencontainers.image.created="2026-06-09T14:35:11Z" \
+      org.opencontainers.image.created="2026-06-17T11:48:35Z" \
       org.opencontainers.image.description="Application packaged by Broadcom, Inc." \
       org.opencontainers.image.documentation="https://github.com/bitnami/containers/tree/main/bitnami/mlflow/README.md" \
       org.opencontainers.image.source="https://github.com/bitnami/containers/tree/main/bitnami/mlflow" \
       org.opencontainers.image.title="mlflow" \
       org.opencontainers.image.vendor="Broadcom, Inc." \
-      org.opencontainers.image.version="3.13.0"
+      org.opencontainers.image.version="3.14.0"
 
 ENV HOME="/" \
     OS_ARCH="${TARGETARCH:-amd64}" \
@@ -28,13 +28,13 @@ RUN --mount=type=secret,id=downloads_url,env=SECRET_DOWNLOADS_URL \
     DOWNLOADS_URL=${SECRET_DOWNLOADS_URL:-${DOWNLOADS_URL}} ; \
     mkdir -p /tmp/bitnami/pkg/cache/ ; cd /tmp/bitnami/pkg/cache/ || exit 1 ; \
     COMPONENTS=( \
-      "python-3.12.13-12-linux-${OS_ARCH}-debian-12" \
+      "python-3.12.13-15-linux-${OS_ARCH}-debian-12" \
       "postgresql-lib-18.4.0-0-linux-${OS_ARCH}-debian-12" \
-      "mlflow-3.13.0-0-linux-${OS_ARCH}-debian-12" \
+      "mlflow-3.14.0-0-linux-${OS_ARCH}-debian-12" \
     ) ; \
     for COMPONENT in "${COMPONENTS[@]}"; do \
       if [ ! -f "${COMPONENT}.tar.gz" ]; then \
-        curl -SsLf "https://${DOWNLOADS_URL}/${COMPONENT}.tar.gz" -O ; \
+        curl -SsLf "${DOWNLOADS_URL}/${COMPONENT}.tar.gz" -O ; \
       fi ; \
       sha256sum -c "/opt/bitnami/checksums/${COMPONENT}.tar.gz.sha256" ; \
       tar -zxf "${COMPONENT}.tar.gz" -C /opt/bitnami --strip-components=2 --no-same-owner ; \
@@ -49,7 +49,7 @@ RUN mkdir /.local && chmod g+rwX /.local
 RUN uninstall_packages curl
 
 RUN mkdir -p /app/mlruns /app/mlartifacts /bitnami/mlflow && chmod g+rwX /app /app/mlruns /app/mlartifacts /bitnami/mlflow && ln -s /opt/bitnami/python/lib/*/site-packages/mlflow/server/auth/ /bitnami/mlflow-basic-auth
-ENV APP_VERSION="3.13.0" \
+ENV APP_VERSION="3.14.0" \
     BITNAMI_APP_NAME="mlflow" \
     IMAGE_REVISION="0" \
     LD_LIBRARY_PATH="/opt/bitnami/postgresql/lib" \

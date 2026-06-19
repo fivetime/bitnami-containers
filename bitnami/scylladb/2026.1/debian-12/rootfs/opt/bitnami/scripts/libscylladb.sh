@@ -518,6 +518,10 @@ cassandra_validate() {
     check_true_false_value DB_SSL_VALIDATE
     check_true_false_value DB_AUTOMATIC_SSTABLE_UPGRADE
 
+    if is_boolean_yes "$DB_CLIENT_ENCRYPTION" && ! is_boolean_yes "$DB_SSL_VALIDATE"; then
+        warn "Client encryption is enabled but SSL validation is not enabled. This is vulnerable to a man-in-the-middle attack where an attacker can present an arbitrary certificate to the client."
+    fi
+
     if ((${#DB_PASSWORD} > 512)); then
         print_validation_error "The password cannot be longer than 512 characters. Set the environment variable DB_PASSWORD with a shorter value"
     fi
@@ -946,7 +950,7 @@ cassandra_initialize() {
             fi
 
             cassandra_execute_startup_cql
-            touch "$CASSANDRA_INIT_SEMAPHORE"
+            touch "$DB_INIT_SEMAPHORE"
         else
             info "Non-seeder node. Waiting for synchronization"
             wait_for_cql_access "$DB_USER" "$DB_PASSWORD" "127.0.0.1" "$DB_PEER_CQL_MAX_RETRIES" "$DB_PEER_CQL_SLEEP_TIME"
@@ -958,7 +962,7 @@ cassandra_initialize() {
     if is_dir_empty "$DB_DATA_DIR"; then
         info "Deploying $DB_FLAVOR from scratch"
         __credential_seeding
-    elif [[ ! -f "$CASSANDRA_INIT_SEMAPHORE" ]] && is_boolean_yes "$DB_PASSWORD_SEEDER"; then
+    elif [[ ! -f "$DB_INIT_SEMAPHORE" ]] && is_boolean_yes "$DB_PASSWORD_SEEDER"; then
         warn "The init semaphore is absent: the seed pod was interrupted between start and credential seeding. Re-running seeding against the persisted data."
         __credential_seeding
     else

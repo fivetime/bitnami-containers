@@ -3,11 +3,11 @@
 
 FROM docker.io/bitnami/minideb:bookworm
 
-ARG DOWNLOADS_URL="downloads.bitnami.com/files/stacksmith"
+ARG DOWNLOADS_URL="https://downloads.bitnami.com/files/stacksmith"
 ARG TARGETARCH
 
 LABEL org.opencontainers.image.base.name="docker.io/bitnami/minideb:bookworm" \
-      org.opencontainers.image.created="2026-06-08T16:40:21Z" \
+      org.opencontainers.image.created="2026-06-15T20:46:10Z" \
       org.opencontainers.image.description="Application packaged by Broadcom, Inc." \
       org.opencontainers.image.documentation="https://github.com/bitnami/containers/tree/main/bitnami/php-fpm/README.md" \
       org.opencontainers.image.source="https://github.com/bitnami/containers/tree/main/bitnami/php-fpm" \
@@ -27,12 +27,12 @@ RUN --mount=type=secret,id=downloads_url,env=SECRET_DOWNLOADS_URL \
     DOWNLOADS_URL=${SECRET_DOWNLOADS_URL:-${DOWNLOADS_URL}} ; \
     mkdir -p /tmp/bitnami/pkg/cache/ ; cd /tmp/bitnami/pkg/cache/ || exit 1 ; \
     COMPONENTS=( \
-      "php-8.5.7-1-linux-${OS_ARCH}-debian-12" \
+      "php-8.5.7-2-linux-${OS_ARCH}-debian-12" \
       "postgresql-lib-18.4.0-0-linux-${OS_ARCH}-debian-12" \
     ) ; \
     for COMPONENT in "${COMPONENTS[@]}"; do \
       if [ ! -f "${COMPONENT}.tar.gz" ]; then \
-        curl -SsLf "https://${DOWNLOADS_URL}/${COMPONENT}.tar.gz" -O ; \
+        curl -SsLf "${DOWNLOADS_URL}/${COMPONENT}.tar.gz" -O ; \
       fi ; \
       sha256sum -c "/opt/bitnami/checksums/${COMPONENT}.tar.gz.sha256" ; \
       tar -zxf "${COMPONENT}.tar.gz" -C /opt/bitnami --strip-components=2 --no-same-owner ; \
@@ -48,7 +48,7 @@ RUN sed -i 's/^PASS_MAX_DAYS.*/PASS_MAX_DAYS    90/' /etc/login.defs && \
 
 ENV APP_VERSION="8.5.7" \
     BITNAMI_APP_NAME="php-fpm" \
-    IMAGE_REVISION="1" \
+    IMAGE_REVISION="3" \
     LD_LIBRARY_PATH="/opt/bitnami/postgresql/lib" \
     PATH="/opt/bitnami/php/bin:/opt/bitnami/php/sbin:$PATH"
 

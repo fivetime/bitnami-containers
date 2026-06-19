@@ -3,17 +3,17 @@
 
 FROM docker.io/bitnami/minideb:bookworm
 
-ARG DOWNLOADS_URL="downloads.bitnami.com/files/stacksmith"
+ARG DOWNLOADS_URL="https://downloads.bitnami.com/files/stacksmith"
 ARG TARGETARCH
 
 LABEL org.opencontainers.image.base.name="docker.io/bitnami/minideb:bookworm" \
-      org.opencontainers.image.created="2026-06-08T18:39:05Z" \
+      org.opencontainers.image.created="2026-06-18T04:13:10Z" \
       org.opencontainers.image.description="Application packaged by Broadcom, Inc." \
       org.opencontainers.image.documentation="https://github.com/bitnami/containers/tree/main/bitnami/jax/README.md" \
       org.opencontainers.image.source="https://github.com/bitnami/containers/tree/main/bitnami/jax" \
       org.opencontainers.image.title="jax" \
       org.opencontainers.image.vendor="Broadcom, Inc." \
-      org.opencontainers.image.version="0.10.1"
+      org.opencontainers.image.version="0.10.2"
 
 ENV HOME="/" \
     OS_ARCH="${TARGETARCH:-amd64}" \
@@ -28,12 +28,12 @@ RUN --mount=type=secret,id=downloads_url,env=SECRET_DOWNLOADS_URL \
     DOWNLOADS_URL=${SECRET_DOWNLOADS_URL:-${DOWNLOADS_URL}} ; \
     mkdir -p /tmp/bitnami/pkg/cache/ ; cd /tmp/bitnami/pkg/cache/ || exit 1 ; \
     COMPONENTS=( \
-      "python-3.12.13-12-linux-${OS_ARCH}-debian-12" \
-      "jax-0.10.1-0-linux-${OS_ARCH}-debian-12" \
+      "python-3.12.13-15-linux-${OS_ARCH}-debian-12" \
+      "jax-0.10.2-0-linux-${OS_ARCH}-debian-12" \
     ) ; \
     for COMPONENT in "${COMPONENTS[@]}"; do \
       if [ ! -f "${COMPONENT}.tar.gz" ]; then \
-        curl -SsLf "https://${DOWNLOADS_URL}/${COMPONENT}.tar.gz" -O ; \
+        curl -SsLf "${DOWNLOADS_URL}/${COMPONENT}.tar.gz" -O ; \
       fi ; \
       sha256sum -c "/opt/bitnami/checksums/${COMPONENT}.tar.gz.sha256" ; \
       tar -zxf "${COMPONENT}.tar.gz" -C /opt/bitnami --strip-components=2 --no-same-owner ; \
@@ -48,7 +48,7 @@ RUN mkdir /.local && chmod g+rwX /.local
 RUN uninstall_packages curl
 
 RUN mkdir /app && chmod g+rwX /app
-ENV APP_VERSION="0.10.1" \
+ENV APP_VERSION="0.10.2" \
     BITNAMI_APP_NAME="jax" \
     IMAGE_REVISION="0" \
     PATH="/opt/bitnami/python/bin:$PATH"

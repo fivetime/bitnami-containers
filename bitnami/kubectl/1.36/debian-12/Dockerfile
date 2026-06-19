@@ -3,17 +3,17 @@
 
 FROM docker.io/bitnami/minideb:bookworm
 
-ARG DOWNLOADS_URL="downloads.bitnami.com/files/stacksmith"
+ARG DOWNLOADS_URL="https://downloads.bitnami.com/files/stacksmith"
 ARG TARGETARCH
 
 LABEL org.opencontainers.image.base.name="docker.io/bitnami/minideb:bookworm" \
-      org.opencontainers.image.created="2026-06-05T10:10:13Z" \
+      org.opencontainers.image.created="2026-06-12T13:02:11Z" \
       org.opencontainers.image.description="Application packaged by Broadcom, Inc." \
       org.opencontainers.image.documentation="https://github.com/bitnami/containers/tree/main/bitnami/kubectl/README.md" \
       org.opencontainers.image.source="https://github.com/bitnami/containers/tree/main/bitnami/kubectl" \
       org.opencontainers.image.title="kubectl" \
       org.opencontainers.image.vendor="Broadcom, Inc." \
-      org.opencontainers.image.version="1.36.1"
+      org.opencontainers.image.version="1.36.2"
 
 ENV HOME="/" \
     OS_ARCH="${TARGETARCH:-amd64}" \
@@ -28,12 +28,12 @@ RUN --mount=type=secret,id=downloads_url,env=SECRET_DOWNLOADS_URL \
     DOWNLOADS_URL=${SECRET_DOWNLOADS_URL:-${DOWNLOADS_URL}} ; \
     mkdir -p /tmp/bitnami/pkg/cache/ ; cd /tmp/bitnami/pkg/cache/ || exit 1 ; \
     COMPONENTS=( \
-      "yq-4.53.2-2-linux-${OS_ARCH}-debian-12" \
-      "kubectl-1.36.1-2-linux-${OS_ARCH}-debian-12" \
+      "yq-4.53.3-1-linux-${OS_ARCH}-debian-12" \
+      "kubectl-1.36.2-0-linux-${OS_ARCH}-debian-12" \
     ) ; \
     for COMPONENT in "${COMPONENTS[@]}"; do \
       if [ ! -f "${COMPONENT}.tar.gz" ]; then \
-        curl -SsLf "https://${DOWNLOADS_URL}/${COMPONENT}.tar.gz" -O ; \
+        curl -SsLf "${DOWNLOADS_URL}/${COMPONENT}.tar.gz" -O ; \
       fi ; \
       sha256sum -c "/opt/bitnami/checksums/${COMPONENT}.tar.gz.sha256" ; \
       tar -zxf "${COMPONENT}.tar.gz" -C /opt/bitnami --strip-components=2 --no-same-owner ; \
@@ -47,9 +47,9 @@ RUN mkdir /.kube && chmod g+rwX /.kube
 RUN find / -perm /6000 -type f -exec chmod a-s {} \; || true
 RUN uninstall_packages curl
 
-ENV APP_VERSION="1.36.1" \
+ENV APP_VERSION="1.36.2" \
     BITNAMI_APP_NAME="kubectl" \
-    IMAGE_REVISION="6" \
+    IMAGE_REVISION="0" \
     PATH="/opt/bitnami/common/bin:/opt/bitnami/kubectl/bin:$PATH"
 
 USER 1001

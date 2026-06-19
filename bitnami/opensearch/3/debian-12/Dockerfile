@@ -3,19 +3,19 @@
 
 FROM docker.io/bitnami/minideb:bookworm
 
-ARG DOWNLOADS_URL="downloads.bitnami.com/files/stacksmith"
+ARG DOWNLOADS_URL="https://downloads.bitnami.com/files/stacksmith"
 ARG JAVA_EXTRA_SECURITY_DIR="/bitnami/java/extra-security"
 ARG OPENSEARCH_PLUGINS
 ARG TARGETARCH
 
 LABEL org.opencontainers.image.base.name="docker.io/bitnami/minideb:bookworm" \
-      org.opencontainers.image.created="2026-05-27T07:15:47Z" \
+      org.opencontainers.image.created="2026-06-15T20:26:19Z" \
       org.opencontainers.image.description="Application packaged by Broadcom, Inc." \
       org.opencontainers.image.documentation="https://github.com/bitnami/containers/tree/main/bitnami/opensearch/README.md" \
       org.opencontainers.image.source="https://github.com/bitnami/containers/tree/main/bitnami/opensearch" \
       org.opencontainers.image.title="opensearch" \
       org.opencontainers.image.vendor="Broadcom, Inc." \
-      org.opencontainers.image.version="3.6.0"
+      org.opencontainers.image.version="3.7.0"
 
 ENV HOME="/" \
     OS_ARCH="${TARGETARCH:-amd64}" \
@@ -31,13 +31,13 @@ RUN --mount=type=secret,id=downloads_url,env=SECRET_DOWNLOADS_URL \
     DOWNLOADS_URL=${SECRET_DOWNLOADS_URL:-${DOWNLOADS_URL}} ; \
     mkdir -p /tmp/bitnami/pkg/cache/ ; cd /tmp/bitnami/pkg/cache/ || exit 1 ; \
     COMPONENTS=( \
-      "yq-4.53.2-1-linux-${OS_ARCH}-debian-12" \
+      "yq-4.53.3-1-linux-${OS_ARCH}-debian-12" \
       "jre-21.0.11-11-1-linux-${OS_ARCH}-debian-12" \
-      "opensearch-3.6.0-0-linux-${OS_ARCH}-debian-12" \
+      "opensearch-3.7.0-0-linux-${OS_ARCH}-debian-12" \
     ) ; \
     for COMPONENT in "${COMPONENTS[@]}"; do \
       if [ ! -f "${COMPONENT}.tar.gz" ]; then \
-        curl -SsLf "https://${DOWNLOADS_URL}/${COMPONENT}.tar.gz" -O ; \
+        curl -SsLf "${DOWNLOADS_URL}/${COMPONENT}.tar.gz" -O ; \
       fi ; \
       sha256sum -c "/opt/bitnami/checksums/${COMPONENT}.tar.gz.sha256" ; \
       tar -zxf "${COMPONENT}.tar.gz" -C /opt/bitnami --strip-components=2 --no-same-owner ; \
@@ -52,11 +52,11 @@ RUN find / -perm /6000 -type f -exec chmod a-s {} \; || true
 COPY rootfs /
 RUN /opt/bitnami/scripts/opensearch/postunpack.sh
 RUN /opt/bitnami/scripts/java/postunpack.sh
-ENV APP_VERSION="3.6.0" \
+ENV APP_VERSION="3.7.0" \
     BITNAMI_APP_NAME="opensearch" \
-    IMAGE_REVISION="6" \
+    IMAGE_REVISION="0" \
     JAVA_HOME="/opt/bitnami/java" \
-    LD_LIBRARY_PATH="/opt/bitnami/opensearch/plugins/opensearch-knn/lib:$LD_LIBRARY_PATH" \
+    LD_LIBRARY_PATH="/opt/bitnami/opensearch/plugins/opensearch-knn/lib" \
     OPENSEARCH_JAVA_HOME="/opt/bitnami/java"
 
 EXPOSE 9200 9300
