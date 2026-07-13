@@ -7,13 +7,13 @@ ARG DOWNLOADS_URL="https://downloads.bitnami.com/files/stacksmith"
 ARG TARGETARCH
 
 LABEL org.opencontainers.image.base.name="docker.io/bitnami/minideb:bookworm" \
-      org.opencontainers.image.created="2026-06-10T21:43:46Z" \
+      org.opencontainers.image.created="2026-07-12T13:58:57Z" \
       org.opencontainers.image.description="Application packaged by Broadcom, Inc." \
       org.opencontainers.image.documentation="https://github.com/bitnami/containers/tree/main/bitnami/odoo/README.md" \
       org.opencontainers.image.source="https://github.com/bitnami/containers/tree/main/bitnami/odoo" \
       org.opencontainers.image.title="odoo" \
       org.opencontainers.image.vendor="Broadcom, Inc." \
-      org.opencontainers.image.version="19.0.20260601"
+      org.opencontainers.image.version="19.0.20260701"
 
 ENV OS_ARCH="${TARGETARCH:-amd64}" \
     OS_FLAVOUR="debian-12" \
@@ -22,16 +22,16 @@ ENV OS_ARCH="${TARGETARCH:-amd64}" \
 COPY prebuildfs /
 SHELL ["/bin/bash", "-o", "errexit", "-o", "nounset", "-o", "pipefail", "-c"]
 # Install required system packages and dependencies
-RUN install_packages acl ca-certificates curl fontconfig libbsd0 libbz2-1.0 libc6 libcap2-bin libcom-err2 libcrypt1 libedit2 libffi8 libfreetype6 libgcc-s1 libgmp10 libgnutls30 libgssapi-krb5-2 libhogweed6 libicu72 libidn2-0 libjpeg62-turbo libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0 libldap-2.5-0 liblz4-1 liblzma5 libmd0 libncursesw6 libnettle8 libnsl2 libp11-kit0 libpng16-16 libreadline8 libsasl2-2 libsqlite3-0 libssl3 libstdc++6 libtasn1-6 libtinfo6 libtirpc3 libunistring2 libuuid1 libx11-6 libxcb1 libxext6 libxml2 libxrender1 libxslt1.1 procps xfonts-75dpi xfonts-base zlib1g
+RUN install_packages acl ca-certificates curl fontconfig libbsd0 libbz2-1.0 libc6 libcap2-bin libedit2 libffi8 libfreetype6 libgcc-s1 libgmp10 libgnutls30 libhogweed6 libicu72 libidn2-0 libjpeg62-turbo libldap-2.5-0 liblz4-1 liblzma5 libmd0 libncursesw6 libnettle8 libp11-kit0 libpng16-16 libreadline8 libsasl2-2 libsqlite3-0 libssl3 libstdc++6 libtasn1-6 libtinfo6 libunistring2 libuuid1 libx11-6 libxcb1 libxext6 libxml2 libxrender1 libxslt1.1 procps xfonts-75dpi xfonts-base zlib1g
 RUN --mount=type=secret,id=downloads_url,env=SECRET_DOWNLOADS_URL \
     DOWNLOADS_URL=${SECRET_DOWNLOADS_URL:-${DOWNLOADS_URL}} ; \
     mkdir -p /tmp/bitnami/pkg/cache/ ; cd /tmp/bitnami/pkg/cache/ || exit 1 ; \
     COMPONENTS=( \
-      "python-3.12.13-13-linux-${OS_ARCH}-debian-12" \
-      "render-template-1.0.9-167-linux-${OS_ARCH}-debian-12" \
+      "python-3.13.14-3-linux-${OS_ARCH}-debian-12" \
+      "render-template-1.0.9-168-linux-${OS_ARCH}-debian-12" \
       "postgresql-client-18.4.0-0-linux-${OS_ARCH}-debian-12" \
-      "node-22.22.3-0-linux-${OS_ARCH}-debian-12" \
-      "odoo-19.0.20260601-1-linux-${OS_ARCH}-debian-12" \
+      "node-22.23.1-2-linux-${OS_ARCH}-debian-12" \
+      "odoo-19.0.20260701-1-linux-${OS_ARCH}-debian-12" \
     ) ; \
     for COMPONENT in "${COMPONENTS[@]}"; do \
       if [ ! -f "${COMPONENT}.tar.gz" ]; then \
@@ -56,7 +56,7 @@ RUN curl -sLO "https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6
 
 COPY rootfs /
 RUN /opt/bitnami/scripts/odoo/postunpack.sh
-ENV APP_VERSION="19.0.20260601" \
+ENV APP_VERSION="19.0.20260701" \
     BITNAMI_APP_NAME="odoo" \
     IMAGE_REVISION="2" \
     LD_LIBRARY_PATH="/opt/bitnami/postgresql/lib" \
