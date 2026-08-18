@@ -3,7 +3,7 @@
 
 services:
   redis:
-    image: docker.io/bitnami/redis:8.8
+    image: docker.io/bitnami/redis:8.10
     environment:
       # ALLOW_EMPTY_PASSWORD is recommended only for development.
       - ALLOW_EMPTY_PASSWORD=yes

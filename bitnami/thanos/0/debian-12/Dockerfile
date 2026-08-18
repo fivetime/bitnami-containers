@@ -17,7 +17,7 @@ RUN --mount=type=secret,id=downloads_url,env=SECRET_DOWNLOADS_URL \
     DOWNLOADS_URL=${SECRET_DOWNLOADS_URL:-${DOWNLOADS_URL}} ; \
     mkdir -p /tmp/bitnami/pkg/cache/ ; cd /tmp/bitnami/pkg/cache/ || exit 1 ; \
     COMPONENTS=( \
-      "thanos-0.42.2-0-linux-${OS_ARCH}-debian-12" \
+      "thanos-0.42.4-2-linux-${OS_ARCH}-debian-12" \
     ) ; \
     for COMPONENT in "${COMPONENTS[@]}"; do \
       if [ ! -f "${COMPONENT}.tar.gz" ]; then \
@@ -40,20 +40,20 @@ ARG TARGETARCH
 ENV OS_ARCH="${TARGETARCH:-amd64}"
 
 LABEL org.opencontainers.image.base.name="scratch" \
-      org.opencontainers.image.created="2026-07-17T08:20:20Z" \
+      org.opencontainers.image.created="2026-08-14T15:25:00Z" \
       org.opencontainers.image.description="Application packaged by Broadcom, Inc." \
       org.opencontainers.image.title="thanos" \
       org.opencontainers.image.vendor="Broadcom, Inc." \
-      org.opencontainers.image.version="0.42.2"
+      org.opencontainers.image.version="0.42.4"
 
 COPY rootfs /
 COPY --from=builder /opt/bitnami/thanos/.spdx-thanos.spdx /opt/bitnami/thanos/.spdx-thanos.spdx
 COPY --from=builder /opt/bitnami/thanos/bin/thanos /opt/bitnami/thanos/bin/thanos
 COPY --from=builder /opt/bitnami/thanos/licenses /opt/bitnami/thanos/licenses
 
-ENV APP_VERSION="0.42.2" \
+ENV APP_VERSION="0.42.4" \
     BITNAMI_APP_NAME="thanos" \
-    IMAGE_REVISION="0" \
+    IMAGE_REVISION="2" \
     PATH="/opt/bitnami/thanos/bin:$PATH"
 
 USER 1001

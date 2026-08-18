@@ -3,7 +3,7 @@
 
 services:
   apache:
-    image: docker.io/bitnami/activemq:6.2
+    image: docker.io/bitnami/activemq:6.3
     ports:
       - 8161:8161
       - 1883:1883

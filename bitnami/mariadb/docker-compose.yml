@@ -3,7 +3,7 @@
 
 services:
   mariadb:
-    image: docker.io/bitnami/mariadb:12.3
+    image: docker.io/bitnami/mariadb:13.0
     ports:
       - '3306:3306'
     volumes:
