@@ -26,7 +26,7 @@ services:
       - ELASTICSEARCH_ENABLE_REST_TLS=false
       - ELASTICSEARCH_PASSWORD=bitnami123
   mastodon:
-    image: docker.io/bitnami/mastodon:4.6
+    image: docker.io/bitnami/mastodon:4.7
     ports:
       - 80:3000
     volumes:
@@ -40,7 +40,7 @@ services:
       - MASTODON_DATABASE_PASSWORD=bitnami1
       - MASTODON_ELASTICSEARCH_PASSWORD=bitnami123
   mastodon-streaming:
-    image: docker.io/bitnami/mastodon:4.6
+    image: docker.io/bitnami/mastodon:4.7
     ports:
       - 4000:4000
     environment:
@@ -51,7 +51,7 @@ services:
       - MASTODON_DATABASE_PASSWORD=bitnami1
       - MASTODON_ELASTICSEARCH_PASSWORD=bitnami123
   mastodon-sidekiq:
-    image: docker.io/bitnami/mastodon:4.6
+    image: docker.io/bitnami/mastodon:4.7
     volumes:
       - 'mastodon_data:/bitnami/mastodon'
     environment:

@@ -3,5 +3,5 @@
 
 services:
   argo-workflows:
-    image: docker.io/bitnami/argo-workflows:4.0
+    image: docker.io/bitnami/argo-workflows:4.1
     entrypoint: tail -f /dev/null

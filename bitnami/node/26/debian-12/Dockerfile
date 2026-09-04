@@ -7,13 +7,13 @@ ARG DOWNLOADS_URL="https://downloads.bitnami.com/files/stacksmith"
 ARG TARGETARCH
 
 LABEL org.opencontainers.image.base.name="docker.io/bitnami/minideb:bookworm" \
-      org.opencontainers.image.created="2026-08-18T10:37:18Z" \
+      org.opencontainers.image.created="2026-09-03T08:35:25Z" \
       org.opencontainers.image.description="Application packaged by Broadcom, Inc." \
       org.opencontainers.image.documentation="https://github.com/bitnami/containers/tree/main/bitnami/node/README.md" \
       org.opencontainers.image.source="https://github.com/bitnami/containers/tree/main/bitnami/node" \
       org.opencontainers.image.title="node" \
       org.opencontainers.image.vendor="Broadcom, Inc." \
-      org.opencontainers.image.version="26.7.0"
+      org.opencontainers.image.version="26.8.1"
 
 ENV OS_ARCH="${TARGETARCH:-amd64}" \
     OS_FLAVOUR="debian-12" \
@@ -22,13 +22,13 @@ ENV OS_ARCH="${TARGETARCH:-amd64}" \
 COPY prebuildfs /
 SHELL ["/bin/bash", "-o", "errexit", "-o", "nounset", "-o", "pipefail", "-c"]
 # Install required system packages and dependencies
-RUN install_packages build-essential ca-certificates curl git libatomic1 libbz2-1.0 libffi8 libgcc-s1 liblzma5 libncursesw6 libreadline8 libsqlite3-0 libsqlite3-dev libssl-dev libssl3 libstdc++6 libtinfo6 pkg-config procps unzip wget zlib1g
+RUN install_packages build-essential ca-certificates curl git libatomic1 libbz2-1.0 libffi8 libgcc-s1 liblzma5 libncursesw6 libreadline8 libsqlite3-0 libsqlite3-dev libssl-dev libssl3 libstdc++6 libtinfo6 p7zip-full pkg-config procps wget zlib1g
 RUN --mount=type=secret,id=downloads_url,env=SECRET_DOWNLOADS_URL \
     DOWNLOADS_URL=${SECRET_DOWNLOADS_URL:-${DOWNLOADS_URL}} ; \
     mkdir -p /tmp/bitnami/pkg/cache/ ; cd /tmp/bitnami/pkg/cache/ || exit 1 ; \
     COMPONENTS=( \
-      "python-3.14.7-5-linux-${OS_ARCH}-debian-12" \
-      "node-26.7.0-0-linux-${OS_ARCH}-debian-12" \
+      "python-3.14.7-7-linux-${OS_ARCH}-debian-12" \
+      "node-26.8.1-0-linux-${OS_ARCH}-debian-12" \
     ) ; \
     for COMPONENT in "${COMPONENTS[@]}"; do \
       if [ ! -f "${COMPONENT}.tar.gz" ]; then \
@@ -49,10 +49,10 @@ RUN sed -i 's/^PASS_MAX_DAYS.*/PASS_MAX_DAYS    90/' /etc/login.defs && \
 
 COPY rootfs /
 RUN /opt/bitnami/scripts/node/postunpack.sh
-ENV APP_VERSION="26.7.0" \
+ENV APP_VERSION="26.8.1" \
     BITNAMI_APP_NAME="node" \
     COREPACK_HOME="/opt/bitnami/node/corepack" \
-    IMAGE_REVISION="1" \
+    IMAGE_REVISION="2" \
     PATH="/opt/bitnami/python/bin:/opt/bitnami/node/bin:$PATH"
 
 WORKDIR /app
