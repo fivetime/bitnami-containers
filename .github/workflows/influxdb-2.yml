@@ -1,0 +1,174 @@
+name: Build influxdb 2
+
+# Compiles InfluxDB from a v2.x tag of github.com/influxdata/influxdb.
+# The schedule picks up a new tag on its own: it builds the newest v2.x.y
+# tag when the registry does not have it yet. latest always follows the
+# newest tag; an older version built by hand gets only its own tag.
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'bitnami/influxdb/2/**'
+      - '.github/workflows/influxdb-2.yml'
+  pull_request:
+    branches: [main, master]
+    paths:
+      - 'bitnami/influxdb/2/**'
+      - '.github/workflows/influxdb-2.yml'
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'InfluxDB version to build, e.g. 2.9.1 (default: the newest v2.x tag)'
+        required: false
+        type: string
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/influxdb
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.pick.outputs.version }}
+      latest: ${{ steps.pick.outputs.latest }}
+      build: ${{ steps.pick.outputs.build }}
+    steps:
+      - name: Pick the version
+        id: pick
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+          EVENT: ${{ github.event_name }}
+        run: |
+          # Release tags only (vX.Y.Z), no release candidates.
+          newest=$(git ls-remote --tags --refs https://github.com/influxdata/influxdb.git 'v2.*' |
+            sed -n 's#.*refs/tags/v\(2\.[0-9]*\.[0-9]*\)$#\1#p' | sort -V | tail -n 1)
+          test -n "$newest"
+          version=${INPUT_VERSION:-$newest}
+          version=${version#v}
+          if ! git ls-remote --exit-code --tags https://github.com/influxdata/influxdb.git "refs/tags/v${version}" >/dev/null; then
+            echo "::error::no tag v${version} in influxdata/influxdb"
+            exit 1
+          fi
+          build=true
+          # The schedule only builds what the registry does not have yet.
+          if [ "$EVENT" = schedule ] &&
+             docker manifest inspect "${REGISTRY}/${IMAGE_NAME}:${version}" >/dev/null 2>&1; then
+            build=false
+          fi
+          {
+            echo "version=${version}"
+            echo "latest=$([ "$version" = "$newest" ] && echo true || echo false)"
+            echo "build=${build}"
+          } >> "$GITHUB_OUTPUT"
+          echo "newest v2 tag: ${newest}, building ${version}: ${build}"
+
+  # Each architecture compiles on its own native runner (Rust and Go under
+  # QEMU would take hours) and pushes by digest; merge joins the two.
+  build:
+    needs: version
+    if: needs.version.outputs.build == 'true'
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - platform: linux/amd64
+            runner: ubuntu-24.04
+          - platform: linux/arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build
+        id: build
+        uses: docker/build-push-action@v7
+        with:
+          context: bitnami/influxdb/2
+          platforms: ${{ matrix.platform }}
+          build-args: INFLUXDB_VERSION=${{ needs.version.outputs.version }}
+          labels: |
+            org.opencontainers.image.title=influxdb
+            org.opencontainers.image.version=${{ needs.version.outputs.version }}
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+          outputs: type=image,name=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=${{ github.event_name != 'pull_request' }}
+          cache-from: type=gha,scope=influxdb-2-${{ matrix.runner }}
+          cache-to: type=gha,scope=influxdb-2-${{ matrix.runner }},mode=max
+
+      - name: Export digest
+        if: github.event_name != 'pull_request'
+        run: |
+          mkdir -p /tmp/digests
+          touch "/tmp/digests/${DIGEST#sha256:}"
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+
+      - name: Upload digest
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v7
+        with:
+          name: influxdb-2-digest-${{ matrix.runner }}
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  merge:
+    needs: [version, build]
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Download digests
+        uses: actions/download-artifact@v8
+        with:
+          path: /tmp/digests
+          pattern: influxdb-2-digest-*
+          merge-multiple: true
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create the manifest list
+        working-directory: /tmp/digests
+        env:
+          VERSION: ${{ needs.version.outputs.version }}
+          LATEST: ${{ needs.version.outputs.latest }}
+        run: |
+          image="${REGISTRY}/${IMAGE_NAME}"
+          tags=(-t "${image}:${VERSION}")
+          if [ "$LATEST" = true ]; then
+            tags+=(-t "${image}:latest")
+          fi
+          sources=()
+          for digest in *; do
+            sources+=("${image}@sha256:${digest}")
+          done
+          docker buildx imagetools create "${tags[@]}" "${sources[@]}"
+          docker buildx imagetools inspect "${image}:${VERSION}"
