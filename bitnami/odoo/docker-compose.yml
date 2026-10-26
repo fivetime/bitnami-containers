@@ -12,7 +12,7 @@ services:
       - POSTGRESQL_USERNAME=bn_odoo
       - POSTGRESQL_DATABASE=bitnami_odoo
   odoo:
-    image: docker.io/bitnami/odoo:19
+    image: docker.io/bitnami/odoo:20
     ports:
       - '80:8069'
     volumes:

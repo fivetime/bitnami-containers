@@ -7,13 +7,13 @@ ARG DOWNLOADS_URL="https://downloads.bitnami.com/files/stacksmith"
 ARG TARGETARCH
 
 LABEL org.opencontainers.image.base.name="docker.io/bitnami/minideb:bookworm" \
-      org.opencontainers.image.created="2026-09-02T06:33:34Z" \
+      org.opencontainers.image.created="2026-10-24T00:21:31Z" \
       org.opencontainers.image.description="Application packaged by Broadcom, Inc." \
       org.opencontainers.image.documentation="https://github.com/bitnami/containers/tree/main/bitnami/deepspeed/README.md" \
       org.opencontainers.image.source="https://github.com/bitnami/containers/tree/main/bitnami/deepspeed" \
       org.opencontainers.image.title="deepspeed" \
       org.opencontainers.image.vendor="Broadcom, Inc." \
-      org.opencontainers.image.version="0.19.6"
+      org.opencontainers.image.version="0.19.8"
 
 ENV HOME="/" \
     OS_ARCH="${TARGETARCH:-amd64}" \
@@ -23,14 +23,14 @@ ENV HOME="/" \
 COPY prebuildfs /
 SHELL ["/bin/bash", "-o", "errexit", "-o", "nounset", "-o", "pipefail", "-c"]
 # Install required system packages and dependencies
-RUN install_packages build-essential ca-certificates curl git jq libbz2-1.0 libffi8 libgcc-s1 libjemalloc2 liblzma5 libncursesw6 libreadline8 libsqlite3-0 libssl3 libstdc++6 libtinfo6 libuuid1 numactl openssh-server pkg-config procps unzip zlib1g
+RUN install_packages build-essential ca-certificates curl git jq libbz2-1.0 libffi8 libgcc-s1 libjemalloc2 liblzma5 libncursesw6 libreadline8 libsqlite3-0 libssl3 libstdc++6 libtinfo6 libuuid1 numactl openssh-server p7zip-full pkg-config procps zlib1g
 RUN --mount=type=secret,id=downloads_url,env=SECRET_DOWNLOADS_URL \
     DOWNLOADS_URL=${SECRET_DOWNLOADS_URL:-${DOWNLOADS_URL}} ; \
     mkdir -p /tmp/bitnami/pkg/cache/ ; cd /tmp/bitnami/pkg/cache/ || exit 1 ; \
     COMPONENTS=( \
       "nss-wrapper-1.1.16-0-linux-${OS_ARCH}-debian-12" \
-      "python-3.14.7-7-linux-${OS_ARCH}-debian-12" \
-      "deepspeed-0.19.6-0-linux-${OS_ARCH}-debian-12" \
+      "python-3.14.9-2-linux-${OS_ARCH}-debian-12" \
+      "deepspeed-0.19.8-0-linux-${OS_ARCH}-debian-12" \
     ) ; \
     for COMPONENT in "${COMPONENTS[@]}"; do \
       if [ ! -f "${COMPONENT}.tar.gz" ]; then \
@@ -50,7 +50,7 @@ RUN uninstall_packages curl
 
 COPY rootfs /
 RUN mkdir /app /.cache && mkdir -p /home/deepspeed/.local && mkdir -p /home/deepspeed/.ssh && mkdir /home/deepspeed/.cache && ln -s /home/deepspeed/.local /opt/bitnami/deepspeed && ln -s /home/deepspeed/.ssh /opt/bitnami/deepspeed && ln -s /home/deepspeed/.cache /opt/bitnami/deepspeed && chmod g+rwX /app /.cache /home/deepspeed/.cache /home/deepspeed/.local
-ENV APP_VERSION="0.19.6" \
+ENV APP_VERSION="0.19.8" \
     BITNAMI_APP_NAME="deepspeed" \
     CFLAGS="-s -I/opt/bitnami/python/include -I/opt/bitnami/common/include" \
     CPLUS_INCLUDE_PATH="/opt/bitnami/common/include" \

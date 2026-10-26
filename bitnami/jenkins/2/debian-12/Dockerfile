@@ -8,13 +8,13 @@ ARG JAVA_EXTRA_SECURITY_DIR="/bitnami/java/extra-security"
 ARG TARGETARCH
 
 LABEL org.opencontainers.image.base.name="docker.io/bitnami/minideb:bookworm" \
-      org.opencontainers.image.created="2026-09-03T08:08:12Z" \
+      org.opencontainers.image.created="2026-10-25T01:15:29Z" \
       org.opencontainers.image.description="Application packaged by Broadcom, Inc." \
       org.opencontainers.image.documentation="https://github.com/bitnami/containers/tree/main/bitnami/jenkins/README.md" \
       org.opencontainers.image.source="https://github.com/bitnami/containers/tree/main/bitnami/jenkins" \
       org.opencontainers.image.title="jenkins" \
       org.opencontainers.image.vendor="Broadcom, Inc." \
-      org.opencontainers.image.version="2.568.3"
+      org.opencontainers.image.version="2.580.1"
 
 ENV HOME="/" \
     OS_ARCH="${TARGETARCH:-amd64}" \
@@ -30,9 +30,9 @@ RUN --mount=type=secret,id=downloads_url,env=SECRET_DOWNLOADS_URL \
     mkdir -p /tmp/bitnami/pkg/cache/ ; cd /tmp/bitnami/pkg/cache/ || exit 1 ; \
     COMPONENTS=( \
       "nss-wrapper-1.1.16-0-linux-${OS_ARCH}-debian-12" \
-      "render-template-1.0.10-4-linux-${OS_ARCH}-debian-12" \
-      "jre-21.0.12-10-2-linux-${OS_ARCH}-debian-12" \
-      "jenkins-2.568.3-0-linux-${OS_ARCH}-debian-12" \
+      "render-template-1.0.10-6-linux-${OS_ARCH}-debian-12" \
+      "jre-21.0.13-25-0-linux-${OS_ARCH}-debian-12" \
+      "jenkins-2.580.1-0-linux-${OS_ARCH}-debian-12" \
     ) ; \
     for COMPONENT in "${COMPONENTS[@]}"; do \
       if [ ! -f "${COMPONENT}.tar.gz" ]; then \
@@ -47,13 +47,14 @@ RUN apt-get update && apt-get upgrade -y && \
     apt-get clean && rm -rf /var/lib/apt/lists /var/cache/apt/archives
 RUN chmod g+rwX /opt/bitnami
 RUN find / -perm /6000 -type f -exec chmod a-s {} \; || true
+RUN mkdir -p /usr/share/fonts /etc/fonts/conf.d && if [ -d /opt/bitnami/common/fonts ]; then ln -sf /opt/bitnami/common/fonts /usr/share/fonts/bitnami; fi && if [ -d /opt/bitnami/common/fontconfig ]; then ln -sf /opt/bitnami/common/fontconfig /etc/fonts/conf.d/bitnami; fi
 
 COPY rootfs /
 RUN /opt/bitnami/scripts/java/postunpack.sh
 RUN /opt/bitnami/scripts/jenkins/postunpack.sh
-ENV APP_VERSION="2.568.3" \
+ENV APP_VERSION="2.580.1" \
     BITNAMI_APP_NAME="jenkins" \
-    IMAGE_REVISION="1" \
+    IMAGE_REVISION="7" \
     JAVA_HOME="/opt/bitnami/java" \
     PATH="/opt/bitnami/common/bin:/opt/bitnami/java/bin:$PATH"
 

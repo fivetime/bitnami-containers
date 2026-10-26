@@ -13,7 +13,7 @@ services:
       # ALLOW_EMPTY_PASSWORD is recommended only for development.
       - ALLOW_EMPTY_PASSWORD=yes
   gitea:
-    image: docker.io/bitnami/gitea:1
+    image: docker.io/bitnami/gitea:28
     volumes:
       - 'gitea_data:/bitnami/gitea'
     environment:
