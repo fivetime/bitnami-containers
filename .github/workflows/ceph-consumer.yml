@@ -6,7 +6,7 @@ on:
     tags: ['v*']
     paths:
       - 'bitnami/ceph-consumer/**'
-      - '.github/workflows/docker-build.yml'
+      - '.github/workflows/ceph-consumer.yml'
   pull_request:
     branches: [main, master]
     paths:
